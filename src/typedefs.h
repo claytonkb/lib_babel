@@ -54,19 +54,20 @@ typedef bstruct sym;    // general-purpose symbol
 
 // enums
 //
-typedef enum flag_val_enum // flag_val# 
+typedef enum flag_val_enum
         {CLR, SET, IGN} flag_val;
 
-typedef enum access_size_sel_enum // access_size_sel#  
-        {BIT_ASIZE,   BYTE_ASIZE,  WORD_ASIZE,
-         DWORD_ASIZE, QWORD_ASIZE, MWORD_ASIZE} access_size_sel;
+typedef enum access_size_enum
+        {U1_ASIZE,   U8_ASIZE,  U16_ASIZE,
+         U32_ASIZE,  U64_ASIZE, U128_ASIZE, 
+         MWORD_ASIZE} access_size;
 
-typedef enum sort_type_enum // sort_type# 
-        {UNSIGNED,  SIGNED,   ALPHA_MWORD, ALPHA_BYTE, 
-         LEX_MWORD, LEX_BYTE, VAL,         CUSTOM} sort_type;
+typedef enum sort_type_enum
+        {UNSIGNED_ST,  SIGNED_ST,   ALPHA_MWORD_ST, ALPHA_BYTE_ST, 
+         LEX_MWORD_ST, LEX_BYTE_ST, VAL_ST,         CUSTOM_ST} sort_type;
 
 typedef enum fileout_type_enum 
-        {OVERWRITE, APPEND} fileout_type; // fileout_type_enum#
+        {OVERWRITE, APPEND} fileout_type;
 
 // generic_fn
 //
@@ -113,7 +114,7 @@ typedef struct{
 //
 typedef struct {
     tptr            tag;
-    access_size_sel asize;
+    access_size     asize;
     sort_type       st;
     generic_fn     *cmp;
     bsrange         bs;

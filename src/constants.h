@@ -7,37 +7,36 @@
  *                                                                           *
  ****************************************************************************/
 
-  ///////////////////
- // CODES          //
-//                 ///////////////////////////////////////////////////////////
+
+// CODES
+//
 #define NORMAL_EXIT_CODE    0                                   // NORMAL_EXIT_CODE#
 #define DIE_EXIT_CODE       1                                   // DIE_EXIT_CODE#
 #define CAT_EXCEPT          1                                   // CAT_EXCEPT#
 #define INTERP_RESET        2                                   // INTERP_RESET#
 #define OP_RESTART          4                                   // OP_RESTART#
 
-  ///////////////////
- // DIMENSIONS     //
-//                 ///////////////////////////////////////////////////////////
+
+// DIMENSIONS/LIMITS
+//
 #define BITS_PER_BYTE 8                                         // BITS_PER_BYTE#
 #define BYTE_MAX 255                                            // BYTE_MAX#
-
-  ///////////////////
- // MWORD          //
-//                 ///////////////////////////////////////////////////////////
-#define MWORD_SIZE sizeof(mword)                                // MWORD_SIZE#
-#define MWORD_BIT_SIZE (MWORD_SIZE * BITS_PER_BYTE)             // MWORD_BIT_SIZE#
-#define HALF_MWORD_BIT_SIZE (MWORD_BIT_SIZE/2)                  // HALF_MWORD_SIZE#
-#define MWORD_MSB (MWORD_BIT_SIZE-1)                            // MWORD_MSB#
-#define MSB_MASK ((mword)1<<MWORD_MSB)                          // MSB_MASK#
-#define MWORD_LSB (mword)0                                      // MWORD_LSB#
 
 #define NEG_ONE ((mword)-1)                                     // NEG_ONE#
 #define FMAX    NEG_ONE                                         // FMAX#
 
-  ///////////////////
- // UNITS          //
-//                 ///////////////////////////////////////////////////////////
+
+// MWORD
+//
+#define MWORD_SIZE sizeof(void*)                                // MWORD_SIZE#
+#define MWORD_BIT_SIZE (MWORD_SIZE * BITS_PER_BYTE)             // MWORD_BIT_SIZE#
+#define MWORD_MSB (MWORD_BIT_SIZE-1)                            // MWORD_MSB#
+#define MSB_MASK ((mword)1<<MWORD_MSB)                          // MSB_MASK#
+#define MWORD_LSB (mword)0                                      // MWORD_LSB#
+
+
+// UNITS
+//
 #define UNITS_MTO8(x) ((x)*MWORD_SIZE)                          // UNITS_MTO8#
 #define UNITS_8TOM(x) ((x)/MWORD_SIZE)                          // UNITS_8TOM#
 
@@ -56,9 +55,8 @@
 
 #define COMPLEMENT_MTO1(x) (MWORD_BIT_SIZE-(x))                 // COMPLEMENT_MTO1#
 
-  ///////////////////
- // MASKS          //
-//                 ///////////////////////////////////////////////////////////
+// MASKS
+//
 #define MASK_1_BIT   (mword)0x01                                // MASK_1_BIT#
 #define MASK_1_BYTE  (mword)0xff                                // MASK_1_BYTE#
 #define MASK_1_WORD  (mword)0xffff                              // MASK_1_WORD#
@@ -68,9 +66,8 @@
 
 #define CTL_MASK (MWORD_SIZE-1)                                 // CTL_MASK#
 
-  ///////////////////
- // BIT TOOLS      //
-//                 ///////////////////////////////////////////////////////////
+// BIT TOOLS
+//
 #define BIT_RANGE(hi,lo) ((FMAX >> (MWORD_MSB-(hi))) & (FMAX << (lo)))  // BIT_RANGE#
 #define BIT_MASK(val, hi, lo) (val & BIT_RANGE(hi, lo))                 // BIT_MASK#
 #define BIT_SELECT(val, hi, lo) (BIT_MASK(val, hi, lo) >> lo)           // BIT_SELECT#
@@ -83,9 +80,8 @@
 #define MWORD_MUX(A, B, sel) (((A) & sel) | ((B) & (~sel)))             // MWORD_MUX#
 #define BIT_MERGE(A, B, sel) ldv(A,0) = MWORD_MUX(B, rdv(A,0), sel);    // BIT_MERGE#
 
-  ///////////////////
- // ALU            //
-//                 ///////////////////////////////////////////////////////////
+// ALU
+//
 #define BYTE_SELECT(val, index) (val \
                                     &  (MASK_1_BYTE << (BITS_PER_BYTE*index)) \
                                     >> (BITS_PER_BYTE*index))           // BYTE_SELECT#
@@ -101,17 +97,15 @@
 #define MWORD_SHIFT(A, n) ((n>0) ? (A << (n)) : (A >> (abs(n))))        // MWORD_SHIFT#
 #define MWORD_ROTATE(A, n) ((A << n) | (A >> (MWORD_MSB-n)))            // MWORD_ROTATE#
 
-  ///////////////////
- // HASHES         //
-//                 ///////////////////////////////////////////////////////////
+// HASHES
+//
 #define HASH_BIT_SIZE (mword)128                                        // HASH_BIT_SIZE#
 #define HASH_BYTE_SIZE (mword)(HASH_BIT_SIZE/BITS_PER_BYTE)             // HASH_BYTE_SIZE#
 #define HASH_SIZE (mword)UNITS_1TOM(HASH_BIT_SIZE)                      // HASH_SIZE#
 #define HASH_ALLOC_SIZE (HASH_SIZE+1)                                   // HASH_ALLOC_SIZE#
 
-  ///////////////////
- // TPTRS          //
-//                 ///////////////////////////////////////////////////////////
+// TPTRS
+//
 #define TAG_SIZE (HASH_SIZE*MWORD_SIZE)                         // TAG_SIZE#
 #define INTERP_TAG_SIZE (mword)1                                // INTERP_TAG_SIZE#
 
@@ -127,9 +121,8 @@
 
 #define TPTR_SFIELD (mword)0                                    // TPTR_SFIELD#
 
-  ///////////////////
- // MISC           //
-//                 ///////////////////////////////////////////////////////////
+// MISC
+//
 #define UNINIT_VAL 0xdbadbadbadbadbad                           // UNINIT_VAL#
 #define UNINIT_PTR nil                                          // UNINIT_PTR#
 
