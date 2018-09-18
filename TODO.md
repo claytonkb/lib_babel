@@ -7,13 +7,13 @@ Accessors
 ---------
 
 Core:
-rd(be,kind,thing,index,result)      --> read
-wr(be,kind,thing,index,payload)     --> write
+rd(be,kind,thing,index,result)      --> read  
+wr(be,kind,thing,index,payload)     --> write  
 
-Extended:
-rm(be,kind,thing,index)             --> remove
-ex(be,kind,thing,index)             --> test existence
-ls(be,kind,thing)                   --> list (keys)
+Extended:  
+rm(be,kind,thing,index)             --> remove  
+ex(be,kind,thing,index)             --> test existence  
+ls(be,kind,thing)                   --> list (keys)  
 
 Kinds:
 - val
