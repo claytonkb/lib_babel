@@ -6,7 +6,7 @@ TODO
 Accessors
 ---------
 
-Core:
+Core:  
 rd(be,kind,thing,index,result)      --> read  
 wr(be,kind,thing,index,payload)     --> write  
 
