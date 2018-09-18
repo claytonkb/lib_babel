@@ -49,6 +49,11 @@ Above this threshold, must use paged-array accessors.
 
 Set up pyramidal array for mem_context
 
+    mem_context --> mem_open_nest
+                --> mem_close_nest
+    
+    Use these for semi-automatic memory mgmt
+
 Migration
 ---------
 

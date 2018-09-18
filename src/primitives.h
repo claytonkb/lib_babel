@@ -137,6 +137,10 @@
         ||  tageq(tptr, PYR_TAG_UNEXIST   , TAG_SIZE)       \
         ||  tageq(tptr, PYR_TAG_INTERP_NIL, TAG_SIZE))
 
+//is_builtin() (see tptr.*)
+
+#define is_large_arr(x) (size(x) > PA_LO_THRESH)
+
 
 /*****************************************************************************
  *                                                                           *

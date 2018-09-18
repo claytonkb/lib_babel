@@ -22,7 +22,8 @@ typedef bstruct tarr;   // tag array
 typedef bstruct val8;   // byte val-array
 typedef bstruct val1;   // byte val-array
 typedef bstruct tptr;   // tagged-pointer
-typedef bstruct cptr;   // C-style (unsafe) pointer
+typedef bstruct cptr;   // C-style (unsafe) pointer (MWORD-aligned)
+typedef bstruct cptr8;   // C-style (unsafe) pointer (byte-aligned)
 typedef bstruct ls;     // linked-list
 typedef bstruct dls;    // doubly linked-list
 typedef bstruct tens;   // tensor

@@ -25,6 +25,11 @@
 #define NEG_ONE ((mword)-1)                                     // NEG_ONE#
 #define FMAX    NEG_ONE                                         // FMAX#
 
+// MEM
+//
+#define SMALL_PAGE   (1<<12)
+#define LARGE_PAGE   (1<<21)
+#define PA_LO_THRESH (LARGE_PAGE/2)
 
 // MWORD
 //
