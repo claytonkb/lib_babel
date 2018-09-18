@@ -52,11 +52,11 @@ Set up pyramidal array for mem_context
 Migration
 ---------
 
-Bstruct
-Array
-List
-Trie
-...
+Bstruct  
+Array  
+List  
+Trie  
+...  
 
 BUGS
 ====
