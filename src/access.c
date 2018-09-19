@@ -43,9 +43,14 @@ void access_api_rd(babel_env *be, bstruct b, mword offset, cptr result, access_s
 void access_api_wr(babel_env *be, bstruct b, mword offset, bstruct payload, access_size asize){
 
     if(is_tptr(b)){
-        // NOTE: If you want to write the tag of a tptr, use tptr_set_tag()
-        //       not an access_* function
-        tptr_set_ptr(b, payload);
+        if(is_builtin(b)){
+            // dispatch
+        }
+        else{
+            // NOTE: If you want to write the tag of a tptr, use tptr_set_tag()
+            //       not an access_* function
+            tptr_set_ptr(b, payload);
+        }
     }
     else if(is_large_arr(b)){
         // call paged-array accessor
@@ -134,6 +139,22 @@ void access_api_wr_ptr(ptr p, mword offset, cptr payload){
 
     setp(p,offset,payload);
 
+}
+
+
+//
+//
+void access_pa_rd(babel_env *be, bstruct b, mword offset, cptr result, access_size asize){
+//      see std.* for paged-array functions
+//      see cruft.c for implementation
+}
+
+
+//
+//
+void access_pa_wr(babel_env *be, bstruct b, mword offset, bstruct payload, access_size asize){
+//      see std.* for paged-array functions
+//      see cruft.c for implementation
 }
 
 
