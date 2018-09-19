@@ -25,11 +25,19 @@
 #define NEG_ONE ((mword)-1)                                     // NEG_ONE#
 #define FMAX    NEG_ONE                                         // FMAX#
 
-// MEM
+// MEM & PAGING
 //
+#define PA_LEVEL2_MSB 36
+#define PA_LEVEL2_LSB 29
+#define PA_LEVEL1_MSB 28
+#define PA_LEVEL1_LSB 21
+#define PA_LEVEL0_MSB 20
+#define PA_LEVEL0_LSB 0
+
 #define SMALL_PAGE   (1<<12)
-#define LARGE_PAGE   (1<<21)
+#define LARGE_PAGE   (1<<PA_LEVEL1_LSB)
 #define PA_LO_THRESH (LARGE_PAGE/2)
+
 
 // MWORD
 //

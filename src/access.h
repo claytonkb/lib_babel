@@ -22,7 +22,7 @@
 //      in-memory storage. A large array is converted to a segmented-array
 //      built-in for mass/persistent storage.
 //
-//      see std.* for paged-array functions
+//      See std.* for segmented-array functions (was called paged-array)
 
 // general accessors:
 // use these when you don't know what kind of bstruct you're accessing
@@ -35,8 +35,15 @@ void   access_api_wr_val(babel_env *be, val v, mword offset, cptr payload, acces
 mword *access_api_rd_ptr(ptr p, mword offset);
 void   access_api_wr_ptr(ptr p, mword offset, cptr payload);
 
+// paged-array general accessors:
 void access_pa_rd(babel_env *be, bstruct b, mword offset, cptr result, access_size asize);
 void access_pa_wr(babel_env *be, bstruct b, mword offset, bstruct payload, access_size asize);
+
+// paged-array specific accessors:
+mword access_pa_rd_val(babel_env *be, bstruct b, mword offset, cptr result, access_size asize);
+void access_pa_wr_val(babel_env *be, bstruct b, mword offset, bstruct payload, access_size asize);
+mword *access_pa_rd_ptr(bstruct b, mword offset);
+void access_pa_wr_ptr(babel_env *be, bstruct b, mword offset, bstruct payload, access_size asize);
 
 #endif // ACCESS_H
 

@@ -20,18 +20,19 @@ void access_api_rd(babel_env *be, bstruct b, mword offset, cptr result, access_s
         else{
             // NOTE: If you want to read the tag out of a tptr, use get_tag()
             //       not an access_* function
-            setp(result,0,get_tptr(b));
+            setp(result, 0, get_tptr(b));
         }
     }
     else if(is_large_arr(b)){
         // call paged-array accessor
+        access_pa_rd(be, b, offset, result, asize); // XXX this can livelock!
     }
     else{
         if(is_ptr(b)){
-            setp(result,0,getp(b,offset));
+            setp(result, 0, getp(b, offset));
         }
         else{ // is_val(b)
-            setv(result,0,access_api_rd_val(be,b,offset,asize));
+            setv(result, 0, access_api_rd_val(be, b, offset, asize));
         }
     }
 
@@ -54,13 +55,14 @@ void access_api_wr(babel_env *be, bstruct b, mword offset, bstruct payload, acce
     }
     else if(is_large_arr(b)){
         // call paged-array accessor
+        access_pa_wr(be, b, offset, payload, asize); // XXX this can livelock!
     }
     else{
         if(is_ptr(b)){
-            setp(b,offset,getp(payload,0));
+            setp(b, offset, getp(payload, 0));
         }
         else{ // is_val(b)
-            //void access_api_wr_val(babel_env *be, val bs, mword offset, cptr payload, access_size asize){ 
+            access_api_wr_val(be, b, offset, payload, asize);
         }
     }
 
@@ -71,8 +73,13 @@ void access_api_wr(babel_env *be, bstruct b, mword offset, bstruct payload, acce
 //
 mword access_api_rd_val(babel_env *be, val v, mword offset, access_size asize){
 
+    if(is_large_arr(v)){
+        // call paged-array accessor
+        access_pa_rd_val(babel_env *be, bstruct b, mword offset, cptr result, access_size asize);
+    }
+
     switch(asize){
-       case U1_ASIZE:
+        case U1_ASIZE:
             //mword array1_read(mword *array, mword offset){ // array1_read#
             break;
         case U8_ASIZE:
@@ -89,7 +96,7 @@ mword access_api_rd_val(babel_env *be, val v, mword offset, access_size asize){
         case U64_ASIZE:
         case MWORD_ASIZE:
             return getv(v, offset);
-         default:
+        default:
             _pigs_fly;
     }
 
@@ -101,7 +108,7 @@ mword access_api_rd_val(babel_env *be, val v, mword offset, access_size asize){
 void access_api_wr_val(babel_env *be, val v, mword offset, cptr payload, access_size asize){ 
 
     switch(asize){
-       case U1_ASIZE:
+        case U1_ASIZE:
             //void array1_write(mword *array, mword offset, mword value){ // array1_write#
             break;
         case U8_ASIZE:
@@ -128,7 +135,7 @@ void access_api_wr_val(babel_env *be, val v, mword offset, cptr payload, access_
 //
 mword *access_api_rd_ptr(ptr p, mword offset){
 
-    return getp(p,offset);
+    return getp(p, offset);
 
 }
 
@@ -137,24 +144,129 @@ mword *access_api_rd_ptr(ptr p, mword offset){
 //
 void access_api_wr_ptr(ptr p, mword offset, cptr payload){
 
-    setp(p,offset,payload);
+    setp(p, offset, payload);
 
 }
+
+
+//// non-reentrant due to statics
+//// XXX measure: better perf?
+//void access_pa_rd(babel_env *be, bstruct b, mword offset, cptr result, access_size asize){
+//
+//    static mword last_level2_offset; // primitive TLB
+//    static mword last_level1_offset;
+//
+//    mword level2_offset = BIT_SELECT(offset, PA_LEVEL2_MSB, PA_LEVEL2_LSB);
+//    mword level1_offset = BIT_SELECT(offset, PA_LEVEL1_MSB, PA_LEVEL1_LSB);
+//    mword level0_offset = BIT_SELECT(offset, PA_LEVEL0_MSB, PA_LEVEL0_LSB);
+//
+//           mword *result2;
+//    static mword *result1;
+//
+//    if(    (level2_offset != last_level2_offset) 
+//        || (level1_offset != last_level1_offset) ){
+//        result2 = rdp(be->mem->paging_base, level2_offset);
+//        result1 = rdp(result2, level1_offset);
+//    }
+//
+//    access_api_rd(be, result1, level0_offset, result, asize); // XXX this can live-lock!
+//
+//}
 
 
 //
 //
 void access_pa_rd(babel_env *be, bstruct b, mword offset, cptr result, access_size asize){
-//      see std.* for paged-array functions
-//      see cruft.c for implementation
+
+    mword level2_offset = BIT_SELECT(offset, PA_LEVEL2_MSB, PA_LEVEL2_LSB);
+    mword level1_offset = BIT_SELECT(offset, PA_LEVEL1_MSB, PA_LEVEL1_LSB);
+    mword level0_offset = BIT_SELECT(offset, PA_LEVEL0_MSB, PA_LEVEL0_LSB);
+
+    mword *result2 = rdp(be->mem->paging_base, level2_offset);
+    mword *result1 = rdp(result2, level1_offset);
+
+    access_api_rd(be, result1, level0_offset, result, asize); // XXX this can live-lock!
+
 }
 
 
 //
 //
 void access_pa_wr(babel_env *be, bstruct b, mword offset, bstruct payload, access_size asize){
-//      see std.* for paged-array functions
-//      see cruft.c for implementation
+
+    mword level2_offset = BIT_SELECT(offset, PA_LEVEL2_MSB, PA_LEVEL2_LSB);
+    mword level1_offset = BIT_SELECT(offset, PA_LEVEL1_MSB, PA_LEVEL1_LSB);
+    mword level0_offset = BIT_SELECT(offset, PA_LEVEL0_MSB, PA_LEVEL0_LSB);
+
+    mword *result2 = rdp(be->mem->paging_base, level2_offset);
+    mword *result1 = rdp(result2, level1_offset);
+
+    access_api_wr(be, result1, level0_offset, payload, asize); // XXX this can live-lock!
+
+}
+
+
+//
+//
+mword access_pa_rd_val(babel_env *be, bstruct b, mword offset, cptr result, access_size asize){
+
+    mword level2_offset = BIT_SELECT(offset, PA_LEVEL2_MSB, PA_LEVEL2_LSB);
+    mword level1_offset = BIT_SELECT(offset, PA_LEVEL1_MSB, PA_LEVEL1_LSB);
+    mword level0_offset = BIT_SELECT(offset, PA_LEVEL0_MSB, PA_LEVEL0_LSB);
+
+    mword *result2 = rdp(be->mem->paging_base, level2_offset);
+    mword *result1 = rdp(result2, level1_offset);
+
+    return access_api_rd_val(be, result1, level0_offset, result, asize); // XXX this can live-lock!
+
+}
+
+
+//
+//
+void access_pa_wr_val(babel_env *be, bstruct b, mword offset, bstruct payload, access_size asize){
+
+    mword level2_offset = BIT_SELECT(offset, PA_LEVEL2_MSB, PA_LEVEL2_LSB);
+    mword level1_offset = BIT_SELECT(offset, PA_LEVEL1_MSB, PA_LEVEL1_LSB);
+    mword level0_offset = BIT_SELECT(offset, PA_LEVEL0_MSB, PA_LEVEL0_LSB);
+
+    mword *result2 = rdp(be->mem->paging_base, level2_offset);
+    mword *result1 = rdp(result2, level1_offset);
+
+    access_api_wr_val(be, result1, level0_offset, payload, asize); // XXX this can live-lock!
+
+}
+
+
+//
+//
+mword *access_pa_rd_ptr(bstruct b, mword offset){
+
+    mword level2_offset = BIT_SELECT(offset, PA_LEVEL2_MSB, PA_LEVEL2_LSB);
+    mword level1_offset = BIT_SELECT(offset, PA_LEVEL1_MSB, PA_LEVEL1_LSB);
+    mword level0_offset = BIT_SELECT(offset, PA_LEVEL0_MSB, PA_LEVEL0_LSB);
+
+    mword *result2 = rdp(be->mem->paging_base, level2_offset);
+    mword *result1 = rdp(result2, level1_offset);
+
+    return access_api_rd_ptr(result1, level0_offset); // XXX this can live-lock!
+
+}
+
+
+//
+//
+void access_pa_wr_ptr(babel_env *be, bstruct b, mword offset, bstruct payload, access_size asize){
+
+    mword level2_offset = BIT_SELECT(offset, PA_LEVEL2_MSB, PA_LEVEL2_LSB);
+    mword level1_offset = BIT_SELECT(offset, PA_LEVEL1_MSB, PA_LEVEL1_LSB);
+    mword level0_offset = BIT_SELECT(offset, PA_LEVEL0_MSB, PA_LEVEL0_LSB);
+
+    mword *result2 = rdp(be->mem->paging_base, level2_offset);
+    mword *result1 = rdp(result2, level1_offset);
+
+    access_api_wr_ptr(be, result1, level0_offset, payload, asize); // XXX this can live-lock!
+
 }
 
 
