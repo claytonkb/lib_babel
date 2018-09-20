@@ -3,6 +3,48 @@ TODO
 
 *BUGS AT BOTTOM*
 
+Paging/GC
+---------
+
+    #define PA_LO_THRESH (1<<20)
+
+PA_LO_THRESH sets lower threshold of array size which might cross paging
+boundary(ies). All arrays below this threshold can use normal accessors.
+Above this threshold, must use paged-array accessors.
+
+Set up pyramidal array for mem_context
+
+    mem_context --> mem_open_nest
+                --> mem_close_nest
+    
+    Use these for semi-automatic memory mgmt
+
+Migration
+---------
+
+array.c
+bstruct.c
+introspect.c
+io.c
+list.c
+mem.c
+mt19937ar.c
+pearson.c
+sexpr.c
+string.c
+tptr.c
+trie.c
+utf8.c
+
+Bstruct  
+Array  
+List  
+Trie  
+...  
+
+DONEISH
+=======
+
 Accessors
 ---------
 
@@ -38,30 +80,7 @@ Babel Environment
         // dynamic_env (map)
     } babel_env;
 
-Paging/GC
----------
 
-    #define PA_LO_THRESH (1<<20)
-
-PA_LO_THRESH sets lower threshold of array size which might cross paging
-boundary(ies). All arrays below this threshold can use normal accessors.
-Above this threshold, must use paged-array accessors.
-
-Set up pyramidal array for mem_context
-
-    mem_context --> mem_open_nest
-                --> mem_close_nest
-    
-    Use these for semi-automatic memory mgmt
-
-Migration
----------
-
-Bstruct  
-Array  
-List  
-Trie  
-...  
 
 BUGS
 ====
