@@ -24,10 +24,10 @@ else{
 }
 
 sub libs{
-    safe_do("mkdir -p obj");
+    `mkdir -p obj`;
     chdir "src";
-    safe_do("gcc -c *.c");
-    safe_do("mv *.o ../obj");
+    `gcc -c *.c`;
+    `mv *.o ../obj`;
     chdir "../";
 }
 
