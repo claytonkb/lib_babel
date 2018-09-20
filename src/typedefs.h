@@ -113,13 +113,27 @@ typedef struct{
 //      adesc a;
 //      a.bs.range.malign.start = (mword*)foo;
 //
-typedef struct {
+typedef struct{
     tptr            tag;
     access_size     asize;
     sort_type       st;
     generic_fn     *cmp;
     bsrange         bs;
 } adesc;
+
+
+typedef struct{
+    bstruct paging_base;
+    // GC flags
+    // nested context list
+} mem_context;
+
+
+typedef struct{
+    mem_context *mem;
+    sap static_env;
+    map dynamic_env;
+} babel_env;
 
 
 

@@ -29,8 +29,8 @@ Examples:
     access_api_rd_ptr(pc,x,y,MWORD_ASIZE)
     ...
 
-Babel Context
--------------
+Babel Environment
+-----------------
 
     struct{
         // mem_context

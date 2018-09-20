@@ -20,7 +20,7 @@ void access_api_rd(babel_env *be, bstruct b, mword offset, cptr result, access_s
         else{
             // NOTE: If you want to read the tag out of a tptr, use get_tag()
             //       not an access_* function
-            setp(result, 0, get_tptr(b));
+//            setp(result, 0, get_tptr(b));
         }
     }
     else if(is_large_arr(b)){
@@ -75,7 +75,7 @@ mword access_api_rd_val(babel_env *be, val v, mword offset, access_size asize){
 
     if(is_large_arr(v)){
         // call paged-array accessor
-        access_pa_rd_val(babel_env *be, bstruct b, mword offset, cptr result, access_size asize);
+        return access_pa_rd_val(be, v, offset, asize);
     }
 
     switch(asize){
@@ -135,7 +135,9 @@ void access_api_wr_val(babel_env *be, val v, mword offset, cptr payload, access_
 //
 mword *access_api_rd_ptr(ptr p, mword offset){
 
-    return getp(p, offset);
+//    return getp(p, offset);
+    _trace;
+    return (mword*)0;
 
 }
 
@@ -208,7 +210,7 @@ void access_pa_wr(babel_env *be, bstruct b, mword offset, bstruct payload, acces
 
 //
 //
-mword access_pa_rd_val(babel_env *be, bstruct b, mword offset, cptr result, access_size asize){
+mword access_pa_rd_val(babel_env *be, bstruct b, mword offset, access_size asize){
 
     mword level2_offset = BIT_SELECT(offset, PA_LEVEL2_MSB, PA_LEVEL2_LSB);
     mword level1_offset = BIT_SELECT(offset, PA_LEVEL1_MSB, PA_LEVEL1_LSB);
@@ -217,7 +219,7 @@ mword access_pa_rd_val(babel_env *be, bstruct b, mword offset, cptr result, acce
     mword *result2 = rdp(be->mem->paging_base, level2_offset);
     mword *result1 = rdp(result2, level1_offset);
 
-    return access_api_rd_val(be, result1, level0_offset, result, asize); // XXX this can live-lock!
+    return access_api_rd_val(be, result1, level0_offset, asize); // XXX this can live-lock!
 
 }
 
@@ -240,7 +242,7 @@ void access_pa_wr_val(babel_env *be, bstruct b, mword offset, bstruct payload, a
 
 //
 //
-mword *access_pa_rd_ptr(bstruct b, mword offset){
+mword *access_pa_rd_ptr(babel_env *be, bstruct b, mword offset){
 
     mword level2_offset = BIT_SELECT(offset, PA_LEVEL2_MSB, PA_LEVEL2_LSB);
     mword level1_offset = BIT_SELECT(offset, PA_LEVEL1_MSB, PA_LEVEL1_LSB);
@@ -265,7 +267,7 @@ void access_pa_wr_ptr(babel_env *be, bstruct b, mword offset, bstruct payload, a
     mword *result2 = rdp(be->mem->paging_base, level2_offset);
     mword *result1 = rdp(result2, level1_offset);
 
-    access_api_wr_ptr(be, result1, level0_offset, payload, asize); // XXX this can live-lock!
+    access_api_wr_ptr(result1, level0_offset, payload); // XXX this can live-lock!
 
 }
 

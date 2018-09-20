@@ -40,9 +40,9 @@ void access_pa_rd(babel_env *be, bstruct b, mword offset, cptr result, access_si
 void access_pa_wr(babel_env *be, bstruct b, mword offset, bstruct payload, access_size asize);
 
 // paged-array specific accessors:
-mword access_pa_rd_val(babel_env *be, bstruct b, mword offset, cptr result, access_size asize);
+mword access_pa_rd_val(babel_env *be, bstruct b, mword offset, access_size asize);
 void access_pa_wr_val(babel_env *be, bstruct b, mword offset, bstruct payload, access_size asize);
-mword *access_pa_rd_ptr(bstruct b, mword offset);
+mword *access_pa_rd_ptr(babel_env *be, bstruct b, mword offset);
 void access_pa_wr_ptr(babel_env *be, bstruct b, mword offset, bstruct payload, access_size asize);
 
 #endif // ACCESS_H

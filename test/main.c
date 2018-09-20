@@ -2,6 +2,7 @@
 //
 
 #include "babel.h"
+#include "access.h"
 #include <stdio.h>
 
 void dev_get_line(char *buffer, FILE *stream);
@@ -27,6 +28,8 @@ void dev_prompt(void){
     char buffer[256];
 
     int i;
+    ptr   x;
+    mword y;
 
     _say("type 0 for menu");
 
@@ -54,7 +57,7 @@ void dev_prompt(void){
                 return;
 
             case 3:
-                _say("cmd_code==1");
+                access_api_rd_ptr(x,y);
                 break;
 
             default:
