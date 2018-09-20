@@ -57,6 +57,7 @@ void dev_prompt(void){
                 return;
 
             case 3:
+                // dummy call (compile-test)
                 access_api_rd_ptr(x,y);
                 break;
 

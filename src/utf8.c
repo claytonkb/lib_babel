@@ -13,11 +13,9 @@
 
   Clayton Bauman: Some modifications have been made from Bezanson's original code
 
-  XXX This file has NOT been "Babelized"... bugs and security holes likely abound XXX
-
 */
 
-#include "pyramid.h"
+#include "babel.h"
 #include "utf8.h"
 
 static const uint32_t offsetsFromUTF8[6] = {
