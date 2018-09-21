@@ -108,7 +108,7 @@ mword array_search(babel_env *be, mword *array, mword *target, sort_type st);
 mword array_search_binary(babel_env *be, mword *begin, mword *end, mword *target, sort_type st);
 mword array_search_linear(babel_env *be, mword *array, int start, int end, mword *target, sort_type st);
 
-blob array_cat_pyr_op(babel_env *be, blob arrays);
+bstruct array_cat_pyr_op(babel_env *be, bstruct arrays);
 
     //#define _arcmp8(x,y,z) array8_cmp_lex(x, y, z)
 //#define  _arcmp(x,y)  array_cmp_lex(x, y)

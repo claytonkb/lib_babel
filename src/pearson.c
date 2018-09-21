@@ -1,8 +1,11 @@
 // pearson.c
 //
 
-#include "pyramid.h"
+#include "babel.h"
 #include "pearson.h"
+
+#if 0
+
 #include "mem.h"
 #include "array.h"
 
@@ -475,6 +478,8 @@ const char pearson16_byte_perm[] = // pearson16_byte_perm#
     0x38, 0xf7, 0xef, 0xfa, 0x7f, 0xad, 0x04, 0xa1, 0x03, 0x35, 0x98, 0xc7, 0xca, 0x96, 0x91, 0xb4, 
 
 };
+
+#endif
 
 // Clayton Bauman 2016
 
