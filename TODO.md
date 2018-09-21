@@ -26,6 +26,12 @@ Migration
 
     %s/pyr_cache \*this_pyr/babel_env *be/g
 
+    %s/access_size/asize/g
+    %s/access_size_sel/access_size/g
+
+    sed -i -e 's/\baccess_size\b/asize/g' array.h
+    sed -i -e 's/\baccess_size_sel\b/access_size/g' array.h
+
 * There is no global_irt
 * nil?
 * mem_new_\* ?

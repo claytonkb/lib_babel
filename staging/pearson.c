@@ -7,7 +7,6 @@
 #include "array.h"
 
 
-// XXX CLEAN UP THE HASH INTERFACE, CAN BE EASILY CONVERTED TO #DEFINES XXX
 // byte-based hash
 //
 mword *pearson_hash8(babel_env *be, mword *key){ // pearson_hash8#
@@ -68,15 +67,6 @@ void pearson16(char *result, char *init, char *key, mword strlen){ // pearson16#
 
 }
 
-
-/*****************************************************************************
- *                                                                           *
- *                   XXX NOTE: DEPRECATE *marsaglia*!!! XXX                  *
- *                                                                           *
- *       Poor randomness. Use mersenne-twister instead. Permute MT with      *
- *       pearson16_byte_perm for better pseudo-randomness out of the box     *
- *                                                                           *
- ****************************************************************************/
 
 // 16-byte hash function based on Pearson hashing with added Marsaglia XORSHIFT fuzz
 //
