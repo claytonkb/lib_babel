@@ -49,10 +49,23 @@
  ****************************************************************************/
 
 #ifdef DEV_MODE
-
 int dev_i;
-
 #endif
+
+
+/*****************************************************************************
+ *                                                                           *
+ *                                  NIL                                      *
+ *                                                                           *
+ ****************************************************************************/
+#define nil (be->nil)
+
+    // XXX
+    //      This #define is utilized as an internal short-hand since every
+    // NOTE instance of a babel_env is named "be" in lib_babel. Use of this
+    //      #define in other code may have undefined/unpredictable consequences.
+    // XXX
+
 
 /*****************************************************************************
  *                                                                           *

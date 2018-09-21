@@ -3,25 +3,20 @@
 
 #include "babel.h"
 #include "mem.h"
-
-#if 0
-
 #include "array.h"
-
 
 
 /*****************************************************************************
  *                                                                           *
- *                    NON-GC MEMORY (global_irt->sys_mem)                    *
+ *                              NON-GC MEMORY                                *
  *                                                                           *
  ****************************************************************************/
-
 
 // XXX WAIVER REQUIRED mem_sys_alloc XXX
 // NB: size is in units of bytes
 // DESC: malloc() wrapper (check ret ptr + track stats)
 //
-void *mem_sys_alloc(int size){ // mem_sys_alloc#
+void *mem_sys_alloc(mem_context *mc, int size){
 
     void *alloc_attempt = malloc(size); // XXX WAIVER(malloc) XXX
 
@@ -29,7 +24,9 @@ void *mem_sys_alloc(int size){ // mem_sys_alloc#
         _fatal("malloc failed");
     }
 
-    global_irt->sys_mem->alloc_count++; // FIXME Wrap this in PROF_MODE guards
+#ifdef PROF_MODE
+    mc->sys_alloc_count++;
+#endif
 
     return alloc_attempt;
 
@@ -39,11 +36,60 @@ void *mem_sys_alloc(int size){ // mem_sys_alloc#
 // NB: Use only with mem created by mem_sys_alloc
 // DESC: free() wrapper (track stats)
 //
-void mem_sys_free(void *p){ // mem_sys_free#
+void mem_sys_free(mem_context *mc, void *p){
 
     free(p); // XXX WAIVER(free) XXX
 
-    global_irt->sys_mem->free_count++; // FIXME Wrap this in PROF_MODE guards
+#ifdef PROF_MODE
+    mc->sys_free_count++;
+#endif
+
+}
+
+
+// init_mem_size is in units of bytes
+//
+mem_context *mem_context_new(mword init_mem_size){
+
+#ifdef GC_TRACE
+_trace;
+#endif
+
+    mem_context *mc = malloc(sizeof(mem_context)); // XXX WAIVER(malloc) XXX
+
+    mword mword_mem_size = UNITS_8TOM(init_mem_size);
+
+    ptr level2_dir;
+    ptr level1_dir;
+    val level0_dir;
+
+    if(mword_mem_size < LARGE_PAGE_SIZE){
+
+        level2_dir = mem_sys_alloc(mc,sizeof(PA_DIR_SIZE*sizeof(mword)));
+        level1_dir = mem_sys_alloc(mc,sizeof(PA_DIR_SIZE*sizeof(mword)));
+        level0_dir = mem_sys_alloc(mc,mword_mem_size);
+
+        ldp(level1_dir,0) = level0_dir;
+        ldp(level2_dir,0) = level1_dir;
+        mc->paging_base = level2_dir;
+
+    }
+    else{
+        _enhance("init_mem_size >= LARGE_PAGE_SIZE");
+    }
+
+    return mc;
+
+}
+
+#if 0
+
+//
+//
+void mem_destroy(mem_context *m){ // mem_destroy#
+
+    mem_bank_free(m->primary);
+    mem_bank_free(m->secondary);
 
 }
 
@@ -222,7 +268,7 @@ void mem_non_gc_teardown(void){ // mem_non_gc_teardown#
 
 //
 //
-void mem_new(pyr_cache *this_pyr, mword init_mem_size){ // mem_new#
+void mem_new(babel_env *be, mword init_mem_size){ // mem_new#
 
 #if(defined INTERP_RESET_TRACE)
 _reset_trace;
@@ -283,7 +329,7 @@ void mem_bank_free(alloc_bank *a){ // mem_bank_free#
 
 //
 //
-mword *mem_alloc(pyr_cache *this_pyr, mword alloc_sfield){ // mem_alloc#
+mword *mem_alloc(babel_env *be, mword alloc_sfield){ // mem_alloc#
 
     mword *return_ptr;
 
@@ -350,7 +396,7 @@ mword *mem_alloc(pyr_cache *this_pyr, mword alloc_sfield){ // mem_alloc#
 
 //
 //
-void *mem_new_val(pyr_cache *this_pyr, mword size, mword init){ // mem_new_val#
+void *mem_new_val(babel_env *be, mword size, mword init){ // mem_new_val#
 
     mword local_size = UNITS_MTO8(size);
 
@@ -366,7 +412,7 @@ void *mem_new_val(pyr_cache *this_pyr, mword size, mword init){ // mem_new_val#
 
 //
 //
-void *mem_new_ptr(pyr_cache *this_pyr, mword size){ // mem_new_ptr#
+void *mem_new_ptr(babel_env *be, mword size){ // mem_new_ptr#
 
     void *ptr;
 
@@ -393,7 +439,7 @@ void *mem_new_ptr(pyr_cache *this_pyr, mword size){ // mem_new_ptr#
 
 //
 //
-void *mem_new_tptr(pyr_cache *this_pyr, const mword *hash, mword *bs){
+void *mem_new_tptr(babel_env *be, const mword *hash, mword *bs){
 
     mword *ptr = mem_alloc(this_pyr, TPTR_SFIELD);
 
@@ -411,7 +457,7 @@ void *mem_new_tptr(pyr_cache *this_pyr, const mword *hash, mword *bs){
 
 //
 //
-void *mem_new_cptr(pyr_cache *this_pyr, const mword *hash, mword *cptr){ // mem_new_cptr#
+void *mem_new_cptr(babel_env *be, const mword *hash, mword *cptr){ // mem_new_cptr#
 
     return mem_new_tptr(this_pyr, hash, _val(this_pyr, (mword)cptr));
 
@@ -421,7 +467,7 @@ void *mem_new_cptr(pyr_cache *this_pyr, const mword *hash, mword *cptr){ // mem_
 // Accepts a data value and returns a val-array of size 1 containing that 
 // data value
 //
-void *_val(pyr_cache *this_pyr, mword value){ // _val#
+void *_val(babel_env *be, mword value){ // _val#
 
     void *ptr = mem_new_val(this_pyr, 1, 0);
     ldv(ptr,0) = value;
@@ -434,7 +480,7 @@ void *_val(pyr_cache *this_pyr, mword value){ // _val#
 // Accepts a single unsafe pointer and returns a safe ptr-array of size
 // 1 containing the unsafe pointer
 //
-void *_ptr(pyr_cache *this_pyr, mword *unsafe_ptr){ // _ptr#
+void *_ptr(babel_env *be, mword *unsafe_ptr){ // _ptr#
 
     void *ptr = mem_new_ptr(this_pyr, 1);
     ldp(ptr,0) = unsafe_ptr;
@@ -449,7 +495,7 @@ void *_ptr(pyr_cache *this_pyr, mword *unsafe_ptr){ // _ptr#
 
 // Intended for internal-use... 
 //
-mword *_newstr(pyr_cache *this_pyr, mword size8, char set_char){ // _newstr#
+mword *_newstr(babel_env *be, mword size8, char set_char){ // _newstr#
 
 //    if(!set_char)
 //        set_char = ' ';
@@ -470,7 +516,7 @@ mword *_newstr(pyr_cache *this_pyr, mword size8, char set_char){ // _newstr#
 
 // Intended for internal-use... 
 //
-mword *_newbits(pyr_cache *this_pyr, mword size1){ // _newbits#
+mword *_newbits(babel_env *be, mword size1){ // _newbits#
 
     mword arlength = array1_mword_size(this_pyr, size1);
 
@@ -488,7 +534,7 @@ mword *_newbits(pyr_cache *this_pyr, mword size1){ // _newbits#
 
 //
 //
-mword *_cons(pyr_cache *this_pyr, mword *car, mword *cdr){ // _cons#
+mword *_cons(babel_env *be, mword *car, mword *cdr){ // _cons#
 
     mword **cons_cell = (mword**)mem_new_cons(this_pyr);
     ldp(cons_cell,0) = car;
@@ -501,7 +547,7 @@ mword *_cons(pyr_cache *this_pyr, mword *car, mword *cdr){ // _cons#
 
 // Make a double-linked list cons cell (three entries instead of two)
 //
-mword *_dcons(pyr_cache *this_pyr, mword *car, mword *cdr, mword *cpr){ // _dcons#
+mword *_dcons(babel_env *be, mword *car, mword *cdr, mword *cpr){ // _dcons#
 
     mword **dcons_cell = (mword**)mem_new_cons(this_pyr);
     ldp(dcons_cell,0) = car;
@@ -515,7 +561,7 @@ mword *_dcons(pyr_cache *this_pyr, mword *car, mword *cdr, mword *cpr){ // _dcon
 
 //
 //
-void *_mkval(pyr_cache *this_pyr, mword array_size, ...){ // _mkval#
+void *_mkval(babel_env *be, mword array_size, ...){ // _mkval#
 
     void *val = (void*)mem_new_val(this_pyr, array_size, 0);
 
@@ -537,7 +583,7 @@ void *_mkval(pyr_cache *this_pyr, mword array_size, ...){ // _mkval#
 
 //
 //
-void *_mkptr(pyr_cache *this_pyr, mword array_size, ...){ // _mkptr#
+void *_mkptr(babel_env *be, mword array_size, ...){ // _mkptr#
 
     void *ptr = (void*)mem_new_ptr(this_pyr, array_size);
 
@@ -560,7 +606,7 @@ void *_mkptr(pyr_cache *this_pyr, mword array_size, ...){ // _mkptr#
 // make aop ==> make "array-of-pairs"
 // array_size = number-of-arguments / 2
 //
-void *_mk_aop(pyr_cache *this_pyr, mword array_size, ...){ // _mk_aop#
+void *_mk_aop(babel_env *be, mword array_size, ...){ // _mk_aop#
 
     void *ptr = (void*)mem_new_ptr(this_pyr, array_size);
 
@@ -590,7 +636,7 @@ void *_mk_aop(pyr_cache *this_pyr, mword array_size, ...){ // _mk_aop#
 //
 // [ptr [val 0x1 ] [ptr [val 0x2 ] [ptr [val 0x3 ]  nil ] ] ]
 //
-mword *_mkls(pyr_cache *this_pyr, mword list_size, ...){ // _mkls#
+mword *_mkls(babel_env *be, mword list_size, ...){ // _mkls#
 
     va_list vl;
     va_start(vl,list_size);
@@ -623,7 +669,7 @@ mword *_mkls(pyr_cache *this_pyr, mword list_size, ...){ // _mkls#
 // creates a new circular, doubly-linked list of given size
 // note that the list is created in REVERSE order
 //
-mword *_mkdls(pyr_cache *this_pyr, mword list_size, ...){ // _mkdls#
+mword *_mkdls(babel_env *be, mword list_size, ...){ // _mkdls#
 
     va_list vl;
     va_start(vl,list_size);

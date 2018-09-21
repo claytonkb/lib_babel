@@ -126,10 +126,15 @@ typedef struct{
     bstruct paging_base;
     // GC flags
     // nested context list
+#ifdef PROF_MODE
+    mword sys_alloc_count;
+    mword sys_free_count;
+#endif
 } mem_context;
 
 
 typedef struct{
+    mword *nil;
     mem_context *mem;
     sap static_env;
     map dynamic_env;

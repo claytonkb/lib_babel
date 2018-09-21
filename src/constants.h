@@ -34,10 +34,10 @@
 #define PA_LEVEL0_MSB 20
 #define PA_LEVEL0_LSB 0
 
-#define SMALL_PAGE   (1<<12)
-#define LARGE_PAGE   (1<<PA_LEVEL1_LSB)
-#define PA_LO_THRESH (LARGE_PAGE/2)
-
+#define SMALL_PAGE_SIZE   (1<<12)
+#define LARGE_PAGE_SIZE   (1<<PA_LEVEL1_LSB)
+#define PA_LO_THRESH (LARGE_PAGE_SIZE/2)
+#define PA_DIR_SIZE 256
 
 // MWORD
 //
@@ -140,5 +140,6 @@
 #define UNINIT_PTR nil                                          // UNINIT_PTR#
 
 #define EMPTY_CSTRING ""                                        // EMPTY_CSTRING#
+
 
 

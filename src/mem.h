@@ -18,9 +18,9 @@
 
 #define mem_new_cons(x) (mem_new_ptr(x, 2)) // mem_new_cons#
 
-void *mem_sys_alloc(int size);
+void *mem_sys_alloc(mem_context *mc, int size);
 //void  mem_sys_free(void *p, int size);
-void mem_sys_free(void *p);
+void mem_sys_free(mem_context *mc, void *p);
 
 //void mem_bank_alloc(alloc_bank *a, mword bank_size);
 //void mem_bank_free(alloc_bank *a);
