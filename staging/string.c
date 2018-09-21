@@ -2,7 +2,7 @@
 //
 
 #include "babel.h"
-#include "string.h"
+#include "bstring.h"
 
 #if 0
 

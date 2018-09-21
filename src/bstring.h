@@ -1,9 +1,9 @@
 // string.h
 // 
 
-#if 0
-#ifndef STRING_H
-#define STRING_H
+
+#ifndef BSTRING_H
+#define BSTRING_H
 
 #include "babel.h"
 
@@ -13,8 +13,7 @@ void bsprintf( babel_env *be, mword *buf, mword *offset, const char *format, ...
 mword *_radix2cu(babel_env *be, mword *string, mword radix);
 mword *string_to_array(babel_env *be, mword *string);
 
-#endif //STRING_H
-#endif
+#endif //BSTRING_H
 
 // Clayton Bauman 2017
 
