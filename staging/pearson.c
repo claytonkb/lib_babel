@@ -10,7 +10,7 @@
 // XXX CLEAN UP THE HASH INTERFACE, CAN BE EASILY CONVERTED TO #DEFINES XXX
 // byte-based hash
 //
-mword *pearson_hash8(pyr_cache *this_pyr, mword *key){ // pearson_hash8#
+mword *pearson_hash8(babel_env *be, mword *key){ // pearson_hash8#
 
     return pearson_hash8p(this_pyr, (char*)global_irt->tags->PYR_TAG_ZERO_HASH, key);
 
@@ -19,7 +19,7 @@ mword *pearson_hash8(pyr_cache *this_pyr, mword *key){ // pearson_hash8#
 
 // mword-based hash
 //
-mword *pearson_hash(pyr_cache *this_pyr, mword *key){ // pearson_hash#
+mword *pearson_hash(babel_env *be, mword *key){ // pearson_hash#
 
    return pearson16a(this_pyr, 
             (char*)global_irt->tags->PYR_TAG_ZERO_HASH,
@@ -31,7 +31,7 @@ mword *pearson_hash(pyr_cache *this_pyr, mword *key){ // pearson_hash#
 
 // byte-based progressive hashing
 //
-mword *pearson_hash8p(pyr_cache *this_pyr, char *base_hash, mword *key){ // pearson_hash8p#
+mword *pearson_hash8p(babel_env *be, char *base_hash, mword *key){ // pearson_hash8p#
 
    return pearson16a(this_pyr, 
             base_hash,
@@ -111,7 +111,7 @@ void pearson_marsaglia16(char *result, char *init, char *key, mword strlen){ // 
 
 // a -> allocating
 //
-mword *pearson16a(pyr_cache *this_pyr, char *init, char *key, mword strlen){ // pearson16a#
+mword *pearson16a(babel_env *be, char *init, char *key, mword strlen){ // pearson16a#
 
     char *result = (char*)mem_new_valz(this_pyr, HASH_SIZE);
 
@@ -124,7 +124,7 @@ mword *pearson16a(pyr_cache *this_pyr, char *init, char *key, mword strlen){ // 
 
 // a -> allocating
 //
-mword *pearson_marsaglia16a(pyr_cache *this_pyr, char *init, char *key, mword strlen){ // pearson_marsaglia16a#
+mword *pearson_marsaglia16a(babel_env *be, char *init, char *key, mword strlen){ // pearson_marsaglia16a#
 
     char *result = (char*)mem_new_valz(this_pyr, HASH_SIZE);
     pearson16(result, init, key, strlen);
@@ -186,7 +186,7 @@ void pearson_empty_hash(char *result){ // pearson_empty_hash#
 
 //// allocating
 ////
-//mword *pearson_rand_val(pyr_cache *this_pyr, mword num_mwords){ // pearson_rand_val#
+//mword *pearson_rand_val(babel_env *be, mword num_mwords){ // pearson_rand_val#
 //
 //    mword *result = mem_new_valz(this_pyr, num_mwords);
 //

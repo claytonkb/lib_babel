@@ -10,20 +10,20 @@
 //extern const char pearson16_byte_perm[4096];
 extern const char pearson16_byte_perm[PERM_TABLE_BYTE_SIZE];
 
-mword *pearson_hash8(pyr_cache *this_pyr, mword *key);
-mword *pearson_hash(pyr_cache *this_pyr, mword *key);
-mword *pearson_hash8p(pyr_cache *this_pyr, char *base_hash, mword *key);
+mword *pearson_hash8(babel_env *be, mword *key);
+mword *pearson_hash(babel_env *be, mword *key);
+mword *pearson_hash8p(babel_env *be, char *base_hash, mword *key);
 
 void pearson16(char *result, char *init, char *key, mword strlen);
 void pearson_marsaglia16(char *result, char* init, char *key, mword strlen);
 
-mword *pearson16a(pyr_cache *this_pyr, char *init, char *key, mword strlen);
-mword *pearson_marsaglia16a(pyr_cache *this_pyr, char *init, char *key, mword strlen);
+mword *pearson16a(babel_env *be, char *init, char *key, mword strlen);
+mword *pearson_marsaglia16a(babel_env *be, char *init, char *key, mword strlen);
 
 mword  pearson_marsaglia_fuzz(mword reset);
 void pearson_empty_hash(char *result);
 
-//mword *pearson_rand_val(pyr_cache *this_pyr, mword num_mwords);
+//mword *pearson_rand_val(babel_env *be, mword num_mwords);
 
 #endif //PEARSON_H
 

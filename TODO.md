@@ -22,20 +22,30 @@ Set up pyramidal array for mem_context
 Migration
 ---------
 
-array.c
-bstruct.c
-introspect.c
-io.c
-list.c
-mem.c
-mt19937ar.c
-pearson.c
-sexpr.c
-string.c
-tptr.c
-trie.c
-utf8.c
+*Edits*
 
+    %s/pyr_cache \*this_pyr/babel_env *be/g
+
+* There is no global_irt
+* nil?
+* mem_new_\* ?
+
+*Files*
+
+array.c  
+bstruct.c  
+introspect.c  
+io.c  
+list.c  
+mem.c  
+mt19937ar.c  
+pearson.c  
+sexpr.c  
+string.c  
+tptr.c  
+trie.c  
+utf8.c  
+  
 Bstruct  
 Array  
 List  
