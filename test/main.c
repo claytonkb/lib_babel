@@ -1,9 +1,12 @@
 // main.c
 //
 
-#include "babel.h"
-#include "access.h"
+//#include "babel.h"
+//#include "access.h"
+#include "cutils.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 void dev_get_line(char *buffer, FILE *stream);
 void dev_menu(void);
@@ -28,8 +31,8 @@ void dev_prompt(void){
     char buffer[256];
 
     int i;
-    ptr   x;
-    mword y;
+//    ptr   x;
+//    mword y;
 
     _say("type 0 for menu");
 
@@ -58,7 +61,7 @@ void dev_prompt(void){
 
             case 3:
                 // dummy call (compile-test)
-                access_api_rd_ptr(x,y);
+//                access_api_rd_ptr(x,y);
                 break;
 
             default:

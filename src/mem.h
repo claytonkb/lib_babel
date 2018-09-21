@@ -22,8 +22,8 @@ void *mem_sys_alloc(int size);
 //void  mem_sys_free(void *p, int size);
 void mem_sys_free(void *p);
 
-void mem_bank_alloc(alloc_bank *a, mword bank_size);
-void mem_bank_free(alloc_bank *a);
+//void mem_bank_alloc(alloc_bank *a, mword bank_size);
+//void mem_bank_free(alloc_bank *a);
 
 void mem_new(babel_env *be, mword init_mem_size);
 void mem_destroy(mem_context *m);
