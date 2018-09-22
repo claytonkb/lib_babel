@@ -134,6 +134,7 @@ typedef struct{
 
 
 typedef struct{
+    mword *zero_hash;
     mword *nil;
     mem_context *mem;
     sap static_env;

@@ -3,29 +3,15 @@
 #ifndef PEARSON_H
 #define PEARSON_H
 
-#define PERM_TABLE_WIDTH 256
-#define PERM_TABLE_BYTE_SIZE 4096
-#define PERM_TABLE_MWORD_SIZE (PERM_TABLE_BYTE_SIZE/MWORD_SIZE)
+#include <stdint.h>
 
-//extern const char pearson16_byte_perm[4096];
-extern const char pearson16_byte_perm[PERM_TABLE_BYTE_SIZE];
+#define PERM_TABLE_SIZE 256
 
-mword *pearson_hash8(babel_env *be, mword *key);
-mword *pearson_hash(babel_env *be, mword *key);
-mword *pearson_hash8p(babel_env *be, char *base_hash, mword *key);
-
-void pearson16(char *result, char *init, char *key, mword strlen);
-void pearson_marsaglia16(char *result, char* init, char *key, mword strlen);
-
-mword *pearson16a(babel_env *be, char *init, char *key, mword strlen);
-mword *pearson_marsaglia16a(babel_env *be, char *init, char *key, mword strlen);
-
-mword  pearson_marsaglia_fuzz(mword reset);
-void pearson_empty_hash(char *result);
-
-//mword *pearson_rand_val(babel_env *be, mword num_mwords);
+void pearson128(hash result, const bstruct init, const char *key, const unsigned strlen);
+//hash pearson_hash8(pyr_context *pc, const bstruct init, const char *key, const unsigned strlen);
+static const char pearson_perm[PERM_TABLE_SIZE];
 
 #endif //PEARSON_H
 
-//Clayton Bauman 2016
+//Clayton Bauman 2018
 

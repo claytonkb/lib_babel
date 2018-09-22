@@ -68,6 +68,8 @@
 
 #define COMPLEMENT_MTO1(x) (MWORD_BIT_SIZE-(x))                 // COMPLEMENT_MTO1#
 
+#define VAL_TO_PTR(x) (-1*(x))
+
 // MASKS
 //
 #define MASK_1_BIT   (mword)0x01                                // MASK_1_BIT#
@@ -137,7 +139,7 @@
 // MISC
 //
 #define UNINIT_VAL 0xdbadbadbadbadbad                           // UNINIT_VAL#
-#define UNINIT_PTR nil                                          // UNINIT_PTR#
+#define UNINIT_PTR gnil                                          // UNINIT_PTR#
 
 #define EMPTY_CSTRING ""                                        // EMPTY_CSTRING#
 

@@ -1,12 +1,16 @@
 // main.c
 //
 
-//#include "babel.h"
+#include "babel.h"
 //#include "access.h"
+#include "mem.h"
+#include "pearson.h"
+
 #include "cutils.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 
 void dev_get_line(char *buffer, FILE *stream);
 void dev_menu(void);
@@ -34,6 +38,12 @@ void dev_prompt(void){
 //    ptr   x;
 //    mword y;
 
+    bstruct ACC;
+    bstruct temp;
+
+    mem_context *mc;
+    babel_env *be;
+   
     _say("type 0 for menu");
 
     while(1){
@@ -52,7 +62,25 @@ void dev_prompt(void){
                 break;
 
             case 1:
-                _say("cmd_code==1");
+                be = malloc(sizeof(babel_env));
+
+                be->zero_hash = malloc(UNITS_MTO8(HASH_ALLOC_SIZE));
+                ldv(be->zero_hash,0) = UNITS_MTO8(HASH_SIZE);
+                be->zero_hash++;
+                memset((char*)be->zero_hash, 0, UNITS_MTO8(HASH_SIZE));
+
+                be->nil = malloc(UNITS_MTO8(TPTR_ALLOC_SIZE));
+                be->nil++;
+
+                sfield(be->nil) = 0;
+                sfield(be->nil+TPTR_PTR_OFFSET) = VAL_TO_PTR(MWORD_SIZE);
+
+                pearson128(be->nil, be->zero_hash, "/babel/tag/nil", STRLEN("/babel/tag/nil") );
+
+                tptr_set_ptr(be->nil, be->nil);
+
+                mc = mem_context_new(be,32);
+                ACC = rdp(mc->paging_base,0);
                 break;
 
             case 2:
@@ -60,8 +88,70 @@ void dev_prompt(void){
                 return;
 
             case 3:
-                // dummy call (compile-test)
-//                access_api_rd_ptr(x,y);
+                fprintf(stderr,"%s\n",(char*)ACC);
+                break;
+
+            case 4:
+                _d((mword)ACC);
+                break;
+
+            case 5:
+                _d(sfield(ACC));
+                break;
+
+            case 6:
+                _mem(ACC);
+                break;
+
+            case 7:
+                ACC = be->nil;
+                _say("ACC <== nil");
+                break;
+
+            case 8:
+                cmd_code_str = strtok(NULL, " ");
+                if(cmd_code_str == NULL){ continue; }
+                ACC = (mword*)strtoul((char*)cmd_code_str,NULL,16);
+                _say("ACC <== p");
+                break;
+
+            case 9:
+                cmd_code_str = strtok(NULL, " ");
+                if(cmd_code_str == NULL){ continue; }
+                temp = rdp(ACC, atoi((char*)cmd_code_str));
+                ACC = temp;
+                _say("ACC <== rdp(ACC,n)");
+                break;
+
+            case 10:
+                cmd_code_str = strtok(NULL, " ");
+                if(cmd_code_str == NULL){ continue; }
+                temp = (mword*)rdv(ACC, atoi((char*)cmd_code_str));
+                ACC = temp;
+                _say("ACC <== rdv(ACC,n)");
+                break;
+
+            case 11:
+//                tempc = cmd_code_str + strlen(cmd_code_str) + 1;
+//                _say((char*)tempc);
+//                ACC = sexpr_from_string(be, string_c2b(be, tempc, 300));
+                break;
+
+            case 12:
+//                temp = introspect_str(be, bstruct_unload(be,ACC));
+//                _say((char*)temp);
+                break;
+
+            case 13:
+//                temp = introspect_gv(be, ACC);
+//                io_spit(be, "test.dot", temp, BYTE_ASIZE, OVERWRITE);
+//                _say("introspect_gv(ACC) ==> test.dot");
+                break;
+
+            case 14:
+//                temp = introspect_svg(be, ACC, 10, 10);
+//                io_spit(be, "intro.svg", temp, BYTE_ASIZE, OVERWRITE);
+//                _say("introspect_svg(ACC) ==> intro.svg");
                 break;
 
             default:
@@ -101,10 +191,20 @@ void dev_get_line(char *buffer, FILE *stream){
 //
 void dev_menu(void){
 
-    _say( "\n0     .....    list command codes\n"
+    _say(   "0     .....    list command codes\n"
             "1     .....    dev one-off\n"
-            "2     .....    exit\n"
-            "3     .....    not implemented\n");
+            "2     .....    exit bare metal\n"
+            "3     .....    print(\"%s\",ACC)\n"
+            "4     .....    _d(ACC)\n"
+            "5     .....    _d(sfield(ACC))\n"
+            "6     .....    _mem(ACC)\n"
+            "8     .....    ACC <== nil\n"
+            "8  n  .....    ACC <== rdp(ACC,n)\n"
+            "9  n  .....    ACC <== rdv(ACC,n)\n"
+            "10 S  .....    ACC <== sexpr(S)\n"
+            "11    .....    introspect_str(ACC)\n"
+            "12    .....    introspect_gv(ACC)\n"
+            "13    .....    introspect_svg(ACC)\n");
 
 }
 

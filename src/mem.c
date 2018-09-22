@@ -47,27 +47,50 @@ void mem_sys_free(mem_context *mc, void *p){
 }
 
 
+// NOTE: Does NOT initialize ptr/tptr areas
+//
+bstruct mem_sys_new_bstruct(mem_context *mc, mword alloc_sfield){
+
+    bstruct result = mem_sys_alloc(mc, UNITS_MTO8(mem_alloc_size(alloc_sfield)+1));
+    result++;
+    sfield(result) = alloc_sfield;
+
+    return result;
+
+}
+
+
 // init_mem_size is in units of bytes
 //
-mem_context *mem_context_new(mword init_mem_size){
+mem_context *mem_context_new(babel_env *be, mword init_mem_size){
 
 #ifdef GC_TRACE
 _trace;
 #endif
 
+    int i;
+
     mem_context *mc = malloc(sizeof(mem_context)); // XXX WAIVER(malloc) XXX
 
-    mword mword_mem_size = UNITS_8TOM(init_mem_size);
+    if(!init_mem_size) // Returns an uninitialized mem_context
+        return mc;
 
     ptr level2_dir;
     ptr level1_dir;
     val level0_dir;
 
+    mword mword_mem_size = UNITS_8TOM(init_mem_size);
+
     if(mword_mem_size < LARGE_PAGE_SIZE){
 
-        level2_dir = mem_sys_alloc(mc,sizeof(PA_DIR_SIZE*sizeof(mword)));
-        level1_dir = mem_sys_alloc(mc,sizeof(PA_DIR_SIZE*sizeof(mword)));
-        level0_dir = mem_sys_alloc(mc,mword_mem_size);
+        level2_dir = mem_sys_new_bstruct(mc, VAL_TO_PTR(UNITS_MTO8(PA_DIR_SIZE)));
+        level1_dir = mem_sys_new_bstruct(mc, VAL_TO_PTR(UNITS_MTO8(PA_DIR_SIZE)));
+        level0_dir = mem_sys_new_bstruct(mc, mword_mem_size);
+
+        for(i=0;i<PA_DIR_SIZE;i++){ // manual initialize of ptr-arrays
+            ldp(level1_dir,i) = gnil;
+            ldp(level2_dir,i) = gnil;
+        }
 
         ldp(level1_dir,0) = level0_dir;
         ldp(level2_dir,0) = level1_dir;

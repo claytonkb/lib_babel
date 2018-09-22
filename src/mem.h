@@ -25,7 +25,10 @@ void mem_sys_free(mem_context *mc, void *p);
 //void mem_bank_alloc(alloc_bank *a, mword bank_size);
 //void mem_bank_free(alloc_bank *a);
 
-void mem_new(babel_env *be, mword init_mem_size);
+bstruct mem_sys_new_bstruct(mem_context *mc, mword alloc_sfield);
+mem_context *mem_context_new(babel_env *be, mword init_mem_size);
+
+//void mem_new(babel_env *be, mword init_mem_size);
 void mem_destroy(mem_context *m);
 
 //void mem_reset_bank(alloc_bank *b);

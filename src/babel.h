@@ -55,10 +55,10 @@ int dev_i;
 
 /*****************************************************************************
  *                                                                           *
- *                                  NIL                                      *
+ *                             GLOBAL NIL                                    *
  *                                                                           *
  ****************************************************************************/
-#define nil (be->nil)
+#define gnil (be->nil)
 
     // XXX
     //      This #define is utilized as an internal short-hand since every
