@@ -16,17 +16,13 @@
 // NB: size is in units of bytes
 // DESC: malloc() wrapper (check ret ptr + track stats)
 //
-void *mem_sys_alloc(mem_context *mc, int size){
+void *mem_sys_alloc_untracked(int size){
 
     void *alloc_attempt = malloc(size); // XXX WAIVER(malloc) XXX
 
     if(alloc_attempt == NULL){ // malloc failed
         _fatal("malloc failed");
     }
-
-#ifdef PROF_MODE
-    mc->sys_alloc_count++;
-#endif
 
     return alloc_attempt;
 
@@ -36,36 +32,54 @@ void *mem_sys_alloc(mem_context *mc, int size){
 // NB: Use only with mem created by mem_sys_alloc
 // DESC: free() wrapper (track stats)
 //
-void mem_sys_free(mem_context *mc, void *p){
+void mem_sys_free_untracked(void *p){
 
     free(p); // XXX WAIVER(free) XXX
-
-#ifdef PROF_MODE
-    mc->sys_free_count++;
-#endif
 
 }
 
 
-////
-////
-//bstruct mem_sys_new(mem_context *mc, mword alloc_sfield){
 //
-//    bstruct result = mem_sys_alloc(mc, UNITS_MTO8(mem_alloc_size(alloc_sfield)+1));
 //
-//}
+void *mem_sys_alloc(mem_context *mc, int size){
 
+    bstruct result = mem_sys_alloc_untracked(size);
+    mc->sys_alloc_count++;
+
+    return result;
+
+}
+
+
+//
+//
+void mem_sys_free(mem_context *mc, void *p){
+
+    mem_sys_free_untracked(p);
+    mc->sys_free_count++;
+
+}
 
 
 // NOTE: Does NOT initialize ptr/tptr areas
 //
-bstruct mem_sys_new_bstruct(mem_context *mc, mword alloc_sfield){
+bstruct mem_sys_new_bstruct(mword alloc_sfield){
 
-    bstruct result = mem_sys_alloc(mc, UNITS_MTO8(mem_alloc_size(alloc_sfield)+1));
+    bstruct result = mem_sys_alloc_untracked(UNITS_MTO8(mem_alloc_size(alloc_sfield)+1));
     result++;
-    sfield(result) = UNITS_MTO8(alloc_sfield);
+    sfield(result) = alloc_sfield;
 
     return result;
+
+}
+
+
+//
+//
+void mem_sys_destroy_bstruct(bstruct b){
+
+    b--;
+    mem_sys_free_untracked(b);
 
 }
 
@@ -87,47 +101,59 @@ _trace;
 
     ptr level2_dir;
     ptr level1_dir;
-    val level0_dir;
+    val level0_pg;
 
     mword mword_mem_size = UNITS_8TOM(init_mem_size);
 
     if(mword_mem_size < LARGE_PAGE_SIZE){
 
-        level2_dir = mem_sys_new_bstruct(mc, VAL_TO_PTR(UNITS_MTO8(PA_DIR_SIZE)));
-        level1_dir = mem_sys_new_bstruct(mc, VAL_TO_PTR(UNITS_MTO8(PA_DIR_SIZE)));
-        level0_dir = mem_sys_new_bstruct(mc, mword_mem_size);
+        level2_dir = mem_sys_new_bstruct(VAL_TO_PTR(UNITS_MTO8(PA_DIR_SIZE)));
+        level1_dir = mem_sys_new_bstruct(VAL_TO_PTR(UNITS_MTO8(PA_DIR_SIZE)));
+        level0_pg  = mem_sys_new_bstruct(UNITS_MTO8(mword_mem_size));
 
         for(i=0;i<PA_DIR_SIZE;i++){ // manual initializion of ptr-arrays
             ldp(level1_dir,i) = gnil;
             ldp(level2_dir,i) = gnil;
         }
 
-        memset((char*)level0_dir, 0, init_mem_size); // zero out memory
+        memset((char*)level0_pg, 0, init_mem_size); // zero out memory
 
-        ldp(level1_dir,0) = level0_dir;
+        ldp(level1_dir,0) = level0_pg;
         ldp(level2_dir,0) = level1_dir;
-        mc->paging_base = level2_dir;
+        mc->paging_base   = level2_dir;
 
     }
     else{
         _enhance("init_mem_size >= LARGE_PAGE_SIZE");
     }
 
+    mc->sys_alloc_count=0;
+    mc->sys_free_count=0;
+
+    // TODO: init GC flags
+    // TODO: init nested context list
+
     return mc;
 
 }
 
-#if 0
 
 //
 //
-void mem_destroy(mem_context *m){ // mem_destroy#
+void mem_context_destroy(mem_context *mc){
 
-    mem_bank_free(m->primary);
-    mem_bank_free(m->secondary);
+    bstruct init_level2_dir = mc->paging_base;
+    bstruct init_level1_dir = rdp(init_level2_dir,0);
+    bstruct init_level0_pg  = rdp(init_level1_dir,0);
+
+    mem_sys_destroy_bstruct(init_level2_dir);
+    mem_sys_destroy_bstruct(init_level1_dir);
+    mem_sys_destroy_bstruct(init_level0_pg);
 
 }
 
+
+#if 0
 
 //
 //

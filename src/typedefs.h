@@ -126,10 +126,9 @@ typedef struct{
     bstruct paging_base;
     // GC flags
     // nested context list
-#ifdef PROF_MODE
     mword sys_alloc_count;
     mword sys_free_count;
-#endif
+
 } mem_context;
 
 

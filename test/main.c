@@ -79,9 +79,9 @@ void dev_prompt(void){
 
                 tptr_set_ptr(be->nil, be->nil);
 
-                mc = mem_context_new(be,32);
-//                ACC = rdp(mc->paging_base,0);
+                mc = mem_context_new(be,2048);
                 ACC = mc->paging_base;
+
                 break;
 
             case 2:
@@ -89,6 +89,7 @@ void dev_prompt(void){
                 return;
 
             case 3:
+//                mem_context_destroy(mc);
                 fprintf(stderr,"%s\n",(char*)ACC);
                 break;
 
@@ -200,7 +201,7 @@ void dev_menu(void){
             "5     .....    _d(sfield(ACC))\n"
             "6     .....    _mem(ACC)\n"
             "7     .....    ACC <== nil\n"
-            "8     .....    ACC <== p\n"
+            "8  p  .....    ACC <== p\n"
             "9  n  .....    ACC <== rdp(ACC,n)\n"
             "10 n  .....    ACC <== rdv(ACC,n)\n");
 

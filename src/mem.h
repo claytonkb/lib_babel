@@ -18,20 +18,32 @@
 
 #define mem_new_cons(x) (mem_new_ptr(x, 2)) // mem_new_cons#
 
+void *mem_sys_alloc_untracked(int size);
+void  mem_sys_free_untracked(void *p);
 void *mem_sys_alloc(mem_context *mc, int size);
-//void  mem_sys_free(void *p, int size);
-void mem_sys_free(mem_context *mc, void *p);
-
-//void mem_bank_alloc(alloc_bank *a, mword bank_size);
-//void mem_bank_free(alloc_bank *a);
-
-bstruct mem_sys_new_bstruct(mem_context *mc, mword alloc_sfield);
+void  mem_sys_free(mem_context *mc, void *p);
+bstruct mem_sys_new_bstruct(mword alloc_sfield);
+void mem_sys_destroy_bstruct(bstruct b);
 mem_context *mem_context_new(babel_env *be, mword init_mem_size);
+void mem_context_destroy(mem_context *mc);
 
-//void mem_new(babel_env *be, mword init_mem_size);
-void mem_destroy(mem_context *m);
 
-//void mem_reset_bank(alloc_bank *b);
+///XXX///XXX///XXX///XXX///XXX///XXX///XXX///XXX///XXX///XXX///XXX///XXX///XXX
+
+//void *mem_sys_alloc(mem_context *mc, int size);
+////void  mem_sys_free(void *p, int size);
+//void mem_sys_free(mem_context *mc, void *p);
+//
+////void mem_bank_alloc(alloc_bank *a, mword bank_size);
+////void mem_bank_free(alloc_bank *a);
+//
+//bstruct mem_sys_new_bstruct(mem_context *mc, mword alloc_sfield);
+//mem_context *mem_context_new(babel_env *be, mword init_mem_size);
+//
+////void mem_new(babel_env *be, mword init_mem_size);
+//void mem_destroy(mem_context *m);
+//
+////void mem_reset_bank(alloc_bank *b);
 
 void *mem_non_gc_alloc2(mword alloc_sfield);
 void *mem_non_gc_alloc(int size);
