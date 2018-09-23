@@ -22,6 +22,8 @@ Set up pyramidal array for mem_context
 Migration
 ---------
 
+**NOTE**: \*.c files are from '16 pyramid; update to ai_ml/pyramid ('18)
+
 *Edits*
 
     %s/pyr_cache \*this_pyr/babel_env *be/g
