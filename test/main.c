@@ -80,7 +80,8 @@ void dev_prompt(void){
                 tptr_set_ptr(be->nil, be->nil);
 
                 mc = mem_context_new(be,32);
-                ACC = rdp(mc->paging_base,0);
+//                ACC = rdp(mc->paging_base,0);
+                ACC = mc->paging_base;
                 break;
 
             case 2:
@@ -198,13 +199,15 @@ void dev_menu(void){
             "4     .....    _d(ACC)\n"
             "5     .....    _d(sfield(ACC))\n"
             "6     .....    _mem(ACC)\n"
-            "8     .....    ACC <== nil\n"
-            "8  n  .....    ACC <== rdp(ACC,n)\n"
-            "9  n  .....    ACC <== rdv(ACC,n)\n"
-            "10 S  .....    ACC <== sexpr(S)\n"
-            "11    .....    introspect_str(ACC)\n"
-            "12    .....    introspect_gv(ACC)\n"
-            "13    .....    introspect_svg(ACC)\n");
+            "7     .....    ACC <== nil\n"
+            "8     .....    ACC <== p\n"
+            "9  n  .....    ACC <== rdp(ACC,n)\n"
+            "10 n  .....    ACC <== rdv(ACC,n)\n");
+
+//            "11 S  .....    ACC <== sexpr(S)\n"
+//            "12    .....    introspect_str(ACC)\n"
+//            "13    .....    introspect_gv(ACC)\n"
+//            "14    .....    introspect_svg(ACC)\n"
 
 }
 

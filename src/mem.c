@@ -47,13 +47,23 @@ void mem_sys_free(mem_context *mc, void *p){
 }
 
 
+////
+////
+//bstruct mem_sys_new(mem_context *mc, mword alloc_sfield){
+//
+//    bstruct result = mem_sys_alloc(mc, UNITS_MTO8(mem_alloc_size(alloc_sfield)+1));
+//
+//}
+
+
+
 // NOTE: Does NOT initialize ptr/tptr areas
 //
 bstruct mem_sys_new_bstruct(mem_context *mc, mword alloc_sfield){
 
     bstruct result = mem_sys_alloc(mc, UNITS_MTO8(mem_alloc_size(alloc_sfield)+1));
     result++;
-    sfield(result) = alloc_sfield;
+    sfield(result) = UNITS_MTO8(alloc_sfield);
 
     return result;
 
@@ -87,10 +97,12 @@ _trace;
         level1_dir = mem_sys_new_bstruct(mc, VAL_TO_PTR(UNITS_MTO8(PA_DIR_SIZE)));
         level0_dir = mem_sys_new_bstruct(mc, mword_mem_size);
 
-        for(i=0;i<PA_DIR_SIZE;i++){ // manual initialize of ptr-arrays
+        for(i=0;i<PA_DIR_SIZE;i++){ // manual initializion of ptr-arrays
             ldp(level1_dir,i) = gnil;
             ldp(level2_dir,i) = gnil;
         }
+
+        memset((char*)level0_dir, 0, init_mem_size); // zero out memory
 
         ldp(level1_dir,0) = level0_dir;
         ldp(level2_dir,0) = level1_dir;
