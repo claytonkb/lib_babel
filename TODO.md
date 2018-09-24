@@ -10,8 +10,13 @@ Migration
 **NOTE**: will need to re-migrate accordingly
 
 *TOS*
+    sort re-work
+        switch to qsort (factor out merge_sort cruft)
 
-    introspect_str() dependencies:
+    bstruct_unload dependencies:
+        sort(be, span_array, VAL);
+        bstruct_unload_r(be, bs, dest, &dest_offset, span_array, offset_array);
+            set_offset_for_ptr(be, span_array, bs, offset_array, this_offset);
 
 *Order of migration*
 

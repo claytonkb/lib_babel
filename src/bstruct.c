@@ -3,9 +3,7 @@
 
 #include "babel.h"
 #include "bstruct.h"
-
-//#include "mem.h"
-//#include "array.h"
+#include "mem.h"
 //#include "sort.h"
 
 
@@ -278,6 +276,7 @@ mword *bstruct_cp(babel_env *be, mword *bs){ // bstruct_cp#
     return bs;
 
 }
+#endif
 
 
 //
@@ -319,6 +318,7 @@ mword *bstruct_load(babel_env *be, mword *bs, mword size){ // bstruct_load#
 }
 
 
+#if 0
 //
 //
 mword *bstruct_unload(babel_env *be, mword *bs){
@@ -346,168 +346,6 @@ mword *bstruct_unload(babel_env *be, mword *bs){
     return dest;
 
 }
-
-//---------------------------------------------------------------------------
-//
-//    bstruct_load_str():
-//
-//        1. Read in all text lines of the bs array
-//            - Split into label-array pairs as you go
-//            - Hash each label as you go
-//            - Save the hash of the very first label (this is defined as the starting
-//                    point of the data-structure)
-//            - For each array, send to sexpr and get an sexpr back
-//            - Track the total length of each array and total number of tptrs
-//                - Need this for allocating the unloaded bstruct
-//        2. Sort the array by label-hash
-//        3. Allocate a val-array to hold the unloaded bstruct
-//            - Allocate enough extra space to hold an unresolved-symbol tptr and nil
-//        3. Starting with the first label:
-//            - If it is a val-array
-//                calculate and write the sfield
-//                convert and store accordingly
-//            - If it is a ptr-array:
-//                calculate and write the sfield
-//                For each entry (label):
-//                    lookup the label in the label array
-//                    if the label is fully resolved:
-//                        Substitute its address in this entry of the ptr-array
-//                    else if the label does not exist:
-//                        Substitute the address of the unresolved-symbol tptr (place
-//                            it at the end of the array, if not already done)
-//                    else:
-//                        Recurse on the unresolved label
-//            - If it is a tptr or tag
-//                sfield=0
-//                tptr: Store the tptr tag bytes
-//                tag: Hash the tag label and store the tptr tag bytes
-//                if the tptr-label is nil or is fully resolved:
-//                    Substitute its address in this entry of the ptr-array
-//                else if the label does not exist:
-//                    Substitute the address of the unresolved-symbol tptr (place
-//                        it at the end of the array, if not already done)
-//                else:
-//                    Recurse on the unresolved label
-//        ------------------------------------------------------------------
-//
-//        [bs
-//          s001 [ptr foo bar baz ]
-//          foo [val 0x1 0x2 0x3 ]
-//          bar [val 0x4 0x5 0x6 ]
-//          baz [val 0x7 0x8 0x9 ] ]
-//
-//        Note: this is a stripped-down version of [bs ] with no fancy bells &
-//            whistles (i.e. we don't pass the arrays to sexpr() to be
-//            individually parsed). A later version may add more robust
-//            functionality.
-
-
-//
-//
-mword *bstruct_load_str(babel_env *be, mword *bs){ // bstruct_load_str#
-
-    mword *dest;
-
-    if(is_val(bs)){
-        dest = mem_new_val(be, alloc_size(bs), 0);
-        memcpy(dest,(bs-1),(size_t)UNITS_MTO8(size(dest)));
-        return dest;
-    }
-
-    dest = mem_new_val(be, bstruct_mu(be, bs), 0);
-
-    mword *span_array = bstruct_to_array(be, bs);
-    sort(be, span_array, VAL);
-
-    mword *offset_array = mem_new_val(be, size(span_array), 0xff);
-
-    mword dest_offset = 0;
-
-    bstruct_unload_r(be, bs, dest, &dest_offset, span_array, offset_array);
-    bstruct_clean(be, bs);
-
-    return dest;
-
-}
-
-
-//
-//
-mword bstruct_load_str_r( // bstruct_load_str_r#
-        babel_env *be, 
-        mword       *bs, 
-        mword       *dest, 
-        mword       *dest_offset, 
-        mword       *span_array, 
-        mword       *offset_array){
-
-    int i;
-
-    if( is_traversed_U(bs) ){
-        return offset_array[array_search(be, span_array, (mword*)(&bs), VAL)];
-    }
-
-    int num_elem = size(bs);
-
-    *(dest+(*dest_offset))   = sfield(bs);
-    *dest_offset             = *dest_offset+1;
-
-    mword local_offset = *dest_offset;
-    mword this_offset  = (*dest_offset)*MWORD_SIZE;
-
-    set_offset_for_ptr(be, span_array, bs, offset_array, this_offset);
-
-    if(is_tptr(bs)){ // is_tptr
-
-        mark_traversed_U(bs);
-
-        for(i=0; i<=HASH_SIZE; i++){
-            ldv(dest,(*dest_offset)) = rdv(bs,i);
-            *dest_offset = *dest_offset+1;
-        }
-
-        mword *tptr_ptr = (bs+TPTR_PTR_OFFSET);
-
-        mark_traversed_U(tptr_ptr); //FIXME: Does this actually need to be here??
-
-        mword tptr_offset = *dest_offset;
-
-        *dest_offset = *dest_offset + 1;
-
-        ldv(dest,tptr_offset)
-            = bstruct_unload_r(be, (mword*)*tptr_ptr, dest, dest_offset, span_array, offset_array);
-
-    }
-    else if(is_ptr(bs)){
-
-        mark_traversed_U(bs);
-
-        *dest_offset = *dest_offset + num_elem;
-
-        for(i=0; i<num_elem; i++){
-            ldv(dest,local_offset+i) 
-                = bstruct_unload_r(be, rdp(bs,i), dest, dest_offset, span_array, offset_array);
-        }
-
-    }
-    else{// if(is_val(bs))
-
-        mark_traversed_U(bs);
-
-//_d(sfield(bs));
-//_bounds_check(be, bs);
-
-        for(i=0; i<num_elem; i++){
-            ldv(dest,(*dest_offset)) = rdv(bs,i);
-            *dest_offset = *dest_offset+1;
-        }
-
-    }
-
-    return this_offset;
-
-}
-
 
 //
 //
@@ -599,7 +437,7 @@ void set_offset_for_ptr(
     offset_array[span_offset] = this_offset;
 
 }
-
+#endif
 
 //Creates an interior array with one pointer to each array in a bstruct
 //
@@ -656,6 +494,73 @@ void bstruct_to_array_r(babel_env *be, mword *bs, mword *arr_list, mword *offset
     //else(is_val(bs))
 
     mark_traversed_U(bs);
+
+}
+
+#if 0
+
+//---------------------------------------------------------------------------
+//
+//    bstruct_load_str():
+//
+//        1. Read in all text lines of the bs array
+//            - Split into label-array pairs as you go
+//            - Hash each label as you go
+//            - Save the hash of the very first label (this is defined as the starting
+//                    point of the data-structure)
+//            - For each array, send to sexpr and get an sexpr back
+//            - Track the total length of each array and total number of tptrs
+//                - Need this for allocating the unloaded bstruct
+//        2. Sort the array by label-hash
+//        3. Allocate a val-array to hold the unloaded bstruct
+//            - Allocate enough extra space to hold an unresolved-symbol tptr and nil
+//        3. Starting with the first label:
+//            - If it is a val-array
+//                calculate and write the sfield
+//                convert and store accordingly
+//            - If it is a ptr-array:
+//                calculate and write the sfield
+//                For each entry (label):
+//                    lookup the label in the label array
+//                    if the label is fully resolved:
+//                        Substitute its address in this entry of the ptr-array
+//                    else if the label does not exist:
+//                        Substitute the address of the unresolved-symbol tptr (place
+//                            it at the end of the array, if not already done)
+//                    else:
+//                        Recurse on the unresolved label
+//            - If it is a tptr or tag
+//                sfield=0
+//                tptr: Store the tptr tag bytes
+//                tag: Hash the tag label and store the tptr tag bytes
+//                if the tptr-label is nil or is fully resolved:
+//                    Substitute its address in this entry of the ptr-array
+//                else if the label does not exist:
+//                    Substitute the address of the unresolved-symbol tptr (place
+//                        it at the end of the array, if not already done)
+//                else:
+//                    Recurse on the unresolved label
+//        ------------------------------------------------------------------
+//
+//        [bs
+//          s001 [ptr foo bar baz ]
+//          foo [val 0x1 0x2 0x3 ]
+//          bar [val 0x4 0x5 0x6 ]
+//          baz [val 0x7 0x8 0x9 ] ]
+//
+//        Note: this is a stripped-down version of [bs ] with no fancy bells &
+//            whistles (i.e. we don't pass the arrays to sexpr() to be
+//            individually parsed). A later version may add more robust
+//            functionality.
+
+
+//
+//
+mword *bstruct_load_str(babel_env *be, mword *bs){ // bstruct_load_str#
+
+    mword *dest;
+
+    return dest;
 
 }
 

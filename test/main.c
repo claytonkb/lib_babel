@@ -2,9 +2,9 @@
 //
 
 #include "babel.h"
-//#include "access.h"
 #include "mem.h"
 #include "pearson.h"
+#include "introspect.h"
 
 #include "cutils.h"
 #include <stdio.h>
@@ -63,7 +63,8 @@ void dev_prompt(void){
 
             case 1:
                 be = babel_env_new(MEM_SUGGEST_INIT_ALLOC,MEM_SUGGEST_INIT_ALLOC);
-                ACC = be->mem->paging_base;
+//                ACC = be->mem->paging_base;
+                ACC = _mkval(be, 4, 0xf0f0f0f0, 0x0f0f0f0f, 0xf0f0f0f0, 0x0f0f0f0f);
                 break;
 
             case 2:
