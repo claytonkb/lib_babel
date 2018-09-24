@@ -12,14 +12,14 @@ Migration
 
 *Order of migration*
 
-introspect\_\*
-sexpr\*
-bstruct_load_str() --> implementation can wait, but stub it in
-bstruct/array/list/trie
-aop/sap
-array1
+introspect\_\*  
+sexpr\*  
+bstruct_load_str() --> implementation can wait, but stub it in  
+bstruct/array/list/trie  
+aop/sap  
+array1  
 
-Will call this "lib_babel 0.5"; ready for external use
+Will call this "lib_babel 0.5"; ready for external use  
 
 
 *Files*
