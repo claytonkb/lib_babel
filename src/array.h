@@ -39,7 +39,7 @@ mword *array_to_string(babel_env *be, mword *array);
  *                            ARRAY COMPARISON                               *
  *                                                                           *
  ****************************************************************************/
-int array_cmp_lex(babel_env *be, mword *left, mword *right, access_size asize);
+int array_cmp_lex(const mword *left, const mword *right, access_size asize);
 int array_ncmp(babel_env *be, mword *left, mword left_offset, mword *right, mword length, access_size asize);
 int array_cmp_alpha(babel_env *be, mword *left, mword *right, access_size asize);
 int array_cmp_num(mword *left, mword *right);

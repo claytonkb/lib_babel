@@ -447,6 +447,7 @@ mword array8_mword_size(mword size8){ // array8_mword_size#
 //
 //}
 
+#endif
 
 /*****************************************************************************
  *                                                                           *
@@ -457,18 +458,18 @@ mword array8_mword_size(mword size8){ // array8_mword_size#
 
 //
 //
-int array_cmp_lex(babel_env *be, mword *left, mword *right, access_size asize){ // array_cmp_lex#
+int array_cmp_lex(const mword *left, const mword *right, access_size asize){ // array_cmp_lex#
 
     mword left_size;
     mword right_size;
 
-    if(access_size == MWORD_ASIZE){
+    if(asize == MWORD_ASIZE){
         left_size  = UNITS_MTO8(size_special(left));
         right_size = UNITS_MTO8(size_special(right));
     }
-    else{ // access_size == BYTE_ASIZE
-        left_size  = array8_size(left);
-        right_size = array8_size(right);
+    else{ // asize == BYTE_ASIZE
+//        left_size  = array8_size(left);
+//        right_size = array8_size(right);
     }
 
     if(left_size > right_size){
@@ -483,6 +484,7 @@ int array_cmp_lex(babel_env *be, mword *left, mword *right, access_size asize){ 
 
 }
 
+#if 0
 
 // LLLLLLLLLLL
 //     RRRRRRRR
