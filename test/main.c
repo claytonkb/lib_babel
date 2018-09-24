@@ -62,26 +62,8 @@ void dev_prompt(void){
                 break;
 
             case 1:
-                be = malloc(sizeof(babel_env));
-
-                be->zero_hash = malloc(UNITS_MTO8(HASH_ALLOC_SIZE));
-                ldv(be->zero_hash,0) = UNITS_MTO8(HASH_SIZE);
-                be->zero_hash++;
-                memset((char*)be->zero_hash, 0, UNITS_MTO8(HASH_SIZE));
-
-                be->nil = malloc(UNITS_MTO8(TPTR_ALLOC_SIZE));
-                be->nil++;
-
-                sfield(be->nil) = 0;
-                sfield(be->nil+TPTR_PTR_OFFSET) = VAL_TO_PTR(MWORD_SIZE);
-
-                pearson128(be->nil, be->zero_hash, "/babel/tag/nil", STRLEN("/babel/tag/nil") );
-
-                tptr_set_ptr(be->nil, be->nil);
-
-                mc = mem_context_new(be,2048);
-                ACC = mc->paging_base;
-
+                be = babel_env_new(MEM_SUGGEST_INIT_ALLOC,MEM_SUGGEST_INIT_ALLOC);
+                ACC = be->mem->paging_base;
                 break;
 
             case 2:
@@ -89,7 +71,6 @@ void dev_prompt(void){
                 return;
 
             case 3:
-//                mem_context_destroy(mc);
                 fprintf(stderr,"%s\n",(char*)ACC);
                 break;
 

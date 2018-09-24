@@ -3,40 +3,24 @@ TODO
 
 *BUGS AT BOTTOM*
 
-Paging/GC
----------
-
-    #define PA_LO_THRESH (1<<20)
-
-PA_LO_THRESH sets lower threshold of array size which might cross paging
-boundary(ies). All arrays below this threshold can use normal accessors.
-Above this threshold, must use paged-array accessors.
-
-Set up pyramidal array for mem_context
-
-    mem_context --> mem_open_nest
-                --> mem_close_nest
-    
-    Use these for semi-automatic memory mgmt
-
 Migration
 ---------
 
-**NOTE**: \*.c files are from '16 pyramid; update to ai_ml/pyramid ('18)
+**NOTE**: \*.c files are from '16 pyramid; update to ai_ml/pyramid ('18)  
+**NOTE**: will need to re-migrate accordingly
 
-*Edits*
 
-    %s/pyr_cache \*this_pyr/babel_env *be/g
+*Order of migration*
 
-    %s/access_size/asize/g
-    %s/access_size_sel/access_size/g
+introspect\_\*
+sexpr\*
+bstruct_load_str() --> implementation can wait, but stub it in
+bstruct/array/list/trie
+aop/sap
+array1
 
-    sed -i -e 's/\baccess_size\b/asize/g' array.h
-    sed -i -e 's/\baccess_size_sel\b/access_size/g' array.h
+Will call this "lib_babel 0.5"; ready for external use
 
-* There is no global_irt
-* nil?
-* mem_new_\* ?
 
 *Files*
 
@@ -53,15 +37,45 @@ string.c
 tptr.c  
 trie.c  
 utf8.c  
-  
-Bstruct  
-Array  
-List  
-Trie  
-...  
+
+
+*Edits*
+
+    %s/pyr_cache \*this_pyr/babel_env *be/g
+
+    %s/access_size/asize/g
+    %s/access_size_sel/access_size/g
+
+    sed -i -e 's/\baccess_size\b/asize/g' array.h
+    sed -i -e 's/\baccess_size_sel\b/access_size/g' array.h
+
+    sed -i -e 's/pyr_cache \*this_pyr/babel_env *be/g' *
+
+* There is no global_irt
+* nil?
+* mem_new\_\* ?
+
 
 DONEISH
 =======
+
+Paging/GC
+---------
+
+    #define PA_LO_THRESH (1<<20)
+
+PA_LO_THRESH sets lower threshold of array size which might cross paging
+boundary(ies). All arrays below this threshold can use normal accessors.
+Above this threshold, must use paged-array accessors.
+
+Set up pyramidal array for mem_context
+
+    mem_context --> mem_open_nest
+                --> mem_close_nest
+    
+    Use these for semi-automatic memory mgmt
+
+
 
 Accessors
 ---------

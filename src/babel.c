@@ -8,7 +8,7 @@
 
 //
 //
-babel_env *babel_new_env(int init_mem_size, int max_mem_size){
+babel_env *babel_env_new(int init_mem_size, int max_mem_size){
 
     babel_env *be = malloc(sizeof(babel_env));
 
@@ -28,7 +28,6 @@ babel_env *babel_new_env(int init_mem_size, int max_mem_size){
     tptr_set_ptr(be->nil, be->nil);
 
     mem_context *mc = mem_context_new(be,init_mem_size);
-
     be->mem = mc;
 
     return be;

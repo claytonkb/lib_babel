@@ -39,6 +39,8 @@
 #define PA_LO_THRESH (LARGE_PAGE_SIZE/2)
 #define PA_DIR_SIZE 256
 
+#define MEM_SUGGEST_INIT_ALLOC (1<<21)
+
 // MWORD
 //
 #define MWORD_SIZE sizeof(void*)                                // MWORD_SIZE#
