@@ -14,16 +14,11 @@ Migration
     sort re-work
         switch to qsort (factor out merge_sort cruft)
 
-        cmp_cint();
-        cmp_cuint();
-        cmp_float(); ?
-        cmp_aop_unsigned(be, 0, size(array), array, key_index);
-        cmp_aop_signed(be, 0, size(array), array, key_index);
-        cmp_aop_alpha_mword(be, 0, size(array), array, key_index);
-        cmp_aop_alpha_byte(be, 0, size(array), array, key_index);
-        cmp_aop_lex_mword(be, 0, size(array), array, key_index);
-        cmp_aop_lex_byte(be, 0, size(array), array, key_index);
-        cmp_aop_custom(be, 0, size(array), array, key_index);
+        cmp_aop_*
+            array_cmp_*_bstruct()
+                array_cmp_*_range()
+
+        NOTE: bake in reuse of *cmp* fn's for linear probing
 
     bstruct_unload dependencies:
         sort(be, span_array, VAL);
