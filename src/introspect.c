@@ -5,28 +5,25 @@
 #include "introspect.h"
 #include "bstruct.h"
 #include "mem.h"
+#include "bstring.h"
+#include "array.h"
 
-//#include "array.h"
-//#include "bstruct.h"
-//#include "string.h"
 
 // introspect_gv  --> use for live, in-memory snapshot of bstruct; use Graphviz 
 //                      dot tool to construct a graphical image from the string
 //                      returned by this function
+//
 // introspect_str --> use for "round-trippable" string-representation of bstruct
+//
 // introspect_svg --> use for visual representation of byte-arrays; choose 
 //                      any height/width suitable for a given array
 
-//#define LOG_MWORD_SIZE 3
 
 // bs must be an unloaded bstruct
 //
 str introspect_str(babel_env *be, mword *bs){ // introspect_str#
 
-    str result;
-#if 0
     if(is_nil_tag(be,bs+1)){
-//        return _cp(be, C2B("[bs s0 nil]\n"));
         return C2B("[bs s0 nil]\n"); // FIXME: Probably wrong, see ^^^
     }
 
@@ -80,7 +77,6 @@ str introspect_str(babel_env *be, mword *bs){ // introspect_str#
             continue;
         }
 
-//        current_bs_size = abs(curr_sfield)>>LOG_MWORD_SIZE;
         current_bs_size = UNITS_8TOM(abs(curr_sfield));
 
         bsprintf(be, result, &str_offset, "\n  ");
@@ -128,15 +124,12 @@ str introspect_str(babel_env *be, mword *bs){ // introspect_str#
 
                 for(i=0; i < current_bs_size; i++){
 
-//                    current_ptr = (rdv(bs_base,i) >> LOG_MWORD_SIZE);
                     current_ptr = UNITS_8TOM(rdv(bs_base,i));
 
-                    // Use memcmp with BABEL_TAG_INTERP_NIL
                     if(is_nil_tag(be,(mword*)(bs+current_ptr))){
                         bsprintf(be, result, &str_offset, "nil "); 
                     }
                     else{
-//                        bsprintf(be, result, &str_offset, offset_format, (unsigned)(rdv(bs_base,i) >> LOG_MWORD_SIZE)); 
                         bsprintf(be, result, &str_offset, offset_format, (unsigned)UNITS_8TOM(rdv(bs_base,i))); 
                     }
                 }
@@ -150,8 +143,8 @@ str introspect_str(babel_env *be, mword *bs){ // introspect_str#
 
     bsprintf(be, result, &str_offset, " ]\n");
 
-    array_shrink(be,result,0,str_offset-1,BYTE_ASIZE);
-#endif
+    array_shrink(be,result,0,str_offset-1,U8_ASIZE);
+
     return result;
 
 }

@@ -75,26 +75,26 @@
 
 
 /////// proper accessors ///////
-#define rd(pc,x,y)              access_rd_api(pc,x,y,  MWORD_ASIZE) // rd#
-#define wr(pc,x,y,z)            access_wr_api(pc,x,y,z,MWORD_ASIZE) // wr#
+#define rd(be,x,y)              access_rd_api(be,x,y,  MWORD_ASIZE) // rd#
+#define wr(be,x,y,z)            access_wr_api(be,x,y,z,MWORD_ASIZE) // wr#
 
-#define rd1(pc,x,y)             access_rd_api(pc,x,y,  BIT_ASIZE)  // rd8#
-#define wr1(pc,x,y,z)           access_wr_api(pc,x,y,z,BIT_ASIZE)  // wr8#
+#define rd1(be,x,y)             access_rd_api(be,x,y,  BIT_ASIZE)  // rd8#
+#define wr1(be,x,y,z)           access_wr_api(be,x,y,z,BIT_ASIZE)  // wr8#
 
-#define rd8(pc,x,y)             access_rd_api(pc,x,y,  BYTE_ASIZE)  // rd8#
-#define wr8(pc,x,y,z)           access_wr_api(pc,x,y,z,BYTE_ASIZE)  // wr8#
+#define rd8(be,x,y)             access_rd_api(be,x,y,  BYTE_ASIZE)  // rd8#
+#define wr8(be,x,y,z)           access_wr_api(be,x,y,z,BYTE_ASIZE)  // wr8#
 
-#define rd16(pc,x,y)            access_rd_api(pc,x,y,  WORD_ASIZE)  // rd16#
-#define wr16(pc,x,y,z)          access_wr_api(pc,x,y,z,WORD_ASIZE)  // wr16#
+#define rd16(be,x,y)            access_rd_api(be,x,y,  WORD_ASIZE)  // rd16#
+#define wr16(be,x,y,z)          access_wr_api(be,x,y,z,WORD_ASIZE)  // wr16#
 
-#define rd32(pc,x,y)            access_rd_api(pc,x,y,  DWORD_ASIZE) // rd32#
-#define wr32(pc,x,y,z)          access_wr_api(pc,x,y,z,DWORD_ASIZE) // wr32#
+#define rd32(be,x,y)            access_rd_api(be,x,y,  DWORD_ASIZE) // rd32#
+#define wr32(be,x,y,z)          access_wr_api(be,x,y,z,DWORD_ASIZE) // wr32#
 
-#define rd_svc(pc,x,y,  asize)  access_rd_svc(pc,x,y,  asize)       // rd_svc#
-#define wr_svc(pc,x,y,z,asize)  access_wr_svc(pc,x,y,z,asize)       // wr_svc#
+#define rd_svc(be,x,y,  asize)  access_rd_svc(be,x,y,  asize)       // rd_svc#
+#define wr_svc(be,x,y,z,asize)  access_wr_svc(be,x,y,z,asize)       // wr_svc#
 
-#define rd_res(pc,x,y,  asize)  access_rd_res(pc,x,y,  asize)       // rd_res#
-#define wr_res(pc,x,y,z,asize)  access_wr_res(pc,x,y,z,asize)       // wr_res#
+#define rd_res(be,x,y,  asize)  access_rd_res(be,x,y,  asize)       // rd_res#
+#define wr_res(be,x,y,z,asize)  access_wr_res(be,x,y,z,asize)       // wr_res#
 
 #define rd_sys(x,y,  asize)     access_rd_sys(x,y,  asize)          // rd_sys#
 #define wr_sys(x,y,z,asize)     access_wr_sys(x,y,z,asize)          // wr_sys#
@@ -106,9 +106,9 @@
  *                                                                           *
  ****************************************************************************/
 
-#define is_nil(x)        ( tageq(x,pc->nil,TAG_SIZE) )                   // is_nil#
+#define is_nil(x)        ( tageq(x,be->nil,TAG_SIZE) )                   // is_nil#
 #define is_nil_fast(x)   ( itageq(x,nil) )                               // is_nil_fast#
-#define is_nil_tag(pc,x) ( memcmp((x), pc->nil, HASH_BYTE_SIZE) == 0)    // is_nil_tag#
+#define is_nil_tag(be,x) ( memcmp((x), be->nil, HASH_BYTE_SIZE) == 0)    // is_nil_tag#
 
 #define is_val(x)    ((int)sfield((mword*)x) >  0)                  // is_val#
 #define is_ptr(x)    ((int)sfield((mword*)x) <  0)                  // is_ptr#
@@ -201,8 +201,8 @@
 // HASH#  --> Hash a Babel string    (allocating)
 // HASHM# --> Hash a val-array       (allocating)
 
-#define HASHI(pc,res,str) do{    pearson128( (str)res, (bstruct)pc->zero_hash, (char*)str, STRLEN(str) ) } while(0)
-#define HASHC(pc,str)     do{ pearson_hash8( pc      , (bstruct)pc->zero_hash, (char*)str, STRLEN(str) ) } while(0)
+#define HASHI(be,res,str) do{    pearson128( (str)res, (bstruct)be->zero_hash, (char*)str, STRLEN(str) ) } while(0)
+#define HASHC(be,str)     do{ pearson_hash8( be      , (bstruct)be->zero_hash, (char*)str, STRLEN(str) ) } while(0)
 
 //#define HASHI(result,str) (pearson_marsaglia16( (char*)result, (char*)global_irt->tags->PYR_TAG_ZERO_HASH, (char*)str, STRLEN(str) ))
 //#define HASHC(pyr,str)    HASHA_FORM(pearson_marsaglia16a, pyr, str, STRLEN(str) )
@@ -213,7 +213,7 @@
 
 // signature is HASHM of unloaded bstruct
 
-#define C2B(str) (string_c2b(pc, str, STRLEN(str))) // C2B#
+#define C2B(str) (string_c2b(be, str, STRLEN(str))) // C2B#
 
 #define ROTL64(x,y) ((x << y) | (x >> (64 - y)))
 

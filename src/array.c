@@ -3,28 +3,10 @@
 
 #include "babel.h"
 #include "array.h"
-
-#if 0
-
 #include "mem.h"
 #include "utf8.h"
-#include "bstruct.h"
-#include "list.h"
-#include "util.h"
 
-//#include "operator.h"
-//#include "pbp.h"
-//#include "introspect.h"
-//#include "string.h"
-//#include "lib_babel.h"
-//#include "logic.h"
-
-//#define  key_aopv(x,y) vcar(pcar(rdp(x,y)))
-//#define data_aopv(x,y) vcar(pcar(rdp(x,y)))
-//
-//#define  key_aop(x,y) pcar(rdp(x,y))
-//#define data_aop(x,y) pcar(rdp(x,y))
-//
+#if 0
 
 /*****************************************************************************
  *                                                                           *
@@ -33,12 +15,12 @@
  ****************************************************************************/
 
 
-// XXX TESTED XXX
 //
-mword *array_th(pyr_cache *this_pyr, mword *bs, mword entry){ // array_th#
+//
+arr array_th(babel_env *be, mword *bs, mword entry){ // array_th#
 
     if(is_val(bs)){
-        return _val(this_pyr, rdv(bs, entry%size(bs)));
+        return _val(be, rdv(bs, entry%size(bs)));
     }
     else if(is_tptr(bs)){ // ignores entry
         return tcar(bs);
@@ -56,7 +38,6 @@ mword *array_th(pyr_cache *this_pyr, mword *bs, mword entry){ // array_th#
  *                                                                           *
  ****************************************************************************/
 
-
 #define array8_mask_generate(off,arr,mask,sel)      \
     mword sel         = (off / MWORD_SIZE);         \
     mword byte_offset = (off % MWORD_SIZE);         \
@@ -67,8 +48,7 @@ mword *array_th(pyr_cache *this_pyr, mword *bs, mword entry){ // array_th#
                                                     \
     mword mask = (0xff<<UNITS_8TO1(byte_offset));
 
-
-// XXX TESTED XXX
+//
 //
 mword array8_read(mword *array, mword offset){ // array8_read#
 
@@ -78,7 +58,7 @@ mword array8_read(mword *array, mword offset){ // array8_read#
 }
 
 
-// XXX TESTED XXX
+//
 //
 void array8_write(mword *array, mword offset, mword value){ // array8_write#
 
@@ -90,25 +70,26 @@ void array8_write(mword *array, mword offset, mword value){ // array8_write#
 
 // Returns a val containing the byte at val_entry[entry] (byte-wise addressing)
 //
-mword *array8_th(pyr_cache *this_pyr, mword *val_array, mword entry8){ // array8_th#
+mword *array8_th(babel_env *be, mword *val_array, mword entry8){ // array8_th#
 
-    mword *byte = _newstr(this_pyr, 1, 0);
+    mword *byte = mem_new_str(be, 1, 0);
     ldv(byte,0) = array8_read(val_array, entry8);
 
     return byte;
 
 }
 
+#endif
 
 // calculates array8 size from sfield and alignment word
 //
-mword array8_size(pyr_cache *this_pyr, mword *string){ // array8_size#
+mword array8_size(mword *string){ // array8_size#
 
     mword strsize = size(string) - 1;
     mword last_mword = rdv(string, strsize);
 
     if(last_mword){
-        return (strsize * MWORD_SIZE) - (MWORD_SIZE - array8_dec_align(this_pyr, last_mword));
+        return (strsize * MWORD_SIZE) - (MWORD_SIZE - array8_dec_align(last_mword));
     }
     else{
         return (strsize * MWORD_SIZE);
@@ -116,11 +97,10 @@ mword array8_size(pyr_cache *this_pyr, mword *string){ // array8_size#
 
 }
 
-// FIXME The following functions do not need pyr_cache* !!! FIXME
 
 // decodes the alignment word
 //
-mword array8_dec_align(pyr_cache *this_pyr, mword alignment_word){ // array8_dec_align#
+mword array8_dec_align(mword alignment_word){ // array8_dec_align#
 
     if(alignment_word == 0){
         return 0;
@@ -139,9 +119,10 @@ mword array8_dec_align(pyr_cache *this_pyr, mword alignment_word){ // array8_dec
 }
 
 
+
 //Returns an alignment word based on size8
 //
-mword array8_enc_align(pyr_cache *this_pyr, mword size8){ // array8_enc_align#
+mword array8_enc_align(mword size8){ // array8_enc_align#
 
     if(size8 % MWORD_SIZE == 0)
         return 0;
@@ -153,9 +134,10 @@ mword array8_enc_align(pyr_cache *this_pyr, mword size8){ // array8_enc_align#
 }
 
 
+
 // returns the number of MWORDS required to store a val8 array of length size8
 //
-mword array8_mword_size(pyr_cache *this_pyr, mword size8){ // array8_mword_size#
+mword array8_mword_size(mword size8){ // array8_mword_size#
 
     mword size = (size8 / MWORD_SIZE);
 
@@ -167,14 +149,14 @@ mword array8_mword_size(pyr_cache *this_pyr, mword size8){ // array8_mword_size#
 
 }
 
-
-/*****************************************************************************
- *                                                                           *
- *                          ARRAY-1 PRIMITIVES                               *
- *                                                                           *
- ****************************************************************************/
-
-
+#if 0
+///*****************************************************************************
+// *                                                                           *
+// *                          ARRAY-1 PRIMITIVES                               *
+// *                                                                           *
+// ****************************************************************************/
+//
+/*
 #define array1_mask_generate(off,arr,mask,sel)      \
     mword sel          = (off / MWORD_BIT_SIZE);    \
     mword bit_offset   = (off % MWORD_BIT_SIZE);    \
@@ -185,285 +167,285 @@ mword array8_mword_size(pyr_cache *this_pyr, mword size8){ // array8_mword_size#
                                                     \
     mword mask = (1<<bit_offset);
     
-
-// XXX TESTED XXX
+*/
+//// XXX TESTED XXX
+////
+//mword array1_read(mword *array, mword offset){ // array1_read#
 //
-mword array1_read(mword *array, mword offset){ // array1_read#
-
-    array1_mask_generate(offset, array, read_mask, mword_select);
-    return ((rdv(array,mword_select) & read_mask) >> offset);
-
-}
-
-
-// XXX TESTED XXX
+//    array1_mask_generate(offset, array, read_mask, mword_select);
+//    return ((rdv(array,mword_select) & read_mask) >> offset);
 //
-void array1_write(mword *array, mword offset, mword value){ // array1_write#
-
-    array1_mask_generate(offset, array, write_mask, mword_select);
-    ldv(array,mword_select) = (rdv(array,mword_select) & ~write_mask) | ((value<<bit_offset) & write_mask);
-
-}
-
-
-// Returns a val containing the bit at val_array[entry1] (bitwise addressing)
-// XXX TESTED XXX
-//
-mword *array1_th(pyr_cache *this_pyr, mword *val_array, mword entry1){ // array1_th#
-
-    mword *bit = _newbits(this_pyr, 1);
-    ldv(bit,0) = array1_read(val_array, entry1);
-
-    return bit;
-
-}
-
-
+//}
 //
 //
-mword array1_size(pyr_cache *this_pyr, mword *string){ // array1_size#
-
-    mword strsize = size(string) - 1;
-    mword last_mword = rdv(string, strsize);
-    mword alignment = array1_dec_align(this_pyr, last_mword);
-
-    if(last_mword){
-        return  (strsize * MWORD_BIT_SIZE) - (MWORD_BIT_SIZE - alignment);
-    }
-    else{
-        return (strsize * MWORD_BIT_SIZE);
-    }
-
-}
-
-
-// decodes the alignment word
+//// XXX TESTED XXX
+////
+//void array1_write(mword *array, mword offset, mword value){ // array1_write#
 //
-mword array1_dec_align(pyr_cache *this_pyr, mword alignment_word){ // array1_dec_align#
-
-    if(alignment_word == 0){
-        return 0;
-    }
-
-    alignment_word = ~alignment_word;
-    mword alignment = 0;
-
-    while(alignment_word != 0){ //FIXME: PERF ... really inefficient
-        alignment_word = alignment_word >> 1;
-        alignment++;
-    }
-
-    return alignment;
-
-}
-
-
-//Returns an alignment word based on size1
+//    array1_mask_generate(offset, array, write_mask, mword_select);
+//    ldv(array,mword_select) = (rdv(array,mword_select) & ~write_mask) | ((value<<bit_offset) & write_mask);
 //
-mword array1_enc_align(pyr_cache *this_pyr, mword size1){ // array1_enc_align#
-
-    if((size1 % MWORD_BIT_SIZE) == 0)
-        return 0;
-
-    mword alignment = FMAX; //(mword)-1;
-
-    return alignment << (size1 % MWORD_BIT_SIZE);
-
-}
-
-
+//}
 //
 //
-mword array1_mword_size(pyr_cache *this_pyr, mword size1){ // array1_mword_size#
-
-    mword size = (size1 / MWORD_BIT_SIZE);
-
-    if((size1 % MWORD_BIT_SIZE) != 0){ //XXX Assumes that int div rounds to floor
-        size++;
-    }
-
-    return size+1; //for the alignment_word
-
-}
-
-
-/*****************************************************************************
- *                                                                           *
- *                            ARRAY CONVERSION                               *
- *                                                                           *
- ****************************************************************************/
-
-
-// XXX TESTED XXX
+//// Returns a val containing the bit at val_array[entry1] (bitwise addressing)
+//// XXX TESTED XXX
+////
+//mword *array1_th(babel_env *be, mword *val_array, mword entry1){ // array1_th#
 //
-mword *array_mwords_to_bytes(pyr_cache *this_pyr, mword *array){ // array_mwords_to_bytes#
-
-    mword arr_size  = size(array);
-    char *result = (char*)_newstr(this_pyr, arr_size, ' ');
-
-    int i;
-
-    for(i=0; i<arr_size; i++){
-        result[i] = (char)(array[i] & 0xff);
-    }
-
-    return (mword*)result;
-
-}
-
-
-// XXX TESTED XXX
+//    mword *bit = _newbits(be, 1);
+//    ldv(bit,0) = array1_read(val_array, entry1);
 //
-mword *array_bytes_to_mwords(pyr_cache *this_pyr, mword *array8){ // array_bytes_to_mwords#
-
-    unsigned char *cast_array = (unsigned char *)array8;
-    mword arr8_size = array8_size(this_pyr, array8);
-    mword *result = mem_new_val(this_pyr, arr8_size, 0);
-
-    int i;
-
-    for(i=0; i<arr8_size; i++){
-        result[i] = (mword)cast_array[i];
-    }
-
-    return result;
-
-}
-
-
-// XXX TESTED XXX
+//    return bit;
 //
-mword *array_mwords_to_bits(pyr_cache *this_pyr, mword *array){ // array_mwords_to_bits#
-
-    mword arr_size  = size(array);
-    mword *result   = _newbits(this_pyr, arr_size);
-
-    int i;
-
-    for(i=0; i<arr_size; i++){
-        array1_write(result, i, (array[i] != 0));
-    }
-
-    return result;
-
-}
-
-
-// XXX TESTED XXX
-//
-mword *array_bits_to_mwords(pyr_cache *this_pyr, mword *array1){ // array_bits_to_mwords#
-
-    mword arr1_size  = array1_size(this_pyr, array1);
-    mword *result = mem_new_val(this_pyr, arr1_size, 0);
-
-    int i;
-
-    for(i=0; i<arr1_size; i++){
-
-        result[i] = array1_read(array1, i);
-
-    }
-
-    return result;
-
-}
-
-
-/*****************************************************************************
- *                                                                           *
- *                          ARRAY CONCATENATION                              *
- *                                                                           *
- ****************************************************************************/
-
-
-// XXX TESTED XXX
-//
-mword *array_cat(pyr_cache *this_pyr, mword *left, mword *right){ // array_cat#
-
-    mword s_left;
-    mword s_right;
-
-    char *result;
-
-    if(is_val(right) && is_val(left)){
-        s_left  = sfield(left);
-        s_right = sfield(right);
-        result = (char*)mem_new_valz(this_pyr, UNITS_8TOM(s_left+s_right));
-    }
-    else if(is_ptr(right) && is_ptr(left)){
-        s_left  = sfield(left);
-        s_right = sfield(right);
-        result = (char*)mem_new_ptr(this_pyr, UNITS_8TOM(s_left+s_right));
-    }
-    else{ // FIXME(throw_exception)
-        _fatal("cannot concatenate val-array and ptr-array");
-    }
-
-    memcpy(result,        left,  s_left);
-    memcpy(result+s_left, right, s_right);
-
-    return (mword*)result;
-
-}
-
-
-// XXX TESTED XXX
-//
-mword *array8_cat(pyr_cache *this_pyr, mword *left, mword *right){ // array8_cat#
-
-    mword size_left;
-    mword size_right;
-
-    char *result;
-
-    if(!is_val(right) || !is_val(left)){
-        _fatal("cannot byte-concatenate ptr-array");
-    }
-
-    size_left  = array8_size(this_pyr, left);
-    size_right = array8_size(this_pyr, right);
-
-    result = (char*)_newstr(this_pyr, size_left+size_right, '\0');
-
-    memcpy(result,           left,  size_left);
-    memcpy(result+size_left, right, size_right);
-
-    return (mword*)result;
-
-}
-
-
+//}
 //
 //
-mword *array1_cat(pyr_cache *this_pyr, mword *left, mword *right){ // array1_cat#
-
-    mword size_left;
-    mword size_right;
-
-    char *result;
-
-    if(!is_val(right) || !is_val(left)){
-        _fatal("cannot bit-concatenate ptr-array");
-    }
-
-    size_left  = array1_size(this_pyr, left);
-    size_right = array1_size(this_pyr, right);
-
-    if(   (size_left  % BITS_PER_BYTE == 0)
-       && (size_right % BITS_PER_BYTE == 0)) // array8_cat is *much* faster
-        return array8_cat(this_pyr, left, right);
-
-    result = (char*)_newbits(this_pyr, size_left+size_right);
-
-    // The hard part...
-
+////
+////
+//mword array1_size(babel_env *be, mword *string){ // array1_size#
+//
+//    mword strsize = size(string) - 1;
+//    mword last_mword = rdv(string, strsize);
+//    mword alignment = array1_dec_align(be, last_mword);
+//
+//    if(last_mword){
+//        return  (strsize * MWORD_BIT_SIZE) - (MWORD_BIT_SIZE - alignment);
+//    }
+//    else{
+//        return (strsize * MWORD_BIT_SIZE);
+//    }
+//
+//}
+//
+//
+//// decodes the alignment word
+////
+//mword array1_dec_align(babel_env *be, mword alignment_word){ // array1_dec_align#
+//
+//    if(alignment_word == 0){
+//        return 0;
+//    }
+//
+//    alignment_word = ~alignment_word;
+//    mword alignment = 0;
+//
+//    while(alignment_word != 0){ //FIXME: PERF ... really inefficient
+//        alignment_word = alignment_word >> 1;
+//        alignment++;
+//    }
+//
+//    return alignment;
+//
+//}
+//
+//
+////Returns an alignment word based on size1
+////
+//mword array1_enc_align(babel_env *be, mword size1){ // array1_enc_align#
+//
+//    if((size1 % MWORD_BIT_SIZE) == 0)
+//        return 0;
+//
+//    mword alignment = FMAX; //(mword)-1;
+//
+//    return alignment << (size1 % MWORD_BIT_SIZE);
+//
+//}
+//
+//
+////
+////
+//mword array1_mword_size(babel_env *be, mword size1){ // array1_mword_size#
+//
+//    mword size = (size1 / MWORD_BIT_SIZE);
+//
+//    if((size1 % MWORD_BIT_SIZE) != 0){ //XXX Assumes that int div rounds to floor
+//        size++;
+//    }
+//
+//    return size+1; //for the alignment_word
+//
+//}
+//
+//
+///*****************************************************************************
+// *                                                                           *
+// *                            ARRAY CONVERSION                               *
+// *                                                                           *
+// ****************************************************************************/
+//
+//
+//// XXX TESTED XXX
+////
+//mword *array_mwords_to_bytes(babel_env *be, mword *array){ // array_mwords_to_bytes#
+//
+//    mword arr_size  = size(array);
+//    char *result = (char*)mem_new_str(be, arr_size, ' ');
+//
+//    int i;
+//
+//    for(i=0; i<arr_size; i++){
+//        result[i] = (char)(array[i] & 0xff);
+//    }
+//
+//    return (mword*)result;
+//
+//}
+//
+//
+//// XXX TESTED XXX
+////
+//mword *array_bytes_to_mwords(babel_env *be, mword *array8){ // array_bytes_to_mwords#
+//
+//    unsigned char *cast_array = (unsigned char *)array8;
+//    mword arr8_size = array8_size(be, array8);
+//    mword *result = mem_new_val(be, arr8_size, 0);
+//
+//    int i;
+//
+//    for(i=0; i<arr8_size; i++){
+//        result[i] = (mword)cast_array[i];
+//    }
+//
+//    return result;
+//
+//}
+//
+//
+//// XXX TESTED XXX
+////
+//mword *array_mwords_to_bits(babel_env *be, mword *array){ // array_mwords_to_bits#
+//
+//    mword arr_size  = size(array);
+//    mword *result   = _newbits(be, arr_size);
+//
+//    int i;
+//
+//    for(i=0; i<arr_size; i++){
+//        array1_write(result, i, (array[i] != 0));
+//    }
+//
+//    return result;
+//
+//}
+//
+//
+//// XXX TESTED XXX
+////
+//mword *array_bits_to_mwords(babel_env *be, mword *array1){ // array_bits_to_mwords#
+//
+//    mword arr1_size  = array1_size(be, array1);
+//    mword *result = mem_new_val(be, arr1_size, 0);
+//
+//    int i;
+//
+//    for(i=0; i<arr1_size; i++){
+//
+//        result[i] = array1_read(array1, i);
+//
+//    }
+//
+//    return result;
+//
+//}
+//
+//
+///*****************************************************************************
+// *                                                                           *
+// *                          ARRAY CONCATENATION                              *
+// *                                                                           *
+// ****************************************************************************/
+//
+//
+//// XXX TESTED XXX
+////
+//mword *array_cat(babel_env *be, mword *left, mword *right){ // array_cat#
+//
+//    mword s_left;
+//    mword s_right;
+//
+//    char *result;
+//
+//    if(is_val(right) && is_val(left)){
+//        s_left  = sfield(left);
+//        s_right = sfield(right);
+//        result = (char*)mem_new_valz(be, UNITS_8TOM(s_left+s_right));
+//    }
+//    else if(is_ptr(right) && is_ptr(left)){
+//        s_left  = sfield(left);
+//        s_right = sfield(right);
+//        result = (char*)mem_new_ptr(be, UNITS_8TOM(s_left+s_right));
+//    }
+//    else{ // FIXME(throw_exception)
+//        _fatal("cannot concatenate val-array and ptr-array");
+//    }
+//
+//    memcpy(result,        left,  s_left);
+//    memcpy(result+s_left, right, s_right);
+//
+//    return (mword*)result;
+//
+//}
+//
+//
+//// XXX TESTED XXX
+////
+//mword *array8_cat(babel_env *be, mword *left, mword *right){ // array8_cat#
+//
+//    mword size_left;
+//    mword size_right;
+//
+//    char *result;
+//
+//    if(!is_val(right) || !is_val(left)){
+//        _fatal("cannot byte-concatenate ptr-array");
+//    }
+//
+//    size_left  = array8_size(be, left);
+//    size_right = array8_size(be, right);
+//
+//    result = (char*)mem_new_str(be, size_left+size_right, '\0');
+//
 //    memcpy(result,           left,  size_left);
 //    memcpy(result+size_left, right, size_right);
-
-    return (mword*)result;
-
-
-}
+//
+//    return (mword*)result;
+//
+//}
+//
+//
+////
+////
+//mword *array1_cat(babel_env *be, mword *left, mword *right){ // array1_cat#
+//
+//    mword size_left;
+//    mword size_right;
+//
+//    char *result;
+//
+//    if(!is_val(right) || !is_val(left)){
+//        _fatal("cannot bit-concatenate ptr-array");
+//    }
+//
+//    size_left  = array1_size(be, left);
+//    size_right = array1_size(be, right);
+//
+//    if(   (size_left  % BITS_PER_BYTE == 0)
+//       && (size_right % BITS_PER_BYTE == 0)) // array8_cat is *much* faster
+//        return array8_cat(be, left, right);
+//
+//    result = (char*)_newbits(be, size_left+size_right);
+//
+//    // The hard part...
+//
+////    memcpy(result,           left,  size_left);
+////    memcpy(result+size_left, right, size_right);
+//
+//    return (mword*)result;
+//
+//
+//}
 
 
 /*****************************************************************************
@@ -475,7 +457,7 @@ mword *array1_cat(pyr_cache *this_pyr, mword *left, mword *right){ // array1_cat
 
 //
 //
-int array_cmp_lex(pyr_cache *this_pyr, mword *left, mword *right, access_size_sel access_size){ // array_cmp_lex#
+int array_cmp_lex(babel_env *be, mword *left, mword *right, access_size asize){ // array_cmp_lex#
 
     mword left_size;
     mword right_size;
@@ -485,8 +467,8 @@ int array_cmp_lex(pyr_cache *this_pyr, mword *left, mword *right, access_size_se
         right_size = UNITS_MTO8(size_special(right));
     }
     else{ // access_size == BYTE_ASIZE
-        left_size  = array8_size(this_pyr, left);
-        right_size = array8_size(this_pyr, right);
+        left_size  = array8_size(left);
+        right_size = array8_size(right);
     }
 
     if(left_size > right_size){
@@ -507,7 +489,7 @@ int array_cmp_lex(pyr_cache *this_pyr, mword *left, mword *right, access_size_se
 //     \---/
 //       n
 //
-int array_ncmp(pyr_cache *this_pyr, mword *left, mword left_offset, mword *right, mword length, access_size_sel access_size){
+int array_ncmp(babel_env *be, mword *left, mword left_offset, mword *right, mword length, access_size asize){
 
     mword left_size;
     mword right_size;
@@ -518,8 +500,8 @@ int array_ncmp(pyr_cache *this_pyr, mword *left, mword left_offset, mword *right
         length     = UNITS_MTO8(length);
     }
     else{ // access_size == BYTE_ASIZE
-        left_size  = array8_size(this_pyr, left) - left_offset;
-        right_size = array8_size(this_pyr, right);
+        left_size  = array8_size(left) - left_offset;
+        right_size = array8_size(right);
     }
 
     if( (length > left_size)
@@ -535,7 +517,7 @@ int array_ncmp(pyr_cache *this_pyr, mword *left, mword left_offset, mword *right
 
 //
 //
-int array_cmp_alpha(pyr_cache *this_pyr, mword *left, mword *right, access_size_sel access_size){ // array_cmp_alpha#
+int array_cmp_alpha(babel_env *be, mword *left, mword *right, access_size asize){ // array_cmp_alpha#
 
     mword left_size;
     mword right_size;
@@ -546,8 +528,8 @@ int array_cmp_alpha(pyr_cache *this_pyr, mword *left, mword *right, access_size_
         right_size = size(right);
     }
     else{ // access_size == BYTE_ASIZE
-        left_size  = array8_size(this_pyr, left);
-        right_size = array8_size(this_pyr, right);
+        left_size  = array8_size(left);
+        right_size = array8_size(right);
     }
 
     if(left_size == right_size){
@@ -661,7 +643,7 @@ int array_cmp_num_signed(mword *left, mword *right){ // array_cmp_num_signed#
 
 // Babelized wrapper around memmove()
 //
-void array_move(pyr_cache *this_pyr, mword *dest, mword dest_index, mword *src, mword src_index, mword size_arg, access_size_sel access_size){ // array_move#
+void array_move(babel_env *be, mword *dest, mword dest_index, mword *src, mword src_index, mword size_arg, access_size asize){ // array_move#
 
     mword src_size;
     mword dest_size;
@@ -678,8 +660,8 @@ void array_move(pyr_cache *this_pyr, mword *dest, mword dest_index, mword *src, 
     }
     else{ // access_size = BYTE_ASIZE
 
-        src_size  = array8_size(this_pyr, src );
-        dest_size = array8_size(this_pyr, dest);
+        src_size  = array8_size(src );
+        dest_size = array8_size(dest);
 
     }
 
@@ -711,9 +693,9 @@ void array_move(pyr_cache *this_pyr, mword *dest, mword dest_index, mword *src, 
 
 // NB: Do not use on tptr's
 //
-mword *array_slice(pyr_cache *this_pyr, mword *array, mword start, mword end){ // array_slice#
+mword *array_slice(babel_env *be, mword *array, mword start, mword end){ // array_slice#
 
-    mword *result=nil;
+    mword *result=be->nil;
 
     mword arr_size = size(array);
     end = MIN(end, arr_size);
@@ -722,13 +704,13 @@ mword *array_slice(pyr_cache *this_pyr, mword *array, mword start, mword end){ /
     if(end>start){
 
         if(is_val(array)){
-            result = mem_new_val(this_pyr, arr_size, 0);
+            result = mem_new_val(be, arr_size, 0);
         }
         else{
-            result = mem_new_ptr(this_pyr, arr_size);
+            result = mem_new_ptr(be, arr_size);
         }
 
-        array_move(this_pyr, result, 0, array, start, arr_size, MWORD_ASIZE);
+        array_move(be, result, 0, array, start, arr_size, MWORD_ASIZE);
 
     }
 
@@ -739,17 +721,17 @@ mword *array_slice(pyr_cache *this_pyr, mword *array, mword start, mword end){ /
 
 //
 //
-mword *array8_slice(pyr_cache *this_pyr, mword *array, mword start, mword end){ // array8_slice#
+mword *array8_slice(babel_env *be, mword *array, mword start, mword end){ // array8_slice#
 
-    mword *result = _val(this_pyr, 0); // Empty-string
+    mword *result = _val(be, 0); // Empty-string
 
-    mword size8 = array8_size(this_pyr, array);
+    mword size8 = array8_size(array);
     end = MAX(end, size8);
 
     if(end>start){
 
-        result = _newstr(this_pyr, end-start, ' ');
-        array_move(this_pyr, result, 0, array, start, end-start, BYTE_ASIZE);
+        result = mem_new_str(be, end-start, ' ');
+        array_move(be, result, 0, array, start, end-start, BYTE_ASIZE);
 
     }
 
@@ -758,518 +740,527 @@ mword *array8_slice(pyr_cache *this_pyr, mword *array, mword start, mword end){ 
 }
  
 
+////
+////
+//mword *array1_slice(babel_env *be, mword *array, mword start, mword end){ // array1_slice#
+//
+//    mword *result=nil;
+//    return result;
+//
+//}
 //
 //
-mword *array1_slice(pyr_cache *this_pyr, mword *array, mword start, mword end){ // array1_slice#
-
-    mword *result=nil;
-    return result;
-
-}
-
-
-// XXX SMOKE-TESTED XXX
+//// XXX SMOKE-TESTED XXX
+////
+//void array1_move(babel_env *be, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg){ // array1_move#
 //
-void array1_move(pyr_cache *this_pyr, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg){ // array1_move#
-
-    mword dest_begin_mword = UNITS_1TOM(dest_begin);
-    dest_begin -= UNITS_MTO1(dest_begin_mword);
-
-    mword src_begin_mword = UNITS_1TOM(src_begin);
-    src_begin -= UNITS_MTO1(src_begin_mword);
-
-    array1_move_unsafe(this_pyr, (dest+dest_begin_mword), dest_begin, (src+src_begin_mword), src_begin, size_arg);
-
-}
-
-// comp --> "complementary modulus", i.e. comp(modulus) = (MWORD_BIT_SIZE - modulus)
-// dest_begin and src_begin MUST BE less than MWORD_BIT_SIZE
-// This function performs a full bitwise move from src to dest...
-// XXX src and dest must not overlap... this is NOT checked in this function XXX
+//    mword dest_begin_mword = UNITS_1TOM(dest_begin);
+//    dest_begin -= UNITS_MTO1(dest_begin_mword);
 //
-void array1_move_unsafe(pyr_cache *this_pyr, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg){ // array1_move_unsafe#
-
-    // if src, dest & size_arg are aligned, memmove
-    // if src is aligned, but dest is not aligned, this is a move
-    // if src is not aligned, and dest is aligned, this is a slice
-
-    if(!size_arg)  // nothing to move
-        return;
-
-    if(    (  dest_begin % BITS_PER_BYTE == 0)
-        && (   src_begin % BITS_PER_BYTE == 0) 
-        && (    size_arg % BITS_PER_BYTE == 0) ){
-//        _notify("This was supposed to memmove...");
-//        memmove( ((char*)dest+UNITS_1TO8(dest_begin)), (char*)src, (size_t)UNITS_1TO8(size_arg) );
+//    mword src_begin_mword = UNITS_1TOM(src_begin);
+//    src_begin -= UNITS_MTO1(src_begin_mword);
+//
+//    array1_move_unsafe(be, (dest+dest_begin_mword), dest_begin, (src+src_begin_mword), src_begin, size_arg);
+//
+//}
+//
+//// comp --> "complementary modulus", i.e. comp(modulus) = (MWORD_BIT_SIZE - modulus)
+//// dest_begin and src_begin MUST BE less than MWORD_BIT_SIZE
+//// This function performs a full bitwise move from src to dest...
+//// XXX src and dest must not overlap... this is NOT checked in this function XXX
+////
+//void array1_move_unsafe(babel_env *be, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg){ // array1_move_unsafe#
+//
+//    // if src, dest & size_arg are aligned, memmove
+//    // if src is aligned, but dest is not aligned, this is a move
+//    // if src is not aligned, and dest is aligned, this is a slice
+//
+//    if(!size_arg)  // nothing to move
 //        return;
-    }
-
-    mword num_src_splits  = array1_calc_splits(src_begin,  size_arg);
-    mword num_dest_splits = array1_calc_splits(dest_begin, size_arg);
-
-    if((num_dest_splits==0) && (num_src_splits==0)){
-//_say("splits - dest:0 src:0");
-        array1_move_split_0_0(this_pyr, dest, dest_begin, src, src_begin, size_arg);
-    }
-    else if((num_dest_splits==1) && (num_src_splits==0)){
-//_say("splits - dest:1 src:0");
-        array1_move_split_1_0(this_pyr, dest, dest_begin, src, src_begin, size_arg);
-    }
-    else if((num_dest_splits==0) && (num_src_splits==1)){
-//_say("splits - dest:0 src:1");
-        array1_move_split_0_1(this_pyr, dest, dest_begin, src, src_begin, size_arg);
-    }
-    else if((num_dest_splits==1) && (num_src_splits==1)){
-//_say("splits - dest:1 src:1");
-        array1_move_split_1_1(this_pyr, dest, dest_begin, src, src_begin, size_arg);
-    }
-    else if((num_dest_splits==2) && (num_src_splits==1)){
-//_say("splits - dest:2 src:1");
-        array1_move_split_2_1(this_pyr, dest, dest_begin, src, src_begin, size_arg);
-    }
-    else if((num_dest_splits==1) && (num_src_splits==2)){
-//_say("splits - dest:1 src:2");
-        array1_move_split_1_2(this_pyr, dest, dest_begin, src, src_begin, size_arg);
-    }
-    else if((num_dest_splits==2) && (num_src_splits==2)){
-//_say("splits - dest:n src:n");
-        array1_move_split_n(this_pyr, dest, dest_begin, src, src_begin, size_arg);
-    }
-    else{
-        _pigs_fly;
-    }
-
-}
-
-
+//
+//    if(    (  dest_begin % BITS_PER_BYTE == 0)
+//        && (   src_begin % BITS_PER_BYTE == 0) 
+//        && (    size_arg % BITS_PER_BYTE == 0) ){
+////        _notify("This was supposed to memmove...");
+////        memmove( ((char*)dest+UNITS_1TO8(dest_begin)), (char*)src, (size_t)UNITS_1TO8(size_arg) );
+////        return;
+//    }
+//
+//    mword num_src_splits  = array1_calc_splits(src_begin,  size_arg);
+//    mword num_dest_splits = array1_calc_splits(dest_begin, size_arg);
+//
+//    if((num_dest_splits==0) && (num_src_splits==0)){
+////_say("splits - dest:0 src:0");
+//        array1_move_split_0_0(be, dest, dest_begin, src, src_begin, size_arg);
+//    }
+//    else if((num_dest_splits==1) && (num_src_splits==0)){
+////_say("splits - dest:1 src:0");
+//        array1_move_split_1_0(be, dest, dest_begin, src, src_begin, size_arg);
+//    }
+//    else if((num_dest_splits==0) && (num_src_splits==1)){
+////_say("splits - dest:0 src:1");
+//        array1_move_split_0_1(be, dest, dest_begin, src, src_begin, size_arg);
+//    }
+//    else if((num_dest_splits==1) && (num_src_splits==1)){
+////_say("splits - dest:1 src:1");
+//        array1_move_split_1_1(be, dest, dest_begin, src, src_begin, size_arg);
+//    }
+//    else if((num_dest_splits==2) && (num_src_splits==1)){
+////_say("splits - dest:2 src:1");
+//        array1_move_split_2_1(be, dest, dest_begin, src, src_begin, size_arg);
+//    }
+//    else if((num_dest_splits==1) && (num_src_splits==2)){
+////_say("splits - dest:1 src:2");
+//        array1_move_split_1_2(be, dest, dest_begin, src, src_begin, size_arg);
+//    }
+//    else if((num_dest_splits==2) && (num_src_splits==2)){
+////_say("splits - dest:n src:n");
+//        array1_move_split_n(be, dest, dest_begin, src, src_begin, size_arg);
+//    }
+//    else{
+//        _pigs_fly;
+//    }
+//
+//}
 //
 //
-mword array1_calc_splits(mword begin, mword size_arg){ // array1_calc_splits#
-
-    mword begin_comp = MWORD_BIT_SIZE-begin;
-    mword end_mod = (begin+size_arg) % MWORD_BIT_SIZE;
-
-    mword num_splits = 0;
-
-    if(size_arg <= MWORD_BIT_SIZE){ // 0 or 1 boundaries crossed
-        num_splits = (begin_comp < size_arg);
-    }
-    else if(size_arg < (2*MWORD_BIT_SIZE)){ // 1 or 2 boundaries crossed
-        if((size_arg+begin) <= (2*MWORD_BIT_SIZE)){
-            num_splits = 1;
-        }
-        else{
-            num_splits = 2;
-        }
-    }
-    else if(size_arg == (2*MWORD_BIT_SIZE)){ // 1 or 2 boundaries crossed
-        if( !begin && !end_mod ){
-            num_splits = 1;
-        }
-        else{
-            num_splits = 2;
-        }
-    }
-    else{ // 2 or more boundaries crossed
-        num_splits = 2;
-    }
-
-    return num_splits;
-
-}
-
-
+////
+////
+//mword array1_calc_splits(mword begin, mword size_arg){ // array1_calc_splits#
+//
+//    mword begin_comp = MWORD_BIT_SIZE-begin;
+//    mword end_mod = (begin+size_arg) % MWORD_BIT_SIZE;
+//
+//    mword num_splits = 0;
+//
+//    if(size_arg <= MWORD_BIT_SIZE){ // 0 or 1 boundaries crossed
+//        num_splits = (begin_comp < size_arg);
+//    }
+//    else if(size_arg < (2*MWORD_BIT_SIZE)){ // 1 or 2 boundaries crossed
+//        if((size_arg+begin) <= (2*MWORD_BIT_SIZE)){
+//            num_splits = 1;
+//        }
+//        else{
+//            num_splits = 2;
+//        }
+//    }
+//    else if(size_arg == (2*MWORD_BIT_SIZE)){ // 1 or 2 boundaries crossed
+//        if( !begin && !end_mod ){
+//            num_splits = 1;
+//        }
+//        else{
+//            num_splits = 2;
+//        }
+//    }
+//    else{ // 2 or more boundaries crossed
+//        num_splits = 2;
+//    }
+//
+//    return num_splits;
+//
+//}
 //
 //
-void array1_move_split_0_0(pyr_cache *this_pyr, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg){ // array1_move_split_0_0#
-
-    // src    | .xxx.... |
-    //          deadbeef
-    // 
-    // dest   | ...xxx.. |
-    //          000ead00
-    ldv(dest,0) = MWORD_MUX(
-        (MWORD_SHIFT((rdv(src,0)),(dest_begin-src_begin))),
-        (rdv(dest,0)),
-        (BIT_RANGE((dest_begin+size_arg-1),dest_begin)));
-
-}
-
-
-
-// dest:0 src:1
+////
+////
+//void array1_move_split_0_0(babel_env *be, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg){ // array1_move_split_0_0#
 //
-void array1_move_split_0_1(pyr_cache *this_pyr, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg){ // array1_move_split_0_1#
-
-    // src    |. . . . . . x x|x . . . . . . .|
-    //         f a c e f e e d d e a d b e e f
-    // 
-    // dest   |. . . . x x x .|
-    //         c c c c e d d c 
-
-    mword src_mwordA = BIT_SELECT(rdv(src,0), MWORD_MSB, src_begin);
-    mword src_mwordB = BIT_SELECT(rdv(src,1), (size_arg-(MWORD_MSB-src_begin))-1, 0);
-
-    mword src_mword = (src_mwordA << dest_begin)
-                        |
-                      (src_mwordB << (dest_begin+(MWORD_MSB-src_begin)+1));
-
-    ldv(dest,0) = MWORD_MUX(
-                    src_mword,
-                    rdv(dest,0),
-                    BIT_RANGE((dest_begin+size_arg-1),dest_begin));
-
-}
-
-
-
-// dest:1 src:0
+//    // src    | .xxx.... |
+//    //          deadbeef
+//    // 
+//    // dest   | ...xxx.. |
+//    //          000ead00
+//    ldv(dest,0) = MWORD_MUX(
+//        (MWORD_SHIFT((rdv(src,0)),(dest_begin-src_begin))),
+//        (rdv(dest,0)),
+//        (BIT_RANGE((dest_begin+size_arg-1),dest_begin)));
 //
-void array1_move_split_1_0(pyr_cache *this_pyr, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg){ // array1_move_split_1_0#
-
-    // src    |. x x x . . . .|
-    //         d e a d b e e f
-    // 
-    // dest   |. . . . . . x x|x . . . . . . .|
-    //         c c c c c c e a d 0 0 0 0 0 0 0
-
-    int shiftA = dest_begin-src_begin;
-    int shiftB = -1*COMPLEMENT_MTO1(shiftA);
-
-    mword src_mwordA = MWORD_SHIFT(rdv(src,0),shiftA);
-    mword src_mwordB = MWORD_SHIFT(rdv(src,0),shiftB);
-
-    ldv(dest,0) = MWORD_MUX(
-                    src_mwordA,
-                    rdv(dest,0),
-                    BIT_RANGE(MWORD_MSB,dest_begin));
-
-    ldv(dest,1) = MWORD_MUX(
-                    src_mwordB,
-                    rdv(dest,1),
-                    BIT_RANGE(MODULO_MTO1(dest_begin+size_arg-1),0));
-
-}
-
-
+//}
 //
 //
-void array1_move_split_1_1(pyr_cache *this_pyr, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg){ // array1_move_split_1_1#
-
-    mword src_comp, dest_comp;
-    mword size_hi,  size_mid, size_lo;
-    mword mask_hi,  mask_mid, mask_lo;
-    mword src_val0, src_val1;
-    mword buff0,    buff1;
-
-    // size_arg <= MWORD_SIZE
-    //               1                0
-    //                  hi       lo
-    // src:  |-----v----------|------v---------|
-    //             |-----------------|
-    //                   |-----------------|
-    // dest: |...........^....|............^...|
-    //                     hi       lo
-    if(size_arg <= MWORD_BIT_SIZE){
-
-        src_comp  = MWORD_BIT_SIZE-src_begin;
-        dest_comp = MWORD_BIT_SIZE-dest_begin;
-
-        size_hi = src_begin;
-
-        mask_hi = NBIT_LO_MASK(size_arg-src_comp);
-
-        src_val0 = rdv(src,0);
-        src_val1 = rdv(src,1);
-
-        buff0 = BIT_SELECT(src_val0, MWORD_MSB, src_begin)
-                        |
-                     ((src_val1 & mask_hi) << src_comp);
-
-        size_lo = dest_comp;
-        size_hi = size_arg-size_lo;
-
-        mask_hi = NBIT_LO_MASK(size_hi);
-        mask_lo = NBIT_HI_MASK(size_lo);
-
-        ldv(dest,0) = MWORD_MUX(buff0 << dest_begin, rdv(dest,0), mask_lo);
-        ldv(dest,1) = MWORD_MUX(buff0 >> dest_comp,  rdv(dest,1), mask_hi);
-
-    }
-    // size_arg > MWORD_SIZE
-    //               1                0
-    //           hi      mid     lo
-    // src:  |--v--v----------|------v---------|
-    //          |--|-----------------|
-    //                |--|-----------------|
-    // dest: |........^..^....|............^...|
-    //                 hi  mid     lo
-    else{
-
-        src_comp  = MWORD_BIT_SIZE-src_begin;
-        dest_comp = MWORD_BIT_SIZE-dest_begin;
-
-        size_hi = size_arg-MWORD_BIT_SIZE;
-        size_lo = src_comp;
-        size_mid = size_arg-(size_hi+size_lo);
-
-        src_val0 = rdv(src,0);
-        src_val1 = rdv(src,1);
-
-        if(size_mid){
-
-            buff0 =
-                //lo
-                BIT_SELECT(src_val0, MWORD_MSB, src_begin)
-                    |
-                //mid
-                (BIT_SELECT(src_val1, size_mid-1, 0) << size_lo);
-
-        }
-        else{
-
-            //lo (no mid)
-            buff0 = BIT_SELECT(src_val0, MWORD_MSB, src_begin);
-
-        }
-
-        //hi
-        buff1 = BIT_SELECT(src_val1, size_hi+size_mid-1, size_mid);
-
-//_d(buff0);
-//_d(buff1);
-
-        size_lo  = dest_comp;
-        size_mid = size_arg-(size_hi+size_lo);
-
-        mask_mid = NBIT_LO_MASK(size_mid);
-        mask_lo  = NBIT_HI_MASK(size_lo);
-        mask_hi  = BIT_RANGE((size_hi+size_mid-1),size_mid);
-
-        ldv(dest,0) = MWORD_MUX(buff0 << dest_begin, rdv(dest,0), mask_lo);
-        ldv(dest,1) = MWORD_MUX(buff0 >> dest_comp,  rdv(dest,1), mask_mid);
-        ldv(dest,1) = MWORD_MUX(buff1 << size_mid,   rdv(dest,1), mask_hi);
-
-    }
-
-}
-
-
-// dest:2 src:1
 //
-void array1_move_split_2_1(pyr_cache *this_pyr, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg){ // array1_move_split_2_1#
-
-    //               1                0
-    //             A      B       C
-    // src:  |--v-----v-------|--------v-------|
-    //          |-----|----------------|
-    //                     |-----|----------------|
-    // dest: |.............^..|..^.............|..^.............|
-    //                      A  B        C       D
-
-    mword src_comp, dest_comp;
-    mword size_A, size_B, size_C;
-    mword src_val0, src_val1;
-    mword buff0, buff1;
-
-    src_comp  = MWORD_BIT_SIZE-src_begin;
-    dest_comp = MWORD_BIT_SIZE-dest_begin;
-
-    size_A = size_arg-MWORD_BIT_SIZE;
-    size_C = src_comp;
-    size_B = size_arg-(size_A+size_C);
-
-    src_val0 = rdv(src,0);
-    src_val1 = rdv(src,1);
-
-    if(size_B){
-
-        buff0 =
-            //lo
-            BIT_SELECT(src_val0, MWORD_MSB, src_begin)
-                |
-            //mid
-            (BIT_SELECT(src_val1, size_B-1, 0) << size_C);
-
-    }
-    else{
-
-        //lo (no mid)
-        buff0 = BIT_SELECT(src_val0, MWORD_MSB, src_begin);
-
-    }
-
-    //hi
-    buff1 = BIT_SELECT(src_val1, size_A+size_B-1, size_B);
-
-//_d(buff0);
-//_d(buff1);
-
-    ldv(dest,0) = MWORD_MUX(
-                    (buff0<<dest_begin),
-                    rdv(dest,0),
-                    BIT_RANGE(MWORD_MSB,dest_begin));
-
-    ldv(dest,1) = MWORD_MUX(
-                    (buff0>>dest_comp),
-                    rdv(dest,1),
-                    BIT_RANGE(dest_begin-1,0));
-
-    ldv(dest,1) = MWORD_MUX(
-                    (buff1<<dest_begin),
-                    rdv(dest,1),
-                    BIT_RANGE(MWORD_MSB,dest_begin));
-
-    ldv(dest,2) = MWORD_MUX(
-                    (buff1>>dest_comp),
-                    rdv(dest,2),
-                    BIT_RANGE((size_arg-(MWORD_BIT_SIZE+dest_comp)-1),0));
-
-}
-
-
-// dest:1 src:2
+//// dest:0 src:1
+////
+//void array1_move_split_0_1(babel_env *be, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg){ // array1_move_split_0_1#
 //
-void array1_move_split_1_2(pyr_cache *this_pyr, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg){ // array1_move_split_1_2#
-
-    //               1                0
-    //                      A  B        C       D
-    // src:  |.............v..|..v.............|..v.............|
-    //                     |-----|----------------|
-    //          |-----|----------------|
-    // dest: |--^-----^-------|--------^-------|
-    //             A      B       C
-
-    mword src_comp, dest_comp;
-    mword size_A, size_B, size_C, size_D;
-    mword src_val0, src_val1, src_val2;
-    mword buff0, buff1;
-
-    src_comp  = MWORD_BIT_SIZE-src_begin;
-    dest_comp = MWORD_BIT_SIZE-dest_begin;
-
-    size_D = src_comp;
-    size_B = size_D;
-    size_C = src_begin;
-    size_A = size_arg-(size_B+size_C+size_D);
-
-    src_val0 = rdv(src,0);
-    src_val1 = rdv(src,1);
-    src_val2 = rdv(src,2);
-
-    buff0 =
-        BIT_SELECT(src_val0, MWORD_MSB, src_begin)
-            |
-        (BIT_SELECT(src_val1, size_C-1, 0) << size_D);
-
-    buff1 =
-        BIT_SELECT(src_val1, MWORD_MSB, size_C)
-            |
-        (BIT_SELECT(src_val2, size_A-1, 0) << size_B);
-
-//_d(buff0);
-//_d(buff1);
-
-    ldv(dest,0) = MWORD_MUX(
-                    (buff0<<dest_begin),
-                    rdv(dest,0),
-                    BIT_RANGE(MWORD_MSB,dest_begin));
-
-    ldv(dest,1) = MWORD_MUX(
-                    (buff0>>dest_comp),
-                    rdv(dest,1),
-                    BIT_RANGE(dest_begin-1,0));
-
-    ldv(dest,1) = MWORD_MUX(
-                    (buff1<<dest_begin),
-                    rdv(dest,1),
-                    BIT_RANGE((size_arg-MWORD_BIT_SIZE+dest_begin-1),dest_begin));
-
-}
-
-
-// dest>=2, src>=2
+//    // src    |. . . . . . x x|x . . . . . . .|
+//    //         f a c e f e e d d e a d b e e f
+//    // 
+//    // dest   |. . . . x x x .|
+//    //         c c c c e d d c 
 //
-void array1_move_split_n(pyr_cache *this_pyr, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg){ // array1_move_split_n#
-
-    // Main loop (0 to n-1):
-    //               1                0
-    //                  hi       lo
-    // src:  |-----v----------|------v---------|
-    //             |-----------------|
-    //                   |-----------------|
-    // dest: |...........^....|............^...|
-    //                     hi       lo
-    //
-    // Final loop: Use array1_move_split_1_1() to move last bits
-    mword src_comp,     dest_comp;
-    mword dest_size_hi, dest_size_lo;
-    mword dest_mask_hi, dest_mask_lo;
-    mword src_mask_hi;
-    mword buff;
-
-    int i, ctr;
-
-    src_comp  = MWORD_BIT_SIZE-src_begin;
-    dest_comp = MWORD_BIT_SIZE-dest_begin;
-
-    src_mask_hi = NBIT_LO_MASK(src_begin);
-
-    dest_size_lo = dest_comp;
-    dest_size_hi = dest_begin;
-
-    dest_mask_hi = NBIT_LO_MASK(dest_size_hi);
-    dest_mask_lo = NBIT_HI_MASK(dest_size_lo);
-
-    for(    i=size_arg,        ctr=0;
-            i>MWORD_BIT_SIZE;
-            i-=MWORD_BIT_SIZE, ctr++){
-
-        buff = BIT_SELECT(rdv(src,ctr+0), MWORD_MSB, src_begin)
-                        |
-                     ((rdv(src,ctr+1) & src_mask_hi) << src_comp);
-
-//_d(buff);
-
-        ldv(dest,ctr+0) = MWORD_MUX(buff << dest_begin, rdv(dest,ctr+0), dest_mask_lo);
-        ldv(dest,ctr+1) = MWORD_MUX(buff >> dest_comp,  rdv(dest,ctr+1), dest_mask_hi);
-
-    }
-
-//_dd(i);
-//_dd(ctr);
-
-    //clean up remaining bits
-    array1_move_unsafe(this_pyr, (dest+ctr), dest_begin, (src+ctr), src_begin, i);
-
-}
-
-
-// XXX DEPRECATED XXX
+//    mword src_mwordA = BIT_SELECT(rdv(src,0), MWORD_MSB, src_begin);
+//    mword src_mwordB = BIT_SELECT(rdv(src,1), (size_arg-(MWORD_MSB-src_begin))-1, 0);
 //
-void array_trunc(pyr_cache *this_pyr, mword *operand, mword new_size){ // array_trunc#
+//    mword src_mword = (src_mwordA << dest_begin)
+//                        |
+//                      (src_mwordB << (dest_begin+(MWORD_MSB-src_begin)+1));
+//
+//    ldv(dest,0) = MWORD_MUX(
+//                    src_mword,
+//                    rdv(dest,0),
+//                    BIT_RANGE((dest_begin+size_arg-1),dest_begin));
+//
+//}
+//
+//
+//
+//// dest:1 src:0
+////
+//void array1_move_split_1_0(babel_env *be, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg){ // array1_move_split_1_0#
+//
+//    // src    |. x x x . . . .|
+//    //         d e a d b e e f
+//    // 
+//    // dest   |. . . . . . x x|x . . . . . . .|
+//    //         c c c c c c e a d 0 0 0 0 0 0 0
+//
+//    int shiftA = dest_begin-src_begin;
+//    int shiftB = -1*COMPLEMENT_MTO1(shiftA);
+//
+//    mword src_mwordA = MWORD_SHIFT(rdv(src,0),shiftA);
+//    mword src_mwordB = MWORD_SHIFT(rdv(src,0),shiftB);
+//
+//    ldv(dest,0) = MWORD_MUX(
+//                    src_mwordA,
+//                    rdv(dest,0),
+//                    BIT_RANGE(MWORD_MSB,dest_begin));
+//
+//    ldv(dest,1) = MWORD_MUX(
+//                    src_mwordB,
+//                    rdv(dest,1),
+//                    BIT_RANGE(MODULO_MTO1(dest_begin+size_arg-1),0));
+//
+//}
+//
+//
+////
+////
+//void array1_move_split_1_1(babel_env *be, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg){ // array1_move_split_1_1#
+//
+//    mword src_comp, dest_comp;
+//    mword size_hi,  size_mid, size_lo;
+//    mword mask_hi,  mask_mid, mask_lo;
+//    mword src_val0, src_val1;
+//    mword buff0,    buff1;
+//
+//    // size_arg <= MWORD_SIZE
+//    //               1                0
+//    //                  hi       lo
+//    // src:  |-----v----------|------v---------|
+//    //             |-----------------|
+//    //                   |-----------------|
+//    // dest: |...........^....|............^...|
+//    //                     hi       lo
+//    if(size_arg <= MWORD_BIT_SIZE){
+//
+//        src_comp  = MWORD_BIT_SIZE-src_begin;
+//        dest_comp = MWORD_BIT_SIZE-dest_begin;
+//
+//        size_hi = src_begin;
+//
+//        mask_hi = NBIT_LO_MASK(size_arg-src_comp);
+//
+//        src_val0 = rdv(src,0);
+//        src_val1 = rdv(src,1);
+//
+//        buff0 = BIT_SELECT(src_val0, MWORD_MSB, src_begin)
+//                        |
+//                     ((src_val1 & mask_hi) << src_comp);
+//
+//        size_lo = dest_comp;
+//        size_hi = size_arg-size_lo;
+//
+//        mask_hi = NBIT_LO_MASK(size_hi);
+//        mask_lo = NBIT_HI_MASK(size_lo);
+//
+//        ldv(dest,0) = MWORD_MUX(buff0 << dest_begin, rdv(dest,0), mask_lo);
+//        ldv(dest,1) = MWORD_MUX(buff0 >> dest_comp,  rdv(dest,1), mask_hi);
+//
+//    }
+//    // size_arg > MWORD_SIZE
+//    //               1                0
+//    //           hi      mid     lo
+//    // src:  |--v--v----------|------v---------|
+//    //          |--|-----------------|
+//    //                |--|-----------------|
+//    // dest: |........^..^....|............^...|
+//    //                 hi  mid     lo
+//    else{
+//
+//        src_comp  = MWORD_BIT_SIZE-src_begin;
+//        dest_comp = MWORD_BIT_SIZE-dest_begin;
+//
+//        size_hi = size_arg-MWORD_BIT_SIZE;
+//        size_lo = src_comp;
+//        size_mid = size_arg-(size_hi+size_lo);
+//
+//        src_val0 = rdv(src,0);
+//        src_val1 = rdv(src,1);
+//
+//        if(size_mid){
+//
+//            buff0 =
+//                //lo
+//                BIT_SELECT(src_val0, MWORD_MSB, src_begin)
+//                    |
+//                //mid
+//                (BIT_SELECT(src_val1, size_mid-1, 0) << size_lo);
+//
+//        }
+//        else{
+//
+//            //lo (no mid)
+//            buff0 = BIT_SELECT(src_val0, MWORD_MSB, src_begin);
+//
+//        }
+//
+//        //hi
+//        buff1 = BIT_SELECT(src_val1, size_hi+size_mid-1, size_mid);
+//
+////_d(buff0);
+////_d(buff1);
+//
+//        size_lo  = dest_comp;
+//        size_mid = size_arg-(size_hi+size_lo);
+//
+//        mask_mid = NBIT_LO_MASK(size_mid);
+//        mask_lo  = NBIT_HI_MASK(size_lo);
+//        mask_hi  = BIT_RANGE((size_hi+size_mid-1),size_mid);
+//
+//        ldv(dest,0) = MWORD_MUX(buff0 << dest_begin, rdv(dest,0), mask_lo);
+//        ldv(dest,1) = MWORD_MUX(buff0 >> dest_comp,  rdv(dest,1), mask_mid);
+//        ldv(dest,1) = MWORD_MUX(buff1 << size_mid,   rdv(dest,1), mask_hi);
+//
+//    }
+//
+//}
+//
+//
+//// dest:2 src:1
+////
+//void array1_move_split_2_1(babel_env *be, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg){ // array1_move_split_2_1#
+//
+//    //               1                0
+//    //             A      B       C
+//    // src:  |--v-----v-------|--------v-------|
+//    //          |-----|----------------|
+//    //                     |-----|----------------|
+//    // dest: |.............^..|..^.............|..^.............|
+//    //                      A  B        C       D
+//
+//    mword src_comp, dest_comp;
+//    mword size_A, size_B, size_C;
+//    mword src_val0, src_val1;
+//    mword buff0, buff1;
+//
+//    src_comp  = MWORD_BIT_SIZE-src_begin;
+//    dest_comp = MWORD_BIT_SIZE-dest_begin;
+//
+//    size_A = size_arg-MWORD_BIT_SIZE;
+//    size_C = src_comp;
+//    size_B = size_arg-(size_A+size_C);
+//
+//    src_val0 = rdv(src,0);
+//    src_val1 = rdv(src,1);
+//
+//    if(size_B){
+//
+//        buff0 =
+//            //lo
+//            BIT_SELECT(src_val0, MWORD_MSB, src_begin)
+//                |
+//            //mid
+//            (BIT_SELECT(src_val1, size_B-1, 0) << size_C);
+//
+//    }
+//    else{
+//
+//        //lo (no mid)
+//        buff0 = BIT_SELECT(src_val0, MWORD_MSB, src_begin);
+//
+//    }
+//
+//    //hi
+//    buff1 = BIT_SELECT(src_val1, size_A+size_B-1, size_B);
+//
+////_d(buff0);
+////_d(buff1);
+//
+//    ldv(dest,0) = MWORD_MUX(
+//                    (buff0<<dest_begin),
+//                    rdv(dest,0),
+//                    BIT_RANGE(MWORD_MSB,dest_begin));
+//
+//    ldv(dest,1) = MWORD_MUX(
+//                    (buff0>>dest_comp),
+//                    rdv(dest,1),
+//                    BIT_RANGE(dest_begin-1,0));
+//
+//    ldv(dest,1) = MWORD_MUX(
+//                    (buff1<<dest_begin),
+//                    rdv(dest,1),
+//                    BIT_RANGE(MWORD_MSB,dest_begin));
+//
+//    ldv(dest,2) = MWORD_MUX(
+//                    (buff1>>dest_comp),
+//                    rdv(dest,2),
+//                    BIT_RANGE((size_arg-(MWORD_BIT_SIZE+dest_comp)-1),0));
+//
+//}
+//
+//
+//// dest:1 src:2
+////
+//void array1_move_split_1_2(babel_env *be, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg){ // array1_move_split_1_2#
+//
+//    //               1                0
+//    //                      A  B        C       D
+//    // src:  |.............v..|..v.............|..v.............|
+//    //                     |-----|----------------|
+//    //          |-----|----------------|
+//    // dest: |--^-----^-------|--------^-------|
+//    //             A      B       C
+//
+//    mword src_comp, dest_comp;
+//    mword size_A, size_B, size_C, size_D;
+//    mword src_val0, src_val1, src_val2;
+//    mword buff0, buff1;
+//
+//    src_comp  = MWORD_BIT_SIZE-src_begin;
+//    dest_comp = MWORD_BIT_SIZE-dest_begin;
+//
+//    size_D = src_comp;
+//    size_B = size_D;
+//    size_C = src_begin;
+//    size_A = size_arg-(size_B+size_C+size_D);
+//
+//    src_val0 = rdv(src,0);
+//    src_val1 = rdv(src,1);
+//    src_val2 = rdv(src,2);
+//
+//    buff0 =
+//        BIT_SELECT(src_val0, MWORD_MSB, src_begin)
+//            |
+//        (BIT_SELECT(src_val1, size_C-1, 0) << size_D);
+//
+//    buff1 =
+//        BIT_SELECT(src_val1, MWORD_MSB, size_C)
+//            |
+//        (BIT_SELECT(src_val2, size_A-1, 0) << size_B);
+//
+////_d(buff0);
+////_d(buff1);
+//
+//    ldv(dest,0) = MWORD_MUX(
+//                    (buff0<<dest_begin),
+//                    rdv(dest,0),
+//                    BIT_RANGE(MWORD_MSB,dest_begin));
+//
+//    ldv(dest,1) = MWORD_MUX(
+//                    (buff0>>dest_comp),
+//                    rdv(dest,1),
+//                    BIT_RANGE(dest_begin-1,0));
+//
+//    ldv(dest,1) = MWORD_MUX(
+//                    (buff1<<dest_begin),
+//                    rdv(dest,1),
+//                    BIT_RANGE((size_arg-MWORD_BIT_SIZE+dest_begin-1),dest_begin));
+//
+//}
+//
+//
+//// dest>=2, src>=2
+////
+//void array1_move_split_n(babel_env *be, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg){ // array1_move_split_n#
+//
+//    // Main loop (0 to n-1):
+//    //               1                0
+//    //                  hi       lo
+//    // src:  |-----v----------|------v---------|
+//    //             |-----------------|
+//    //                   |-----------------|
+//    // dest: |...........^....|............^...|
+//    //                     hi       lo
+//    //
+//    // Final loop: Use array1_move_split_1_1() to move last bits
+//    mword src_comp,     dest_comp;
+//    mword dest_size_hi, dest_size_lo;
+//    mword dest_mask_hi, dest_mask_lo;
+//    mword src_mask_hi;
+//    mword buff;
+//
+//    int i, ctr;
+//
+//    src_comp  = MWORD_BIT_SIZE-src_begin;
+//    dest_comp = MWORD_BIT_SIZE-dest_begin;
+//
+//    src_mask_hi = NBIT_LO_MASK(src_begin);
+//
+//    dest_size_lo = dest_comp;
+//    dest_size_hi = dest_begin;
+//
+//    dest_mask_hi = NBIT_LO_MASK(dest_size_hi);
+//    dest_mask_lo = NBIT_HI_MASK(dest_size_lo);
+//
+//    for(    i=size_arg,        ctr=0;
+//            i>MWORD_BIT_SIZE;
+//            i-=MWORD_BIT_SIZE, ctr++){
+//
+//        buff = BIT_SELECT(rdv(src,ctr+0), MWORD_MSB, src_begin)
+//                        |
+//                     ((rdv(src,ctr+1) & src_mask_hi) << src_comp);
+//
+////_d(buff);
+//
+//        ldv(dest,ctr+0) = MWORD_MUX(buff << dest_begin, rdv(dest,ctr+0), dest_mask_lo);
+//        ldv(dest,ctr+1) = MWORD_MUX(buff >> dest_comp,  rdv(dest,ctr+1), dest_mask_hi);
+//
+//    }
+//
+////_dd(i);
+////_dd(ctr);
+//
+//    //clean up remaining bits
+//    array1_move_unsafe(be, (dest+ctr), dest_begin, (src+ctr), src_begin, i);
+//
+//}
+//
+//
+//// XXX DEPRECATED XXX 
+//// use array_shrink() instead
+////
+//void array_trunc(babel_env *be, mword *operand, mword new_size){ // array_trunc#
+//
+//    if(is_val(operand)){
+//        sfield(operand) = (new_size*MWORD_SIZE);
+//    }
+//    else if(is_ptr(operand)){ //is_ptr
+//        sfield(operand) = (int)-1*(new_size*MWORD_SIZE);
+//    }
+//    //else: do nothing, tptrs can't be trunc'd
+//
+//}
+//
 
-    if(is_val(operand)){
-        sfield(operand) = (new_size*MWORD_SIZE);
-    }
-    else if(is_ptr(operand)){ //is_ptr
-        sfield(operand) = (int)-1*(new_size*MWORD_SIZE);
-    }
-    //else: do nothing, tptrs can't be trunc'd
+#endif
 
-}
-
+/*****************************************************************************
+ *                                                                           *
+ *                               ARRAY MISC                                  *
+ *                                                                           *
+ ****************************************************************************/
 
 // shrinks an array in-place, where applicable
 // new_begin and new_end are not sanity-checked here; MUST BE checked by the caller
 //
-mword *array_shrink(pyr_cache *this_pyr, mword *array, mword new_begin, mword new_end, access_size_sel access_size){ // array_shrink#
+mword *array_shrink(babel_env *be, mword *array, mword new_begin, mword new_end, access_size asize){ // array_shrink#
 
     mword new_size = new_end-new_begin+1;
     mword *result = array;
     mword new_sfield, new_align;
 
-    if(access_size == MWORD_ASIZE){
+    if(asize == MWORD_ASIZE){
 
         result+=new_begin;
         if(is_val(result)){
@@ -1281,7 +1272,7 @@ mword *array_shrink(pyr_cache *this_pyr, mword *array, mword new_begin, mword ne
         //else: do nothing, tptrs can't be trunc'd
 
     }
-    else if(access_size == BYTE_ASIZE){ // NB: new_begin, new_end are byte-offsets
+    else if(asize == U8_ASIZE){ // NB: new_begin, new_end are byte-offsets
 
         if(!is_val(result)) return result;
 
@@ -1293,28 +1284,29 @@ mword *array_shrink(pyr_cache *this_pyr, mword *array, mword new_begin, mword ne
                 result+=UNITS_8TOM(new_begin);
             }
         }
-        new_sfield = UNITS_MTO8(array8_mword_size(this_pyr, new_size));
-        new_align = array8_enc_align(this_pyr, new_size);
+        new_sfield = UNITS_MTO8(array8_mword_size(new_size));
+        new_align = array8_enc_align(new_size);
         sfield(result) = new_sfield;
         ldv(result,UNITS_8TOM(new_sfield)-1)  =   new_align;
         ldv(result,UNITS_8TOM(new_sfield)-2) &= ~(new_align); // padding bytes MUST BE ZERO
 
     }
-    else{ // if(access_size == BIT_ASIZE){
-        _give_up;
+    else{ // if(asize == U1_ASIZE){
+        _enhance("asize == U1_ASIZE");
     }
 
     return result;
 
 }
 
+#if 0
 
 //
 //
-mword *array_to_string(pyr_cache *this_pyr, mword *array){ // array_to_string#
+mword *array_to_string(babel_env *be, mword *array){ // array_to_string#
 
     if(is_nil(array)){
-        return mem_new_val(this_pyr, 1, 0);
+        return mem_new_val(be, 1, 0);
     }
 
     mword *result;
@@ -1334,204 +1326,211 @@ mword *array_to_string(pyr_cache *this_pyr, mword *array){ // array_to_string#
         arlength++;
     }
 
-    result = mem_new_val(this_pyr, arlength,0);
+    result = mem_new_val(be, arlength,0);
     memcpy(result, temp_buffer, utf8_length);
     mem_sys_free(temp_buffer);
 
-    ldv(result,arlength-1) = array8_enc_align(this_pyr, utf8_length);
+    ldv(result,arlength-1) = array8_enc_align(utf8_length);
 
     return result;
 
 }
 
 
-// XXX The return-value from this function contains unsafe pointers!!! XXX
-// XXX internal interp use ONLY                                        XXX
-// XXX If you pass tag=nil, returns ALL tags in bs                     XXX
-// XXX PERF: A _tags2ar (like bstruct_to_array) would be more efficient          XXX
+//// XXX The return-value from this function contains unsafe pointers!!! XXX
+//// XXX internal interp use ONLY                                        XXX
+//// XXX If you pass tag=nil, returns ALL tags in bs                     XXX
+//// XXX PERF: A _tags2ar (like bstruct_to_array) would be more efficient          XXX
+////
+//mword *array_find_val(babel_env *be, mword *bs, mword *val){ // array_find_val#
 //
-mword *array_find_val(pyr_cache *this_pyr, mword *bs, mword *val){ // array_find_val#
-
-    mword *span_array     = bstruct_to_array(this_pyr, bs);
-    mword size_span_array = size(span_array);
-    mword size_ptr;
-    mword *val_list       = nil;
-    mword *curr_span_elem;
-    mword *curr_ptr_elem;
-
-    int i,j;
-    for(i=0; i<size_span_array; i++){
-
-        curr_span_elem = rdp(span_array,i);
-
-        if(is_ptr(curr_span_elem)){ // check each element
-
-            size_ptr = size(curr_span_elem);
-
-            for(j=0;j<size_ptr;j++){
-
-                curr_ptr_elem = rdp(curr_span_elem,j);
-
-                if(is_nil(curr_ptr_elem)){
-                    continue;
-                }
-
-                if(is_val(curr_ptr_elem)){
-
-                    if( !array_cmp_lex(this_pyr, curr_ptr_elem, val, MWORD_ASIZE) ){
-
-                        // push onto val_list
-                        if(is_nil(val_list)){
-                            val_list = _cons(this_pyr, (curr_span_elem+j), nil);
-                        }
-                        else{
-                            list_unshift(this_pyr, val_list, (curr_span_elem+j));
-                        }
-
-                    }
-
-                }
-
-            }
-
-        }
-
-    }
-
-    return val_list;
-
-}
-
-
-// XXX The return-value from this function contains unsafe pointers!!! XXX
-// XXX internal interp use ONLY                                        XXX
-// XXX If you pass tag=nil, returns ALL tags in bs                     XXX
-// XXX PERF: A _tags2ar (like bstruct_to_array) would be more efficient          XXX
+//    mword *span_array     = bstruct_to_array(be, bs);
+//    mword size_span_array = size(span_array);
+//    mword size_ptr;
+//    mword *val_list       = nil;
+//    mword *curr_span_elem;
+//    mword *curr_ptr_elem;
 //
-mword *array_find_ptr(pyr_cache *this_pyr, mword *bs, mword *ptr){ // array_find_ptr#
-
-    mword *span_array     = bstruct_to_array(this_pyr, bs);
-    mword size_span_array = size(span_array);
-    mword size_ptr;
-    mword *ptr_list       = nil;
-    mword *curr_span_elem;
-    mword *curr_ptr_elem;
-
-    int i,j;
-    for(i=0; i<size_span_array; i++){
-
-        curr_span_elem = rdp(span_array,i);
-
-        if(is_ptr(curr_span_elem)){ // check each element
-
-            size_ptr = size(curr_span_elem);
-
-            for(j=0;j<size_ptr;j++){
-
-                curr_ptr_elem = rdp(curr_span_elem,j);
-
-                if(is_nil(curr_ptr_elem)){
-                    continue;
-                }
-
-                if(is_ptr(curr_ptr_elem)){
-
-                    if( !array_cmp_lex(this_pyr, curr_ptr_elem, ptr, MWORD_ASIZE) ){
-
-                        // push onto ptr_list
-                        if(is_nil(ptr_list)){
-                            ptr_list = _cons(this_pyr, (curr_span_elem+j), nil);
-                        }
-                        else{
-                            list_unshift(this_pyr, ptr_list, (curr_span_elem+j));
-                        }
-
-                    }
-
-                }
-
-            }
-
-        }
-
-    }
-
-    return ptr_list;
-
-}
-
-
+//    int i,j;
+//    for(i=0; i<size_span_array; i++){
+//
+//        curr_span_elem = rdp(span_array,i);
+//
+//        if(is_ptr(curr_span_elem)){ // check each element
+//
+//            size_ptr = size(curr_span_elem);
+//
+//            for(j=0;j<size_ptr;j++){
+//
+//                curr_ptr_elem = rdp(curr_span_elem,j);
+//
+//                if(is_nil(curr_ptr_elem)){
+//                    continue;
+//                }
+//
+//                if(is_val(curr_ptr_elem)){
+//
+//                    if( !array_cmp_lex(be, curr_ptr_elem, val, MWORD_ASIZE) ){
+//
+//                        // push onto val_list
+//                        if(is_nil(val_list)){
+//                            val_list = list_cons(be, (curr_span_elem+j), nil);
+//                        }
+//                        else{
+//                            list_unshift(be, val_list, (curr_span_elem+j));
+//                        }
+//
+//                    }
+//
+//                }
+//
+//            }
+//
+//        }
+//
+//    }
+//
+//    return val_list;
+//
+//}
 //
 //
-mword *array_to_list(pyr_cache *this_pyr, mword *arr){ // array_to_list#
-
-    mword *last_cons = nil;
-    int i;
-    mword *entry;
-
-    if(is_ptr(arr)){
-        for(i=size(arr)-1;i>=0;i--){
-            last_cons = _cons(this_pyr, rdp(arr,i),last_cons);
-        }
-    }
-    else{
-        for(i=size(arr)-1;i>=0;i--){
-            entry = mem_new_val(this_pyr, 1, 0);
-            *entry = rdv(arr,i);
-            last_cons = _cons(this_pyr, entry,last_cons);
-        }
-    }
-
-    return last_cons;
-
-}
-
-
+//// XXX The return-value from this function contains unsafe pointers!!! XXX
+//// XXX internal interp use ONLY                                        XXX
+//// XXX If you pass tag=nil, returns ALL tags in bs                     XXX
+//// XXX PERF: A _tags2ar (like bstruct_to_array) would be more efficient          XXX
+////
+//mword *array_find_ptr(babel_env *be, mword *bs, mword *ptr){ // array_find_ptr#
+//
+//    mword *span_array     = bstruct_to_array(be, bs);
+//    mword size_span_array = size(span_array);
+//    mword size_ptr;
+//    mword *ptr_list       = nil;
+//    mword *curr_span_elem;
+//    mword *curr_ptr_elem;
+//
+//    int i,j;
+//    for(i=0; i<size_span_array; i++){
+//
+//        curr_span_elem = rdp(span_array,i);
+//
+//        if(is_ptr(curr_span_elem)){ // check each element
+//
+//            size_ptr = size(curr_span_elem);
+//
+//            for(j=0;j<size_ptr;j++){
+//
+//                curr_ptr_elem = rdp(curr_span_elem,j);
+//
+//                if(is_nil(curr_ptr_elem)){
+//                    continue;
+//                }
+//
+//                if(is_ptr(curr_ptr_elem)){
+//
+//                    if( !array_cmp_lex(be, curr_ptr_elem, ptr, MWORD_ASIZE) ){
+//
+//                        // push onto ptr_list
+//                        if(is_nil(ptr_list)){
+//                            ptr_list = list_cons(be, (curr_span_elem+j), nil);
+//                        }
+//                        else{
+//                            list_unshift(be, ptr_list, (curr_span_elem+j));
+//                        }
+//
+//                    }
+//
+//                }
+//
+//            }
+//
+//        }
+//
+//    }
+//
+//    return ptr_list;
+//
+//}
 //
 //
-void array_build_max_heap(mword *array){
-
-    mword array_size = size(array);
-    int i = array_size;
-    i = (i%2) ? (i/2) : ((i/2)-1);
-
-    for(;i>=0;i--){
-        array_max_heapify(array, i, array_size);
-    }
-
-}
-
-
+////
+////
+//mword *array_to_list(babel_env *be, mword *arr){ // array_to_list#
+//
+//    mword *last_cons = nil;
+//    int i;
+//    mword *entry;
+//
+//    if(is_ptr(arr)){
+//        for(i=size(arr)-1;i>=0;i--){
+//            last_cons = list_cons(be, rdp(arr,i),last_cons);
+//        }
+//    }
+//    else{
+//        for(i=size(arr)-1;i>=0;i--){
+//            entry = mem_new_val(be, 1, 0);
+//            *entry = rdv(arr,i);
+//            last_cons = list_cons(be, entry,last_cons);
+//        }
+//    }
+//
+//    return last_cons;
+//
+//}
 //
 //
-void array_max_heapify(mword *array, mword i, mword array_size){
+////
+////
+//void array_build_max_heap(mword *array){
+//
+//    mword array_size = size(array);
+//    int i = array_size;
+//    i = (i%2) ? (i/2) : ((i/2)-1);
+//
+//    for(;i>=0;i--){
+//        array_max_heapify(array, i, array_size);
+//    }
+//
+//}
+//
+//
+////
+////
+//void array_max_heapify(mword *array, mword i, mword array_size){
+//
+//    mword left  = 2*i+1;
+//    mword right = 2*i+2;
+//    mword largest = i;
+//
+//    mword *temp;
+//
+//    if( (left < array_size)
+//            && 
+//        val_gt(key_aop(array,left), key_aop(array,largest)) ){
+//        largest = left;
+//    }
+//
+//    if( (right < array_size) 
+//            && 
+//        val_gt(key_aop(array,right), key_aop(array,largest)) ){
+//        largest = right;
+//    }
+//
+//    if(largest != i){
+//        temp = rdp(array,i);
+//        ldp(array,i) = rdp(array,largest);
+//        ldp(array,largest) = temp;
+//        array_max_heapify(array, largest, array_size);
+//    }
+//
+//}
 
-    mword left  = 2*i+1;
-    mword right = 2*i+2;
-    mword largest = i;
 
-    mword *temp;
-
-    if( (left < array_size)
-            && 
-        val_gt(key_aop(array,left), key_aop(array,largest)) ){
-        largest = left;
-    }
-
-    if( (right < array_size) 
-            && 
-        val_gt(key_aop(array,right), key_aop(array,largest)) ){
-        largest = right;
-    }
-
-    if(largest != i){
-        temp = rdp(array,i);
-        ldp(array,i) = rdp(array,largest);
-        ldp(array,largest) = temp;
-        array_max_heapify(array, largest, array_size);
-    }
-
-}
+/*****************************************************************************
+ *                                                                           *
+ *                             ARRAY SEARCH                                  *
+ *                                                                           *
+ ****************************************************************************/
 
 
 // array must be in sorted order (non-decreasing)
@@ -1540,22 +1539,22 @@ void array_max_heapify(mword *array, mword i, mword array_size){
 //       found, and where the search found the closest match (return a 
 //       boundary index)
 //
-mword array_search(pyr_cache *this_pyr, mword *array, mword *target, sort_type st){ // array_search#
+mword array_search(babel_env *be, mword *array, mword *target, sort_type st){ // array_search#
 
-    return array_search_binary(this_pyr, array, (mword*)(array+size(array)), target, st);
+    return array_search_binary(be, array, (mword*)(array+size(array)), target, st);
 
 }
 
 
 // XXX(INTERNAL_USE_ONLY)
 //
-mword array_search_binary(pyr_cache *this_pyr, mword *begin, mword *end, mword *target, sort_type st){ // array_search_binary#
+mword array_search_binary(babel_env *be, mword *begin, mword *end, mword *target, sort_type st){ // array_search_binary#
 
     mword *array = begin;
     int array_size = (begin-end);
 
     if(array_size <= ARRAY_LINEAR_THRESH)
-        return array_search_linear(this_pyr,
+        return array_search_linear(be,
                     array,
                     0,
                     array_size,
@@ -1605,7 +1604,7 @@ mword array_search_binary(pyr_cache *this_pyr, mword *begin, mword *end, mword *
 
         }
 
-        return array_search_linear(this_pyr,
+        return array_search_linear(be,
                     array,
                     lower_bound,
                     upper_bound+1,
@@ -1646,7 +1645,7 @@ mword array_search_binary(pyr_cache *this_pyr, mword *begin, mword *end, mword *
 
             }
 
-            return array_search_linear(this_pyr,
+            return array_search_linear(be,
                         array,
                         lower_bound,
                         upper_bound+1,
@@ -1661,15 +1660,15 @@ mword array_search_binary(pyr_cache *this_pyr, mword *begin, mword *end, mword *
 
                 guess = key_aop(array,guess_index);
 
-                if(array_lt(this_pyr, guess, target)){
+                if(array_lt(be, guess, target)){
                     lower_bound = guess_index;
                     guess_index += shift;
                 }
-                else if(array_gt(this_pyr, guess, target)){
+                else if(array_gt(be, guess, target)){
                     upper_bound = guess_index;
                     guess_index -= shift;
                 }
-                else if(array_eq(this_pyr, guess, target)){
+                else if(array_eq(be, guess, target)){
                     return guess_index;
                 }
                 else{
@@ -1683,7 +1682,7 @@ mword array_search_binary(pyr_cache *this_pyr, mword *begin, mword *end, mword *
 
             }
 
-            return array_search_linear(this_pyr,
+            return array_search_linear(be,
                         array,
                         lower_bound,
                         upper_bound+1,
@@ -1698,15 +1697,15 @@ mword array_search_binary(pyr_cache *this_pyr, mword *begin, mword *end, mword *
 
                 guess = key_aop(array,guess_index);
 
-                if(array8_lt(this_pyr, guess, target)){
+                if(array8_lt(be, guess, target)){
                     lower_bound = guess_index;
                     guess_index += shift;
                 }
-                else if(array8_gt(this_pyr, guess, target)){
+                else if(array8_gt(be, guess, target)){
                     upper_bound = guess_index;
                     guess_index -= shift;
                 }
-                else if(array8_eq(this_pyr, guess, target)){
+                else if(array8_eq(be, guess, target)){
                     return guess_index;
                 }
                 else{
@@ -1721,7 +1720,7 @@ mword array_search_binary(pyr_cache *this_pyr, mword *begin, mword *end, mword *
 
             }
 
-            return array_search_linear(this_pyr,
+            return array_search_linear(be,
                         array,
                         lower_bound,
                         upper_bound+1,
@@ -1747,7 +1746,7 @@ mword array_search_binary(pyr_cache *this_pyr, mword *begin, mword *end, mword *
 
 //
 //
-mword array_search_linear(pyr_cache *this_pyr, mword *array, int start, int end, mword *target, sort_type st){ // array_search_linear#
+mword array_search_linear(babel_env *be, mword *array, int start, int end, mword *target, sort_type st){ // array_search_linear#
 
     start = (start < 0) ? 0 : start;
     end   = (end   > size(array)) ? size(array) : end;
@@ -1773,14 +1772,14 @@ mword array_search_linear(pyr_cache *this_pyr, mword *array, int start, int end,
     }
     else if(st == ALPHA_MWORD || st == LEX_MWORD){
         for(; i<end; i++){
-            if(array_eq(this_pyr, key_aop(array,i), target)){
+            if(array_eq(be, key_aop(array,i), target)){
                 return i;
             }
         }
     }
     else if(st == ALPHA_BYTE || st == LEX_BYTE){
         for(; i<end; i++){
-            if(array8_eq(this_pyr, key_aop(array,i), target)){
+            if(array8_eq(be, key_aop(array,i), target)){
                 return i;
             }
         }
@@ -1794,64 +1793,64 @@ mword array_search_linear(pyr_cache *this_pyr, mword *array, int start, int end,
 }
 
 
-//array operators
-//--------------
-//
-
-
+////array operators
+////--------------
+////
 //
 //
-blob array_cat_pyr_op(pyr_cache *this_pyr, blob arrays){ // array_cat_pyr_op#
-
-    char *result;
-
-    mword num_arrays = size(arrays);
-    int i;
-
-    if(num_arrays == 1) return (blob)rdp(arrays,0);
-
-    mword all_vals   = 1;
-    mword all_ptrs   = 1;
-    mword total_size = 0;
-    mword *curr_array;
-
-    for(i=0; i<num_arrays; i++){
-
-        curr_array = rdp(arrays,i);
-
-        all_vals = all_vals && is_val(curr_array);
-        all_ptrs = all_ptrs && is_ptr(curr_array);
-
-        total_size += size(curr_array);
-
-    }
-
-    mword curr_offset=0;
-    mword curr_size;
-
-    if(all_vals){
-        result = (char*)mem_new_valz(this_pyr, total_size);
-    }
-    else if(all_ptrs){
-        result = (char*)mem_new_ptr(this_pyr, total_size);
-    }
-    else{
-        return (blob)nil;
-//        return (blob)global_irt->tags->PYR_TAG_BAD_OPERANDS;
-    }
-
-    for(i=0; i<num_arrays; i++){
-        curr_array = rdp(arrays,i);
-        curr_size  = UNITS_MTO8(size(curr_array));
-        memcpy(result+curr_offset, curr_array, curr_size);
-        curr_offset+=curr_size;
-    }
-
-    return (blob)result;
-
-}
+////
+////
+//blob array_cat_pyr_op(babel_env *be, blob arrays){ // array_cat_pyr_op#
+//
+//    char *result;
+//
+//    mword num_arrays = size(arrays);
+//    int i;
+//
+//    if(num_arrays == 1) return (blob)rdp(arrays,0);
+//
+//    mword all_vals   = 1;
+//    mword all_ptrs   = 1;
+//    mword total_size = 0;
+//    mword *curr_array;
+//
+//    for(i=0; i<num_arrays; i++){
+//
+//        curr_array = rdp(arrays,i);
+//
+//        all_vals = all_vals && is_val(curr_array);
+//        all_ptrs = all_ptrs && is_ptr(curr_array);
+//
+//        total_size += size(curr_array);
+//
+//    }
+//
+//    mword curr_offset=0;
+//    mword curr_size;
+//
+//    if(all_vals){
+//        result = (char*)mem_new_valz(be, total_size);
+//    }
+//    else if(all_ptrs){
+//        result = (char*)mem_new_ptr(be, total_size);
+//    }
+//    else{
+//        return (blob)nil;
+////        return (blob)global_irt->tags->PYR_TAG_BAD_OPERANDS;
+//    }
+//
+//    for(i=0; i<num_arrays; i++){
+//        curr_array = rdp(arrays,i);
+//        curr_size  = UNITS_MTO8(size(curr_array));
+//        memcpy(result+curr_offset, curr_array, curr_size);
+//        curr_offset+=curr_size;
+//    }
+//
+//    return (blob)result;
+//
+//}
 
 #endif
 
-// Clayton Bauman 2017
+// Clayton Bauman 2018
 

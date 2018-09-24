@@ -2,10 +2,7 @@
 //
 
 #include "babel.h"
-#include "bstring.h"
-
-#if 0
-
+#include "string.h"
 #include "array.h"
 #include "mem.h"
 #include "utf8.h"
@@ -13,21 +10,19 @@
 
 //
 //
-mword *string_c2b(pyr_cache *this_pyr, char *string, mword max_safe_length){ // string_c2b#
+mword *string_c2b(babel_env *be, char *string, mword max_safe_length){ // string_c2b#
 
     mword char_length;
 
     //strlen is unsafe, use memchr instead:
     void *null_term = memchr(string, 0, (size_t)max_safe_length);
 
-    if(null_term == NULL){
+    if(null_term == NULL)
         char_length = max_safe_length;
-    }
-    else{
+    else
         char_length = (mword)((char*)null_term - string);
-    }
 
-    mword *result = _newstr(this_pyr, char_length, ' ');
+    mword *result = mem_new_str(be, char_length, ' ');
 
     memcpy(result, string, char_length); // XXX WAIVER(memcpy) XXX //
 
@@ -35,15 +30,15 @@ mword *string_c2b(pyr_cache *this_pyr, char *string, mword max_safe_length){ // 
 
 }
 
-
-
-// Trims trailing whitespace in a leaf8, similar to trunc() but different ;)
+#if 0
+// Trims trailing whitespace in a val8, similar to trunc() but different
 // Intended for internal-use ...
-void wstrim(pyr_cache *this_pyr, mword *bs){ // wstrim#
+// XXX Won't array_shrink() work after identifying the trim point? XXX
+void wstrim(babel_env *be, mword *bs){ // wstrim#
 
     #define WS_CHAR ' '
 
-    mword size8 = array8_size(this_pyr, bs);
+    mword size8 = array8_size(bs);
 
     //find last white-space character
     int i = size8-1;
@@ -54,10 +49,10 @@ void wstrim(pyr_cache *this_pyr, mword *bs){ // wstrim#
     }
 
     //get new mword-size
-    mword msize = array8_mword_size(this_pyr, i);
+    mword msize = array8_mword_size(i);
 
     //calculate, set new alignment-word
-    mword alignment_word = array8_enc_align(this_pyr, i);
+    mword alignment_word = array8_enc_align(i);
     ldv(bs,msize-1) = alignment_word;
 
     //clean-up next-to-last mword
@@ -68,19 +63,20 @@ void wstrim(pyr_cache *this_pyr, mword *bs){ // wstrim#
 
 }
 
+#endif
 
 // babel-ized sprintf()
 //
-void bsprintf( pyr_cache *this_pyr, mword *buf, mword *offset, const char *format, ... ){ // bsprintf#
+int bsprintf(babel_env *be, mword *buf, mword *offset, const char *format, ... ){ // bsprintf#
 
     int printed_length;
 
-    int buf_length = array8_size(this_pyr, buf) 
+    int buf_length = array8_size(buf) 
                             - *offset 
                             + 1; // +1 because vsnprintf() discounts for the null-terminator
 
-    if(buf_length < 0)
-        return;
+    if(buf_length <= 0)
+        return -1;
 
     va_list args;
     va_start(args,format);
@@ -88,23 +84,26 @@ void bsprintf( pyr_cache *this_pyr, mword *buf, mword *offset, const char *forma
     printed_length = vsnprintf((char*)buf+*offset, buf_length, format, args);
 
     if(printed_length < 0) // encoding error
-        return;
+        return -1;
 
     *offset = *offset + printed_length;
 
     va_end(args);
 
+    return printed_length;
+
 }
 
+#if 0
 
+// string_to_ul# --> string_to_ul
 //
-//
-mword *_radix2cu(pyr_cache *this_pyr, mword *string, mword radix){ // _radix2cu#
+mword *string_to_ul(babel_env *be, mword *string, mword radix){ // string_to_ul#
 
     unsigned long *result = 
         (unsigned long *)
             mem_new_val(
-                    this_pyr, 
+                    be, 
                     (sizeof(unsigned long) / sizeof(mword)),
                     0);
 
@@ -117,23 +116,27 @@ mword *_radix2cu(pyr_cache *this_pyr, mword *string, mword radix){ // _radix2cu#
 
 //
 //
-mword *string_to_array(pyr_cache *this_pyr, mword *string){ // string_to_array#
+mword *string_to_array(babel_env *be, mword *string){ // string_to_array#
 
-    mword length8 = array8_size(this_pyr, string);
-    mword u8_length = (mword)u8_strlen((char *)string, length8);
+    mword length8    = array8_size(string);
+    mword u8_length  = (mword)u8_strlen((char*)string, length8);
 
-    mword *result = mem_new_val(this_pyr, u8_length+1, 0);
+//    mword *result = mem_new_val(be, u8_length+1, 0);
+    mword *result = mem_new_str(be, (u8_length*4), 0);
 
     mword length = u8_toucs((uint32_t *)result, u8_length+1, (char *)string, length8);
 
-    array_trunc(this_pyr, result, length); //FIXME: Change to array_resize
+    array_shrink(be, result, 0, (length*4), BYTE_ASIZE);
 
     return result;
 
 }
 
-
+/* Footnotes:
+    [1] bstr-array is 32-bits per entry (UCS4)
+*/
 #endif
 
-// Clayton Bauman 2017
+
+// Clayton Bauman 2018
 
