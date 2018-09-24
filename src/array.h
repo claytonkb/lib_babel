@@ -50,14 +50,14 @@ int array_cmp_num_signed(mword *left, mword *right);
 #define array_lt_num(l, r)  (array_cmp_num(l, r) <  0) // array_lt_num#
 #define array_gt_num(l, r)  (array_cmp_num(l, r) >  0) // array_gt_num#
 
-#define array_eq(pyr, l, r)  (array_cmp_lex(pyr, l, r, MWORD_ASIZE) == 0) // array_eq#
-#define array8_eq(pyr, l, r) (array_cmp_lex(pyr, l, r, BYTE_ASIZE)  == 0) // array8_eq#
+#define array_eq(pyr, l, r)  (array_cmp_lex(l, r, MWORD_ASIZE) == 0) // array_eq#
+#define array8_eq(pyr, l, r) (array_cmp_lex(l, r, U8_ASIZE)  == 0) // array8_eq#
 
-#define array_lt(pyr, l, r)  (array_cmp_lex(pyr, l, r, MWORD_ASIZE) <  0) // array_lt#
-#define array8_lt(pyr, l, r) (array_cmp_lex(pyr, l, r, BYTE_ASIZE)  <  0) // array8_lt#
+#define array_lt(pyr, l, r)  (array_cmp_lex(l, r, MWORD_ASIZE) <  0) // array_lt#
+#define array8_lt(pyr, l, r) (array_cmp_lex(l, r, U8_ASIZE)  <  0) // array8_lt#
 
-#define array_gt(pyr, l, r)  (array_cmp_lex(pyr, l, r, MWORD_ASIZE) >  0) // array_gt#
-#define array8_gt(pyr, l, r) (array_cmp_lex(pyr, l, r, BYTE_ASIZE)  >  0) // array8_gt#
+#define array_gt(pyr, l, r)  (array_cmp_lex(l, r, MWORD_ASIZE) >  0) // array_gt#
+#define array8_gt(pyr, l, r) (array_cmp_lex(l, r, U8_ASIZE)  >  0) // array8_gt#
 
 
 

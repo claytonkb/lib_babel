@@ -552,7 +552,7 @@ int array_cmp_alpha(babel_env *be, mword *left, mword *right, access_size asize)
     return result;
 
 }
-
+#endif
 
 // Multi-word unsigned numerical comparison
 //
@@ -611,7 +611,7 @@ int array_cmp_num_range(mword *left, mword *left_end, mword *right, mword *right
 }
 
 
-
+#if 0
 // Multi-word signed numerical comparison
 //
 int array_cmp_num_signed(mword *left, mword *right){ // array_cmp_num_signed#
@@ -1526,7 +1526,7 @@ mword *array_to_string(babel_env *be, mword *array){ // array_to_string#
 //    }
 //
 //}
-
+#endif
 
 /*****************************************************************************
  *                                                                           *
@@ -1575,7 +1575,7 @@ mword array_search_binary(babel_env *be, mword *begin, mword *end, mword *target
     int local_array_size = array_size>>ARRAY_PERF_LINEAR_HOLDOFF;
 
     //////////////////////////// val-array //////////////////////////////////
-    if(is_val(array) || (st == VAL)){
+    if(is_val(array) || (st == VAL_ST)){
 
         mword guess;
         target_val = vcar(target);
@@ -1619,7 +1619,7 @@ mword array_search_binary(babel_env *be, mword *begin, mword *end, mword *target
         mword *guess;
 
         ////////////////////////// numeric //////////////////////////////////
-        if(st == SIGNED || st == UNSIGNED){
+        if(st == SIGNED_ST || st == UNSIGNED_ST){
 
             while(local_array_size){
 
@@ -1656,7 +1656,7 @@ mword array_search_binary(babel_env *be, mword *begin, mword *end, mword *target
 
         }
         ////////////////////////// aop-array ////////////////////////////////
-        else if(st == ALPHA_MWORD || st == LEX_MWORD){
+        else if(st == ALPHA_MWORD_ST || st == LEX_MWORD_ST){
 
             while(local_array_size){
 
@@ -1693,7 +1693,7 @@ mword array_search_binary(babel_env *be, mword *begin, mword *end, mword *target
 
         }
         ////////////////////////// aop-array8 ///////////////////////////////
-        else if(st == ALPHA_BYTE || st == LEX_BYTE){
+        else if(st == ALPHA_BYTE_ST || st == LEX_BYTE_ST){
 
             while(local_array_size){
 
@@ -1731,7 +1731,7 @@ mword array_search_binary(babel_env *be, mword *begin, mword *end, mword *target
 
         }
         else{
-            _give_up;
+            _enhance("st == CUSTOM_ST");
         }
 
 //        return -1; // we didn't find what you were looking for...
@@ -1746,6 +1746,7 @@ mword array_search_binary(babel_env *be, mword *begin, mword *end, mword *target
 }
 
 
+
 //
 //
 mword array_search_linear(babel_env *be, mword *array, int start, int end, mword *target, sort_type st){ // array_search_linear#
@@ -1756,7 +1757,7 @@ mword array_search_linear(babel_env *be, mword *array, int start, int end, mword
     int i=start;
     mword target_val;
 
-    if(is_val(array) || st == VAL){
+    if(is_val(array) || st == VAL_ST){
         target_val = vcar(target);
         for(; i<end; i++){
             if(rdv(array,i) == target_val){
@@ -1765,21 +1766,21 @@ mword array_search_linear(babel_env *be, mword *array, int start, int end, mword
         }
         return -1; // we didn't find what you were looking for...
     }
-    else if(st == SIGNED || st == UNSIGNED){ // numeric
+    else if(st == SIGNED_ST || st == UNSIGNED_ST){ // numeric
         for(; i<end; i++){
             if(array_eq_num(key_aop(array,i), target)){
                 return i;
             }
         }
     }
-    else if(st == ALPHA_MWORD || st == LEX_MWORD){
+    else if(st == ALPHA_MWORD_ST || st == LEX_MWORD_ST){
         for(; i<end; i++){
             if(array_eq(be, key_aop(array,i), target)){
                 return i;
             }
         }
     }
-    else if(st == ALPHA_BYTE || st == LEX_BYTE){
+    else if(st == ALPHA_BYTE_ST || st == LEX_BYTE_ST){
         for(; i<end; i++){
             if(array8_eq(be, key_aop(array,i), target)){
                 return i;
@@ -1787,13 +1788,14 @@ mword array_search_linear(babel_env *be, mword *array, int start, int end, mword
         }
     }
     else{
-        _give_up;
+        _enhance("st == CUSTOM_ST");
     }
 
     return -1; // we didn't find what you were looking for...
 
 }
 
+#if 0
 
 ////array operators
 ////--------------

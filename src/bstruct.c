@@ -4,7 +4,8 @@
 #include "babel.h"
 #include "bstruct.h"
 #include "mem.h"
-//#include "sort.h"
+#include "cmp.h"
+#include "array.h"
 
 
 // recursively cleans a bstruct after traversal
@@ -318,7 +319,7 @@ mword *bstruct_load(babel_env *be, mword *bs, mword size){ // bstruct_load#
 }
 
 
-#if 0
+
 //
 //
 mword *bstruct_unload(babel_env *be, mword *bs){
@@ -334,18 +335,20 @@ mword *bstruct_unload(babel_env *be, mword *bs){
     dest = mem_new_val(be, bstruct_mu(be, bs), 0);
 
     mword *span_array = bstruct_to_array(be, bs);
-    sort(be, span_array, VAL);
+    qsort(span_array,size(span_array),sizeof(mword), cmp_cuint);
 
     mword *offset_array = mem_new_val(be, size(span_array), 0xff);
 
     mword dest_offset = 0;
 
-    bstruct_unload_r(be, bs, dest, &dest_offset, span_array, offset_array);
+//    bstruct_unload_r(be, bs, dest, &dest_offset, span_array, offset_array);
     bstruct_clean(be, bs);
 
     return dest;
 
 }
+
+
 
 //
 //
@@ -360,7 +363,7 @@ mword bstruct_unload_r(
     int i;
 
     if( is_traversed_U(bs) ){
-        return offset_array[array_search(be, span_array, (mword*)(&bs), VAL)];
+        return offset_array[array_search(be, span_array, (mword*)(&bs), VAL_ST)];
     }
 
     int num_elem = size(bs);
@@ -432,12 +435,12 @@ void set_offset_for_ptr(
         mword     *span_array,      mword *ptr, 
         mword     *offset_array,    mword this_offset){ // set_offset_for_ptr#
 
-    mword span_offset = array_search(be, span_array, (mword*)(&ptr), VAL);
+    mword span_offset = array_search(be, span_array, (mword*)(&ptr), VAL_ST);
 
     offset_array[span_offset] = this_offset;
 
 }
-#endif
+
 
 //Creates an interior array with one pointer to each array in a bstruct
 //
