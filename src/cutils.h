@@ -40,6 +40,7 @@
 #define _pigs_fly       _fatal("Pigs CAN fly...")
 
 #define _d(x)           do{ fprintf(stderr, "%s %x\n", #x, (unsigned)x); fflush(stderr); } while(0)
+#define _dx(x)          do{ fprintf(stderr, "%s %016lx\n", #x, (uint64_t)x); fflush(stderr); } while(0)
 #define _dw(x)          do{ fprintf(stderr, "%08x ", (unsigned)x); fflush(stderr); } while(0)
 #define _dc(x)          do{ fprintf(stderr, "%02x ",  (uint8_t)x); fflush(stderr); } while(0)
 #define _dd(x)          do{ fprintf(stderr, "%s %d\n", #x, (unsigned)x); } while(0)
@@ -59,11 +60,10 @@
     fprintf(stderr, "---------------- %016lx\n", sfield(x));          \
     for(dev_i=0; dev_i<alloc_size(x)-1; dev_i++){                     \
         if(dev_i>=0){                                                 \
-            fprintf(stderr, "%016lx ", (unsigned)dev_i*MWORD_SIZE);   \
+            fprintf(stderr, "%016lx ", (uint64_t)dev_i*MWORD_SIZE);   \
         }                                                             \
-        fprintf(stderr, "%016lx\n", rdv(x,dev_i));                    \
+        fprintf(stderr, "%016lx\n", (uint64_t)x[dev_i]);              \
     }
 
 #endif // CUTILS_H
-
 

@@ -75,7 +75,11 @@ void dev_prompt(void){
                 break;
 
             case 4:
+                _dc((mword)ACC);
+                _say("");
                 _d((mword)ACC);
+                _dx((mword)ACC);
+                _df((mword)ACC);
                 break;
 
             case 5:
