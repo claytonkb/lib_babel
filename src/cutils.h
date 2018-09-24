@@ -40,7 +40,7 @@
 #define _pigs_fly       _fatal("Pigs CAN fly...")
 
 #define _d(x)           do{ fprintf(stderr, "%s %x\n", #x, (unsigned)x); fflush(stderr); } while(0)
-#define _dx(x)          do{ fprintf(stderr, "%s %016lx\n", #x, (uint64_t)x); fflush(stderr); } while(0)
+#define _dq(x)          do{ fprintf(stderr, "%s %016lx\n", #x, (uint64_t)x); fflush(stderr); } while(0)
 #define _dw(x)          do{ fprintf(stderr, "%08x ", (unsigned)x); fflush(stderr); } while(0)
 #define _dc(x)          do{ fprintf(stderr, "%02x ",  (uint8_t)x); fflush(stderr); } while(0)
 #define _dd(x)          do{ fprintf(stderr, "%s %d\n", #x, (unsigned)x); } while(0)

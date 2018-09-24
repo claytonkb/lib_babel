@@ -23,7 +23,7 @@ void *mem_sys_alloc_untracked(int size){
     if(alloc_attempt == NULL){ // malloc failed
         _fatal("malloc failed");
     }
-_dx(alloc_attempt);
+
     return alloc_attempt;
 
 }

@@ -4,31 +4,14 @@
 #include "babel.h"
 #include "bstruct.h"
 
-#if 0
+//#include "mem.h"
+//#include "array.h"
+//#include "sort.h"
 
-#include "mem.h"
-#include "array.h"
-#include "tptr.h"
-#include "sort.h"
-
-
-// Non-contiguous bstruct support
-//      - ldv(), ldp(), rdv(), rdp()
-//      - size()
-//      - sfield()
-//
-// Code must not make assumptions about linearity (contiguity)
-// Macros can be locally overridden to support ncbs (non-contiguous Babel-
-// structure).
-//
-// bstruct_load is difficult because it has to abstract away linearity but
-// must understand how to load each page offset.
-//
-// Can we use rov(), trop(), etc. to handle this?
 
 // recursively cleans a bstruct after traversal
 //
-void _rclean(pyr_cache *this_pyr, mword *bs){ // _rclean#
+void bstruct_clean(babel_env *be, mword *bs){ // bstruct_clean#
 
     int i;
 
@@ -41,11 +24,11 @@ void _rclean(pyr_cache *this_pyr, mword *bs){ // _rclean#
     if( is_ptr(bs) ){
         int num_elem = size(bs);
         for(i=0; i<num_elem; i++){
-            _rclean(this_pyr, (mword *)*(bs+i));
+            bstruct_clean(be, (mword *)*(bs+i));
         }
     }
     else if(is_tptr(bs)){
-        _rclean(this_pyr, bs+HASH_SIZE+1);
+        bstruct_clean(be, bs+HASH_SIZE+1);
     }
 
 }
@@ -53,17 +36,18 @@ void _rclean(pyr_cache *this_pyr, mword *bs){ // _rclean#
 
 //
 //
-void _recurse(pyr_cache *this_pyr, mword *bs, bstruct_op_fn_ptr bfn, void *v){ // _recurse#
+void bstruct_recurse(babel_env *be, mword *bs, bstruct_op_fn_ptr bfn, void *v){ // bstruct_recurse#
 
-    _fn_recurse(this_pyr, bs, bfn, v);
-    _rclean(this_pyr, bs);
+    _fn_recurse(be, bs, bfn, v);
+    bstruct_clean(be, bs);
 
 }
 
 
+
 //
 //
-mword _fn_recurse(pyr_cache *this_pyr, mword *bs, bstruct_op_fn_ptr bfn, void *v){ // _fn_recurse#
+mword _fn_recurse(babel_env *be, mword *bs, bstruct_op_fn_ptr bfn, void *v){ // _fn_recurse#
 
     int i;
 
@@ -71,7 +55,7 @@ mword _fn_recurse(pyr_cache *this_pyr, mword *bs, bstruct_op_fn_ptr bfn, void *v
         return 1;
     }
 
-    if( !bfn(this_pyr, bs,v) ){
+    if( !bfn(be, bs,v) ){
         return 0;
     }
 
@@ -79,7 +63,7 @@ mword _fn_recurse(pyr_cache *this_pyr, mword *bs, bstruct_op_fn_ptr bfn, void *v
         int num_elem = size(bs);
         mark_traversed_U(bs);
         for(i=0; i<num_elem; i++){
-            if(!_fn_recurse(this_pyr, (mword *)*(bs+i),bfn,v)){
+            if(!_fn_recurse(be, (mword *)*(bs+i),bfn,v)){
                 return 0;
             }
         }
@@ -92,7 +76,7 @@ mword _fn_recurse(pyr_cache *this_pyr, mword *bs, bstruct_op_fn_ptr bfn, void *v
 
         mark_traversed_U(tptr_ptr);
 
-        _fn_recurse(this_pyr, (mword*)*tptr_ptr, bfn, v);
+        _fn_recurse(be, (mword*)*tptr_ptr, bfn, v);
     }
     else{
         mark_traversed_U(bs);
@@ -102,20 +86,21 @@ mword _fn_recurse(pyr_cache *this_pyr, mword *bs, bstruct_op_fn_ptr bfn, void *v
 }
 
 
-// _mu -> memory usage (mnemonic: *nix du)
-// _mu(this_pyr, x) = 
-//      + _nlf(this_pyr, x) 
-//      + _nva(this_pyr, x)
-//      _nin(this_pyr, x) 
-//      + _nptr(this_pyr, x) 
-//      + _ntag(this_pyr, x)*(HASH_SIZE+1)
+
+// bstruct_mu -> memory usage
+// bstruct_mu(be, x) = 
+//      + bstruct_nlf(be, x) 
+//      + bstruct_nva(be, x)
+//      + bstruct_nin(be, x) 
+//      + bstruct_nptr(be, x) 
+//      + bstruct_ntag(be, x)*(HASH_SIZE+1)
 //      
 //  Don't forget that nil will add a "silent" HASH_SIZE+1 to 
 //  your bstruct if anything in your bstruct points to it...
-mword _mu(pyr_cache *this_pyr, mword *bs){ // _mu#
+mword bstruct_mu(babel_env *be, mword *bs){ // _mu#
 
     mword counter=0;
-    _recurse(this_pyr, bs, _rmu, &counter);
+    bstruct_recurse(be, bs, bstruct_rmu, &counter);
     return counter;
 
 }
@@ -123,7 +108,7 @@ mword _mu(pyr_cache *this_pyr, mword *bs){ // _mu#
 
 //
 //
-mword _rmu(pyr_cache *this_pyr, mword *bs, void *v){ // _rmu#
+mword bstruct_rmu(babel_env *be, mword *bs, void *v){ // _rmu#
 
     if( is_tptr(bs) ){
         *(mword*)v += HASH_SIZE+3;
@@ -140,12 +125,12 @@ mword _rmu(pyr_cache *this_pyr, mword *bs, void *v){ // _rmu#
 }
 
 
-// _nar -> number of leaf-arrays
+// bstruct_nar -> number of arrays (ptr- or val-array)
 //
-mword _nar(pyr_cache *this_pyr, mword *bs){ // _nar#
+mword bstruct_nar(babel_env *be, mword *bs){ // _nar#
 
     mword counter=0;
-    _recurse(this_pyr, bs, _rnar, &counter);
+    bstruct_recurse(be, bs, bstruct_rnar, &counter);
     return counter;
 
 }
@@ -153,7 +138,7 @@ mword _nar(pyr_cache *this_pyr, mword *bs){ // _nar#
 
 //
 //
-mword _rnar(pyr_cache *this_pyr, mword *bs, void *v){ // _rnar#
+mword bstruct_rnar(babel_env *be, mword *bs, void *v){ // _rnar#
 
     *(mword*)v += 1;
 
@@ -162,12 +147,12 @@ mword _rnar(pyr_cache *this_pyr, mword *bs, void *v){ // _rnar#
 }
 
 
-// _nlf -> number of leaf-arrays
+// bstruct_nlf -> number of leaf arrays (val-arrays)
 //
-mword _nlf(pyr_cache *this_pyr, mword *bs){ // _nlf#
+mword bstruct_nlf(babel_env *be, mword *bs){ // _nlf#
 
     mword counter=0;
-    _recurse(this_pyr, bs, _rnlf, &counter);
+    bstruct_recurse(be, bs, bstruct_rnlf, &counter);
     return counter;
 
 }
@@ -175,7 +160,7 @@ mword _nlf(pyr_cache *this_pyr, mword *bs){ // _nlf#
 
 //
 //
-mword _rnlf(pyr_cache *this_pyr, mword *bs, void *v){ // _rnlf#
+mword bstruct_rnlf(babel_env *be, mword *bs, void *v){ // _rnlf#
 
     if( is_val(bs) ){
         *(mword*)v += 1;
@@ -186,12 +171,12 @@ mword _rnlf(pyr_cache *this_pyr, mword *bs, void *v){ // _rnlf#
 }
 
 
-// _nin -> number of interior-arrays
+// bstruct_nin -> number of interior arrays (ptr-arrays)
 //
-mword _nin(pyr_cache *this_pyr, mword *bs){ // _nin#
+mword bstruct_nin(babel_env *be, mword *bs){ // _nin#
 
     mword counter=0;
-    _recurse(this_pyr, bs, _rnin, &counter);
+    bstruct_recurse(be, bs, bstruct_rnin, &counter);
     return counter;
 
 }
@@ -199,7 +184,7 @@ mword _nin(pyr_cache *this_pyr, mword *bs){ // _nin#
 
 //
 //
-mword _rnin(pyr_cache *this_pyr, mword *bs, void *v){ // _rnin#
+mword bstruct_rnin(babel_env *be, mword *bs, void *v){ // _rnin#
 
     if( is_ptr(bs) ){
         *(mword*)v += 1;
@@ -210,12 +195,12 @@ mword _rnin(pyr_cache *this_pyr, mword *bs, void *v){ // _rnin#
 }
 
 
-// _ntag -> number of tagged-pointers
+// bstruct_ntag -> number of tagged-pointers
 //
-mword _ntag(pyr_cache *this_pyr, mword *bs){ // _ntag#
+mword bstruct_ntag(babel_env *be, mword *bs){ // _ntag#
 
     mword counter=0;
-    _recurse(this_pyr, bs, _rntag, &counter);
+    bstruct_recurse(be, bs, bstruct_rntag, &counter);
     return counter;
 
 }
@@ -223,7 +208,7 @@ mword _ntag(pyr_cache *this_pyr, mword *bs){ // _ntag#
 
 //
 //
-mword _rntag(pyr_cache *this_pyr, mword *bs, void *v){ // _rntag#
+mword bstruct_rntag(babel_env *be, mword *bs, void *v){ // _rntag#
 
     if( is_tptr(bs) ){
         *(mword*)v += 1;
@@ -234,12 +219,12 @@ mword _rntag(pyr_cache *this_pyr, mword *bs, void *v){ // _rntag#
 }
 
 
-// _nva -> number of values
+// bstruct_nva -> number of values
 //
-mword _nva(pyr_cache *this_pyr, mword *bs){ // _nva#
+mword bstruct_nva(babel_env *be, mword *bs){ // _nva#
 
     mword counter=0;
-    _recurse(this_pyr, bs, _rnva, &counter);
+    bstruct_recurse(be, bs, bstruct_rnva, &counter);
     return counter;
 
 }
@@ -247,7 +232,7 @@ mword _nva(pyr_cache *this_pyr, mword *bs){ // _nva#
 
 //
 //
-mword _rnva(pyr_cache *this_pyr, mword *bs, void *v){ // _rnva#
+mword bstruct_rnva(babel_env *be, mword *bs, void *v){ // _rnva#
 
     if( is_val(bs) ){
         *(mword*)v += size(bs);
@@ -260,10 +245,10 @@ mword _rnva(pyr_cache *this_pyr, mword *bs, void *v){ // _rnva#
 
 // _nptr -> number of pointers
 //
-mword _nptr(pyr_cache *this_pyr, mword *bs){ // _nptr#
+mword bstruct_nptr(babel_env *be, mword *bs){ // _nptr#
 
     mword counter=0;
-    _recurse(this_pyr, bs, _rnptr, &counter);
+    bstruct_recurse(be, bs, bstruct_rnptr, &counter);
     return counter;
 
 }
@@ -271,7 +256,7 @@ mword _nptr(pyr_cache *this_pyr, mword *bs){ // _nptr#
 
 //
 //
-mword _rnptr(pyr_cache *this_pyr, mword *bs, void *v){ // _rnptr#
+mword bstruct_rnptr(babel_env *be, mword *bs, void *v){ // _rnptr#
 
     if( is_ptr(bs) ){
         *(mword*)v += size(bs);
@@ -281,14 +266,14 @@ mword _rnptr(pyr_cache *this_pyr, mword *bs, void *v){ // _rnptr#
 
 }
 
-
+#if 0
 //
 //
-mword *bstruct_cp(pyr_cache *this_pyr, mword *bs){ // bstruct_cp#
+mword *bstruct_cp(babel_env *be, mword *bs){ // bstruct_cp#
 
-    mword *temp = bstruct_unload(this_pyr, bs);
+    mword *temp = bstruct_unload(be, bs);
 
-    bs = bstruct_load(this_pyr, temp, size(temp));
+    bs = bstruct_load(be, temp, size(temp));
 
     return bs;
 
@@ -297,7 +282,7 @@ mword *bstruct_cp(pyr_cache *this_pyr, mword *bs){ // bstruct_cp#
 
 //
 //
-mword *bstruct_load(pyr_cache *this_pyr, mword *bs, mword size){ // bstruct_load#
+mword *bstruct_load(babel_env *be, mword *bs, mword size){ // bstruct_load#
 
     mword *curr_ptr = bs+1;
     mword *base_ptr = curr_ptr;
@@ -335,27 +320,111 @@ mword *bstruct_load(pyr_cache *this_pyr, mword *bs, mword size){ // bstruct_load
 
 
 //
-mword *bstruct_unload(pyr_cache *this_pyr, mword *bs){
+//
+mword *bstruct_unload(babel_env *be, mword *bs){
 
     mword *dest;
 
     if(is_val(bs)){
-        dest = mem_new_val(this_pyr, alloc_size(bs), 0);
+        dest = mem_new_val(be, alloc_size(bs), 0);
         memcpy(dest,(bs-1),(size_t)UNITS_MTO8(size(dest)));
         return dest;
     }
 
-    dest = mem_new_val(this_pyr, _mu(this_pyr, bs), 0);
+    dest = mem_new_val(be, bstruct_mu(be, bs), 0);
 
-    mword *span_array = bstruct_to_array(this_pyr, bs);
-    sort(this_pyr, span_array, VAL);
+    mword *span_array = bstruct_to_array(be, bs);
+    sort(be, span_array, VAL);
 
-    mword *offset_array = mem_new_val(this_pyr, size(span_array), 0xff);
+    mword *offset_array = mem_new_val(be, size(span_array), 0xff);
 
     mword dest_offset = 0;
 
-    bstruct_unload_r(this_pyr, bs, dest, &dest_offset, span_array, offset_array);
-    _rclean(this_pyr, bs);
+    bstruct_unload_r(be, bs, dest, &dest_offset, span_array, offset_array);
+    bstruct_clean(be, bs);
+
+    return dest;
+
+}
+
+//---------------------------------------------------------------------------
+//
+//    bstruct_load_str():
+//
+//        1. Read in all text lines of the bs array
+//            - Split into label-array pairs as you go
+//            - Hash each label as you go
+//            - Save the hash of the very first label (this is defined as the starting
+//                    point of the data-structure)
+//            - For each array, send to sexpr and get an sexpr back
+//            - Track the total length of each array and total number of tptrs
+//                - Need this for allocating the unloaded bstruct
+//        2. Sort the array by label-hash
+//        3. Allocate a val-array to hold the unloaded bstruct
+//            - Allocate enough extra space to hold an unresolved-symbol tptr and nil
+//        3. Starting with the first label:
+//            - If it is a val-array
+//                calculate and write the sfield
+//                convert and store accordingly
+//            - If it is a ptr-array:
+//                calculate and write the sfield
+//                For each entry (label):
+//                    lookup the label in the label array
+//                    if the label is fully resolved:
+//                        Substitute its address in this entry of the ptr-array
+//                    else if the label does not exist:
+//                        Substitute the address of the unresolved-symbol tptr (place
+//                            it at the end of the array, if not already done)
+//                    else:
+//                        Recurse on the unresolved label
+//            - If it is a tptr or tag
+//                sfield=0
+//                tptr: Store the tptr tag bytes
+//                tag: Hash the tag label and store the tptr tag bytes
+//                if the tptr-label is nil or is fully resolved:
+//                    Substitute its address in this entry of the ptr-array
+//                else if the label does not exist:
+//                    Substitute the address of the unresolved-symbol tptr (place
+//                        it at the end of the array, if not already done)
+//                else:
+//                    Recurse on the unresolved label
+//        ------------------------------------------------------------------
+//
+//        [bs
+//          s001 [ptr foo bar baz ]
+//          foo [val 0x1 0x2 0x3 ]
+//          bar [val 0x4 0x5 0x6 ]
+//          baz [val 0x7 0x8 0x9 ] ]
+//
+//        Note: this is a stripped-down version of [bs ] with no fancy bells &
+//            whistles (i.e. we don't pass the arrays to sexpr() to be
+//            individually parsed). A later version may add more robust
+//            functionality.
+
+
+//
+//
+mword *bstruct_load_str(babel_env *be, mword *bs){ // bstruct_load_str#
+
+    mword *dest;
+
+    if(is_val(bs)){
+        dest = mem_new_val(be, alloc_size(bs), 0);
+        memcpy(dest,(bs-1),(size_t)UNITS_MTO8(size(dest)));
+        return dest;
+    }
+
+    dest = mem_new_val(be, bstruct_mu(be, bs), 0);
+
+    mword *span_array = bstruct_to_array(be, bs);
+    sort(be, span_array, VAL);
+
+    mword *offset_array = mem_new_val(be, size(span_array), 0xff);
+
+    mword dest_offset = 0;
+
+    bstruct_unload_r(be, bs, dest, &dest_offset, span_array, offset_array);
+    bstruct_clean(be, bs);
 
     return dest;
 
@@ -364,18 +433,18 @@ mword *bstruct_unload(pyr_cache *this_pyr, mword *bs){
 
 //
 //
-mword bstruct_unload_r(
-        pyr_cache   *this_pyr, 
+mword bstruct_load_str_r( // bstruct_load_str_r#
+        babel_env *be, 
         mword       *bs, 
         mword       *dest, 
         mword       *dest_offset, 
         mword       *span_array, 
-        mword       *offset_array){ // bstruct_unload_r#
+        mword       *offset_array){
 
     int i;
 
     if( is_traversed_U(bs) ){
-        return offset_array[array_search(this_pyr, span_array, (mword*)(&bs), VAL)];
+        return offset_array[array_search(be, span_array, (mword*)(&bs), VAL)];
     }
 
     int num_elem = size(bs);
@@ -386,7 +455,7 @@ mword bstruct_unload_r(
     mword local_offset = *dest_offset;
     mword this_offset  = (*dest_offset)*MWORD_SIZE;
 
-    set_offset_for_ptr(this_pyr, span_array, bs, offset_array, this_offset);
+    set_offset_for_ptr(be, span_array, bs, offset_array, this_offset);
 
     if(is_tptr(bs)){ // is_tptr
 
@@ -406,7 +475,7 @@ mword bstruct_unload_r(
         *dest_offset = *dest_offset + 1;
 
         ldv(dest,tptr_offset)
-            = bstruct_unload_r(this_pyr, (mword*)*tptr_ptr, dest, dest_offset, span_array, offset_array);
+            = bstruct_unload_r(be, (mword*)*tptr_ptr, dest, dest_offset, span_array, offset_array);
 
     }
     else if(is_ptr(bs)){
@@ -417,7 +486,7 @@ mword bstruct_unload_r(
 
         for(i=0; i<num_elem; i++){
             ldv(dest,local_offset+i) 
-                = bstruct_unload_r(this_pyr, rdp(bs,i), dest, dest_offset, span_array, offset_array);
+                = bstruct_unload_r(be, rdp(bs,i), dest, dest_offset, span_array, offset_array);
         }
 
     }
@@ -426,7 +495,7 @@ mword bstruct_unload_r(
         mark_traversed_U(bs);
 
 //_d(sfield(bs));
-//_bounds_check(this_pyr, bs);
+//_bounds_check(be, bs);
 
         for(i=0; i<num_elem; i++){
             ldv(dest,(*dest_offset)) = rdv(bs,i);
@@ -441,12 +510,91 @@ mword bstruct_unload_r(
 
 
 //
+//
+mword bstruct_unload_r(
+        babel_env *be, 
+        mword       *bs, 
+        mword       *dest, 
+        mword       *dest_offset, 
+        mword       *span_array, 
+        mword       *offset_array){ // bstruct_unload_r#
+
+    int i;
+
+    if( is_traversed_U(bs) ){
+        return offset_array[array_search(be, span_array, (mword*)(&bs), VAL)];
+    }
+
+    int num_elem = size(bs);
+
+    *(dest+(*dest_offset))   = sfield(bs);
+    *dest_offset             = *dest_offset+1;
+
+    mword local_offset = *dest_offset;
+    mword this_offset  = (*dest_offset)*MWORD_SIZE;
+
+    set_offset_for_ptr(be, span_array, bs, offset_array, this_offset);
+
+    if(is_tptr(bs)){ // is_tptr
+
+        mark_traversed_U(bs);
+
+        for(i=0; i<=HASH_SIZE; i++){
+            ldv(dest,(*dest_offset)) = rdv(bs,i);
+            *dest_offset = *dest_offset+1;
+        }
+
+        mword *tptr_ptr = (bs+TPTR_PTR_OFFSET);
+
+        mark_traversed_U(tptr_ptr); //FIXME: Does this actually need to be here??
+
+        mword tptr_offset = *dest_offset;
+
+        *dest_offset = *dest_offset + 1;
+
+        ldv(dest,tptr_offset)
+            = bstruct_unload_r(be, (mword*)*tptr_ptr, dest, dest_offset, span_array, offset_array);
+
+    }
+    else if(is_ptr(bs)){
+
+        mark_traversed_U(bs);
+
+        *dest_offset = *dest_offset + num_elem;
+
+        for(i=0; i<num_elem; i++){
+            ldv(dest,local_offset+i) 
+                = bstruct_unload_r(be, rdp(bs,i), dest, dest_offset, span_array, offset_array);
+        }
+
+    }
+    else{// if(is_val(bs))
+
+        mark_traversed_U(bs);
+
+//_d(sfield(bs));
+//_bounds_check(be, bs);
+
+        for(i=0; i<num_elem; i++){
+            ldv(dest,(*dest_offset)) = rdv(bs,i);
+            *dest_offset = *dest_offset+1;
+        }
+
+    }
+
+    return this_offset;
+
+}
+
+
+//
+//
 void set_offset_for_ptr(
-        pyr_cache *this_pyr, 
+        babel_env *be, 
         mword     *span_array,      mword *ptr, 
         mword     *offset_array,    mword this_offset){ // set_offset_for_ptr#
 
-    mword span_offset = array_search(this_pyr, span_array, (mword*)(&ptr), VAL);
+    mword span_offset = array_search(be, span_array, (mword*)(&ptr), VAL);
 
     offset_array[span_offset] = this_offset;
 
@@ -455,19 +603,15 @@ void set_offset_for_ptr(
 
 //Creates an interior array with one pointer to each array in a bstruct
 //
-mword *bstruct_to_array(pyr_cache *this_pyr, mword *bs){  // bstruct_to_array#
+mword *bstruct_to_array(babel_env *be, mword *bs){  // bstruct_to_array#
 
-//    mword num_arrays  = _nin(this_pyr, bs);
-//          num_arrays += _nlf(this_pyr, bs);
-//          num_arrays += _ntag(this_pyr, bs);
+    mword num_arrays = bstruct_nar(be, bs);
 
-    mword num_arrays = _nar(this_pyr, bs);
-
-    mword *arr_list = mem_new_ptr(this_pyr, num_arrays);
+    mword *arr_list = mem_new_ptr(be, num_arrays);
     mword offset = 0;
 
-    bstruct_to_array_r(this_pyr, bs, arr_list, &offset);
-    _rclean(this_pyr, bs);
+    bstruct_to_array_r(be, bs, arr_list, &offset);
+    bstruct_clean(be, bs);
 
     return arr_list;
 
@@ -476,7 +620,7 @@ mword *bstruct_to_array(pyr_cache *this_pyr, mword *bs){  // bstruct_to_array#
 
 //
 //
-void bstruct_to_array_r(pyr_cache *this_pyr, mword *bs, mword *arr_list, mword *offset){ // bstruct_to_array_r#
+void bstruct_to_array_r(babel_env *be, mword *bs, mword *arr_list, mword *offset){ // bstruct_to_array_r#
 
     int i;
 
@@ -497,8 +641,7 @@ void bstruct_to_array_r(pyr_cache *this_pyr, mword *bs, mword *arr_list, mword *
 
         mark_traversed_U(tptr_ptr);
 
-//        bstruct_to_array_r(this_pyr, (mword*)*tptr_ptr, arr_list, offset);
-        bstruct_to_array_r(this_pyr, tcar(bs), arr_list, offset);
+        bstruct_to_array_r(be, tcar(bs), arr_list, offset);
 
     }
     else if(is_ptr(bs)){
@@ -506,7 +649,7 @@ void bstruct_to_array_r(pyr_cache *this_pyr, mword *bs, mword *arr_list, mword *
         mark_traversed_U(bs);
 
         for(i=0; i<num_elem; i++){
-            bstruct_to_array_r(this_pyr, (mword*)rdp(bs,i), arr_list, offset);
+            bstruct_to_array_r(be, (mword*)rdp(bs,i), arr_list, offset);
         }
 
     }
@@ -517,27 +660,28 @@ void bstruct_to_array_r(pyr_cache *this_pyr, mword *bs, mword *arr_list, mword *
 }
 
 
+////
+////
+//mword *bstruct_find(babel_env *be, mword *target_bs, mword *find_bs){ // bstruct_find#
 //
+//    mword *result;
 //
-mword *bstruct_find(pyr_cache *this_pyr, mword *target_bs, mword *find_bs){ // bstruct_find#
-
-    mword *result;
-
-    if(is_tptr(find_bs)){
-        result = tptr_find_tag_unsafe(this_pyr, target_bs, find_bs);
-    }
-    else if(is_val(find_bs)){
-        result = array_find_val(this_pyr, target_bs, find_bs);
-    }
-    else{ // is_ptr(find_bs)
-        result = array_find_ptr(this_pyr, target_bs, find_bs);
-    }
-
-    return result;
-
-}
+//    if(is_tptr(find_bs)){
+//        result = tptr_find_tag_unsafe(be, target_bs, find_bs);
+//    }
+//    else if(is_val(find_bs)){
+//        result = array_find_val(be, target_bs, find_bs);
+//    }
+//    else{ // is_ptr(find_bs)
+//        result = array_find_ptr(be, target_bs, find_bs);
+//    }
+//
+//    return result;
+//
+//}
 
 #endif
 
-// Clayton Bauman 2017
+
+// Clayton Bauman 2018
 

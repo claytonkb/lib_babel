@@ -6,7 +6,7 @@ A Babel library. See claytonkb/Babel for more info on Babel.
 A note on why I don't use make
 ------------------------------
 
-Most projects utilize a Makefile to automate their build process. This has the
+Many projects utilize a Makefile to automate their build process. This has the
 important benefit that free software projects are easy to build across many
 platforms.
 

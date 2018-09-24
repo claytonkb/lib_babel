@@ -9,6 +9,15 @@ Migration
 **NOTE**: \*.c files are from '16 pyramid; update to ai_ml/pyramid ('18)  
 **NOTE**: will need to re-migrate accordingly
 
+*TOS*
+
+    introspect_str() dependencies:
+    
+        is_nil_tag(be,bs+1)
+        C2B("[bs s0 nil]\n")
+        mem_new_str(be, result_string_length, 0);
+        bsprintf(be, result, &str_offset, "[bs ");
+        array_shrink(be,result,0,str_offset-1,BYTE_ASIZE);
 
 *Order of migration*
 
@@ -42,6 +51,7 @@ utf8.c
 *Edits*
 
     %s/pyr_cache \*this_pyr/babel_env *be/g
+    %s/\<pc\>/be/g
 
     %s/access_size/asize/g
     %s/access_size_sel/access_size/g
