@@ -182,7 +182,7 @@ mword introspect_calc_buf_length(
 
 }
 
-#if 0
+
 // Returns a string containing the Graphviz text file
 // FIXME: use mem_sys_alloc() and memcpy to avoid wasted space
 //
@@ -205,11 +205,12 @@ str introspect_gv(babel_env *be, mword *bs){ // introspect_gv#
     bsprintf(be, result, &str_offset, "}\n");
 
 //    wstrim(be, result);
-    array_shrink(be,result,0,str_offset-1,BYTE_ASIZE);
+    array_shrink(be,result,0,str_offset-1,U8_ASIZE);
 
     return result;
 
 }
+
 
 
 //
@@ -275,7 +276,8 @@ void introspect_gv_r(babel_env *be, mword *bs, mword *result, mword *str_offset,
 
         for(i=0; i<num_entries; i++){ // XXX 23 * NVA
 
-            bsprintf(be, result, str_offset, "<f%d> %x", i, *(mword *)(bs+i));              // XXX 22
+//            bsprintf(be, result, str_offset, "<f%d> %x", i, *(mword *)(bs+i));              // XXX 22
+            bsprintf(be, result, str_offset, "<f%d> %lx", i, *(mword *)(bs+i));              // XXX 22
 
             if(i<(num_entries-1)){
                 bsprintf(be, result, str_offset, "|");              // XXX 1
@@ -371,7 +373,7 @@ void introspect_gv_r(babel_env *be, mword *bs, mword *result, mword *str_offset,
 
 }
 
-
+#if 0
 
 //
 //
@@ -431,7 +433,7 @@ str introspect_svg(babel_env *be, val8 arr, mword width, mword height){ // intro
 //    wstrim(be, result);
 //mword *array_shrink(babel_env *be, mword *array, mword new_begin, mword new_end, access_size asize);
 
-    array_shrink(be,result,0,str_offset-1,BYTE_ASIZE);
+    array_shrink(be,result,0,str_offset-1,U8_ASIZE);
 
     return result;
 

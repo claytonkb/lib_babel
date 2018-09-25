@@ -139,8 +139,9 @@ void dev_prompt(void){
                 break;
 
             case 13:
-//                temp = introspect_gv(be, ACC);
-//                io_spit(be, "test.dot", temp, BYTE_ASIZE, OVERWRITE);
+                temp = introspect_gv(be, ACC);
+                _say((char*)temp);
+//                io_spit(be, "test.dot", temp, U8_ASIZE, OVERWRITE);
 //                _say("introspect_gv(ACC) ==> test.dot");
                 break;
 
