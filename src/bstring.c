@@ -96,9 +96,9 @@ int bsprintf(babel_env *be, mword *buf, mword *offset, const char *format, ... )
 
 
 
-// string_to_ul# --> string_to_ul
 //
-mword *string_to_ul(babel_env *be, mword *string, mword radix){ // string_to_ul#
+//
+mword *string_to_ul(babel_env *be, mword *string, mword radix){
 
     unsigned long *result = 
         (unsigned long *)
@@ -114,19 +114,20 @@ mword *string_to_ul(babel_env *be, mword *string, mword radix){ // string_to_ul#
 }
 
 
+// input string should be UTF-8 formatted string (ASCII is a subset of UTF-8)
 //
-//
-mword *string_to_array(babel_env *be, mword *string){ // string_to_array#
+ucs4 string_to_array(babel_env *be, val8 string){
 
     mword length8    = array8_size(string);
     mword u8_length  = (mword)u8_strlen((char*)string, length8);
 
-//    mword *result = mem_new_val(be, u8_length+1, 0);
-    mword *result = mem_new_str(be, (u8_length*4), 0);
+    ucs4 result = (ucs4)mem_new_str(be, (u8_length*4), 0);
 
-    mword length = u8_toucs((uint32_t *)result, u8_length+1, (char *)string, length8);
+    mword length = u8_toucs(result, u8_length+1, (char*)string, length8);
 
-    array_shrink(be, result, 0, (length*4), U8_ASIZE);
+    // NOTE: ucs4 is defined as uint32_t, so we have to shrink the array as
+    // an array8.
+//    array_shrink(be, (mword*)result, 0, (length*4), U8_ASIZE);
 
     return result;
 

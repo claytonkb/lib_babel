@@ -77,8 +77,8 @@ int u8_toucs(uint32_t *dest, int sz, char *src, int srcsz)
         }
         ch -= offsetsFromUTF8[nb];
         dest[i++] = ch;
-}
- done_toucs:
+    }
+done_toucs:
     dest[i] = 0;
     return i;
 }

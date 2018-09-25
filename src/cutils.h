@@ -62,7 +62,7 @@
         if(dev_i>=0){                                                 \
             fprintf(stderr, "%016lx ", (uint64_t)dev_i*MWORD_SIZE);   \
         }                                                             \
-        fprintf(stderr, "%016lx\n", (uint64_t)x[dev_i]);              \
+        fprintf(stderr, "%016lx\n", *((uint64_t*)x+dev_i));              \
     }
 
 #endif // CUTILS_H

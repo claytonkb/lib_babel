@@ -393,7 +393,7 @@ int array_cmp_lex(const mword *left, const mword *right, access_size asize){ // 
         left_size  = UNITS_MTO8(size_special(left));
         right_size = UNITS_MTO8(size_special(right));
     }
-    else{ // asize == BYTE_ASIZE
+    else{ // asize == U8_SIZE
 //        left_size  = array8_size(left);
 //        right_size = array8_size(right);
     }
@@ -427,7 +427,7 @@ int array_ncmp(babel_env *be, mword *left, mword left_offset, mword *right, mwor
         right_size = UNITS_MTO8(size(right));
         length     = UNITS_MTO8(length);
     }
-    else{ // access_size == BYTE_ASIZE
+    else{ // access_size == U8_SIZE
         left_size  = array8_size(left) - left_offset;
         right_size = array8_size(right);
     }
@@ -455,7 +455,7 @@ int array_cmp_alpha(babel_env *be, mword *left, mword *right, access_size asize)
         left_size  = size(left);
         right_size = size(right);
     }
-    else{ // access_size == BYTE_ASIZE
+    else{ // access_size == U8_SIZE
         left_size  = array8_size(left);
         right_size = array8_size(right);
     }
@@ -586,7 +586,7 @@ void array_move(babel_env *be, mword *dest, mword dest_index, mword *src, mword 
         dest_size = size(dest);
 
     }
-    else{ // asize = BYTE_ASIZE
+    else{ // asize = U8_SIZE
 
         src_size  = array8_size(src );
         dest_size = array8_size(dest);
@@ -610,7 +610,7 @@ void array_move(babel_env *be, mword *dest, mword dest_index, mword *src, mword 
         memmove( dest+dest_index, src+src_index, (size_t)UNITS_MTO8(final_size) );
 
     }
-    else{ // asize = BYTE_ASIZE
+    else{ // asize = U8_SIZE
 
         memmove( ((char*)dest+dest_index), ((char*)src+src_index), (size_t)final_size );
 
@@ -654,11 +654,11 @@ mword *array8_slice(babel_env *be, mword *array, mword start, mword end){ // arr
     mword *result = _val(be, 0); // Empty-string
 
     mword size8 = array8_size(array);
-    end = MAX(end, size8);
+    end = MIN(end, size8);
 
     if(end>start){
 
-        result = mem_new_str(be, end-start, ' ');
+        result = mem_new_str(be, end-start, '\0');
         array_move(be, result, 0, array, start, end-start, U8_ASIZE);
 
     }
@@ -1184,11 +1184,13 @@ mword *array8_slice(babel_env *be, mword *array, mword start, mword end){ // arr
 //
 mword *array_shrink(babel_env *be, mword *array, mword new_begin, mword new_end, access_size asize){ // array_shrink#
 
-    mword new_size = new_end-new_begin+1;
+    mword new_size;
     mword *result = array;
     mword new_sfield, new_align;
 
     if(asize == MWORD_ASIZE){
+
+        new_size = new_end-new_begin+1;
 
         result+=new_begin;
         if(is_val(result)){
@@ -1202,6 +1204,8 @@ mword *array_shrink(babel_env *be, mword *array, mword new_begin, mword new_end,
     }
     else if(asize == U8_ASIZE){ // NB: new_begin, new_end are byte-offsets
 
+        new_size = new_end-new_begin;
+
         if(!is_val(result)) return result;
 
         if(new_begin){
@@ -1212,6 +1216,7 @@ mword *array_shrink(babel_env *be, mword *array, mword new_begin, mword new_end,
                 result+=UNITS_8TOM(new_begin);
             }
         }
+
         new_sfield = UNITS_MTO8(array8_mword_size(new_size));
         new_align = array8_enc_align(new_size);
         sfield(result) = new_sfield;
@@ -1227,6 +1232,58 @@ mword *array_shrink(babel_env *be, mword *array, mword new_begin, mword new_end,
 
 }
 
+
+
+//// shrinks an array in-place, where applicable
+//// new_begin and new_end are not sanity-checked here; MUST BE checked by the caller
+////
+//mword *array_shrink(babel_env *be, mword *array, mword new_begin, mword new_end, access_size asize){ // array_shrink#
+//
+//    mword new_size = new_end-new_begin+1;
+//    mword *result = array;
+//    mword new_sfield, new_align;
+//_dd(new_size);
+//    if(asize == MWORD_ASIZE){
+//
+//        result+=new_begin;
+//        if(is_val(result)){
+//            sfield(result) = UNITS_MTO8(new_size);
+//        }
+//        else if(is_ptr(result)){ //is_ptr
+//            sfield(result) = (int)-1*(UNITS_MTO8(new_size));
+//        }
+//        //else: do nothing, tptrs can't be trunc'd
+//
+//    }
+//    else if(asize == U8_ASIZE){ // NB: new_begin, new_end are byte-offsets
+//
+//        if(!is_val(result)) return result;
+//
+//        if(new_begin){
+//            if(MODULO_MTO8(new_begin)){ // not MWORD-aligned
+//                memmove( ((char*)result), ((char*)result+new_begin), (size_t)new_size );
+//            }
+//            else{ // MWORD-aligned
+//                result+=UNITS_8TOM(new_begin);
+//            }
+//        }
+//
+//        new_sfield = UNITS_MTO8(array8_mword_size(new_size));
+//_dd(new_sfield);
+//        new_align = array8_enc_align(new_size);
+//_dq(new_align);
+//        sfield(result) = new_sfield;
+//        ldv(result,UNITS_8TOM(new_sfield)-1)  =   new_align;
+//        ldv(result,UNITS_8TOM(new_sfield)-2) &= ~(new_align); // padding bytes MUST BE ZERO
+//
+//    }
+//    else{ // if(asize == U1_ASIZE){
+//        _enhance("asize == U1_ASIZE");
+//    }
+//
+//    return result;
+//
+//}
 
 
 //
