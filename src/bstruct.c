@@ -335,13 +335,17 @@ mword *bstruct_unload(babel_env *be, mword *bs){
     dest = mem_new_val(be, bstruct_mu(be, bs), 0);
 
     mword *span_array = bstruct_to_array(be, bs);
-    qsort(span_array,size(span_array),sizeof(mword), cmp_cuint);
+
+    qsort(span_array, size(span_array), sizeof(mword), cmp_cuint);
+
+//_mem(span_array);
+//return dest;
 
     mword *offset_array = mem_new_val(be, size(span_array), 0xff);
 
     mword dest_offset = 0;
 
-//    bstruct_unload_r(be, bs, dest, &dest_offset, span_array, offset_array);
+    bstruct_unload_r(be, bs, dest, &dest_offset, span_array, offset_array);
     bstruct_clean(be, bs);
 
     return dest;
