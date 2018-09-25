@@ -14,7 +14,7 @@ mword introspect_calc_buf_length( babel_env *be, mword *bs, mword const_padding,
 str introspect_gv(babel_env *be, mword *bs);
 void introspect_gv_r(babel_env *be, mword *bs, mword *result, mword *offset, int initial);
 
-str introspect_svg(babel_env *be, val8 arr, mword width, mword height);
+str introspect_svg(babel_env *be, val8 arr, mword width, mword height, access_size asize);
 
 #endif //INTROSPECT_H
 

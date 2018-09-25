@@ -373,7 +373,7 @@ void introspect_gv_r(babel_env *be, mword *bs, mword *result, mword *str_offset,
 
 }
 
-#if 0
+
 
 //
 //
@@ -385,16 +385,25 @@ void introspect_gv_r(babel_env *be, mword *bs, mword *result, mword *str_offset,
 // Returns a string containing an SVG file depicting an array8 as a grayscale
 // image (8-bit depth) with dimensions width,height
 //
-str introspect_svg(babel_env *be, val8 arr, mword width, mword height){ // introspect_svg#
+str introspect_svg(babel_env *be, val arr, mword width, mword height, access_size asize){ // introspect_svg#
 
     #define SVG_RECT_SCALE 20
+
+    mword array_length;
+
+    if(asize==U8_ASIZE)
+        array_length = array8_size(arr);
+    else
+        array_length = UNITS_MTO8(size(arr));
+
+    if(height == 0){
+        height = (array_length / width)+1;
+    }
 
     mword svg_height = height*SVG_RECT_SCALE;
     mword svg_width  = width *SVG_RECT_SCALE;
     mword str_offset=0;
-    char *carr = (char*)arr;
-
-    mword array_length = array8_size(arr);
+    unsigned char *carr = (unsigned char*)arr;
 
     int i,j,ctr=0;
 
@@ -416,7 +425,7 @@ str introspect_svg(babel_env *be, val8 arr, mword width, mword height){ // intro
 
             if(ctr++ >= array_length) break;
 
-            char byte = carr[i*width+j];
+            unsigned char byte = carr[i*width+j];
 
             bsprintf(be, result, &str_offset,
             "<rect x=\"%d\" y=\"%d\" width=\"%d\" height=\"%d\" stroke=\"none\" fill=\"#%02x%02x%02x\"/>\n",
@@ -426,7 +435,6 @@ str introspect_svg(babel_env *be, val8 arr, mword width, mword height){ // intro
 
         }
     }
-
 
     bsprintf(be, result, &str_offset, "</svg>\n\n");
 
@@ -446,7 +454,6 @@ Footnotes:
         rectangle. 
 */
 
-#endif
 
 // Clayton Bauman 2018
 

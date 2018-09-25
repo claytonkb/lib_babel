@@ -65,12 +65,18 @@ void dev_prompt(void){
             case 1:
                 be = babel_env_new(MEM_SUGGEST_INIT_ALLOC,MEM_SUGGEST_INIT_ALLOC);
 //                ACC = be->mem->paging_base;
-                ACC = _mkptr(be, 5, // 0xf0f0f0f0f0f0f0f0, 0x0f0f0f0f0f0f0f0f, 0xf0f0f0f0f0f0f0f0, 0x0f0f0f0f0f0f0f0f
-                    _mkval(be, 2, 0x0121312141213121, 0x1512131214121312),
-                    _mkval(be, 2, 0x2161213121412131, 0x3215121312141213),
-                    _mkval(be, 2, 0x4121712131214121, 0x5312151213121412),
-                    _mkval(be, 2, 0x6131216121312141, 0x7213121512131214),
-                    _mkval(be, 2, 0x8121312181213121, 0x9412131215121312));
+//                ACC = _mkptr(be, 5, // 0xf0f0f0f0f0f0f0f0, 0x0f0f0f0f0f0f0f0f, 0xf0f0f0f0f0f0f0f0, 0x0f0f0f0f0f0f0f0f
+//                    _mkval(be, 2, 0x0121312141213121, 0x1512131214121312),
+//                    _mkval(be, 2, 0x2161213121412131, 0x3215121312141213),
+//                    _mkval(be, 2, 0x4121712131214121, 0x5312151213121412),
+//                    _mkval(be, 2, 0x6131216121312141, 0x7213121512131214),
+//                    _mkval(be, 2, 0x8121312181213121, 0x9412131215121312));
+                ACC = _mkval(be, 10,
+                    0x0121312141213121, 0x1512131214121312,
+                    0x2161213121412131, 0x3215121312141213,
+                    0x4121712131214121, 0x5312151213121412,
+                    0x6131216121312141, 0x7213121512131214,
+                    0x8121312181213121, 0x9412131215121312);
 //                ACC = temp;
 //                ACC = bstruct_unload(be, temp);
                 break;
@@ -146,7 +152,8 @@ void dev_prompt(void){
                 break;
 
             case 14:
-//                temp = introspect_svg(be, ACC, 10, 10);
+                temp = introspect_svg(be, ACC, 8, 0, MWORD_ASIZE);
+                _say((char*)temp);
 //                io_spit(be, "intro.svg", temp, BYTE_ASIZE, OVERWRITE);
 //                _say("introspect_svg(ACC) ==> intro.svg");
                 break;
