@@ -46,7 +46,8 @@ str introspect_str(babel_env *be, mword *bs){ // introspect_str#
     int curr_sfield = 0; // int so we can use abs() to get array-size
     int i;
 
-    char *offset_format = (char*)mem_new_str(be, 7, 0);
+//    char *offset_format = (char*)mem_new_str(be, 7, 0);
+    char *offset_format;
 
     if(bs_size < (1<<4)){
         offset_format = "s0%x ";
@@ -115,7 +116,7 @@ str introspect_str(babel_env *be, mword *bs){ // introspect_str#
                 bsprintf(be, result, &str_offset, "[val ");
 
                 for(i=0; i < current_bs_size; i++){
-                    bsprintf(be, result, &str_offset, "0x%x ", (unsigned)rdv(bs_base,i));
+                    bsprintf(be, result, &str_offset, INTROSPECT_VAL_FORMAT, (mword)rdv(bs_base,i));
                 }
             }
             else{ // curr_sfield < 0 -- inte

@@ -4,6 +4,9 @@
 #ifndef INTROSPECT_H
 #define INTROSPECT_H
 
+//#define INTROSPECT_VAL_FORMAT "0x%x "
+#define INTROSPECT_VAL_FORMAT "0x%lx "
+
 str introspect_str(babel_env *be, mword *bs);
 
 mword introspect_calc_buf_length( babel_env *be, mword *bs, mword const_padding, mword nlf_scaling, mword nva_scaling, mword nin_scaling, mword nptr_scaling, mword ntag_scaling);
