@@ -11,32 +11,7 @@ Migration
 
 *TOS*
 
-    sort re-work
-        switch to qsort (factor out merge_sort cruft)
-
-        cmp_aop_*
-            array_cmp_*_bstruct()
-                array_cmp_*_range()
-
-            int array_cmp_num(mword *left, mword *right);
-            int array_cmp_num_range(mword *left, mword *left_end, mword *right, mword *right_end);
-
-            int array_ncmp(babel_env *be, mword *left, mword left_offset, mword *right, mword length, access_size asize);
-
-        
-        array_cmp_lex_range(left_begin,left_end,right_begin,right_end)
-            left  range: |---****-------|
-            right range: |--****----|
-
-        array_cmp_lex_bstruct(bstruct left, bstruct right)
-            array_cmp_lex_range(left,left+size(left)-1,right,right+size(right)-1)
-
-        NOTE: bake in reuse of *cmp* fn's for linear probing
-
-    bstruct_unload dependencies:
-        sort(be, span_array, VAL);
-        bstruct_unload_r(be, bs, dest, &dest_offset, span_array, offset_array);
-            set_offset_for_ptr(be, span_array, bs, offset_array, this_offset);
+Staging (see below)  
 
 *Order of migration*
 
@@ -87,6 +62,31 @@ utf8.c
 
 DONEISH
 =======
+
+sort re-work
+------------
+
+        switch to qsort (factor out merge_sort cruft)
+
+        cmp_aop_*
+            array_cmp_*_bstruct()
+                array_cmp_*_range()
+
+            int array_cmp_num(mword *left, mword *right);
+            int array_cmp_num_range(mword *left, mword *left_end, mword *right, mword *right_end);
+
+            int array_ncmp(babel_env *be, mword *left, mword left_offset, mword *right, mword length, access_size asize);
+
+        
+        array_cmp_lex_range(left_begin,left_end,right_begin,right_end)
+            left  range: |---****-------|
+            right range: |--****----|
+
+        array_cmp_lex_bstruct(bstruct left, bstruct right)
+            array_cmp_lex_range(left,left+size(left)-1,right,right+size(right)-1)
+
+        NOTE: bake in reuse of *cmp* fn's for linear probing
+
 
 Paging/GC
 ---------
