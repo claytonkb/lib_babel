@@ -94,7 +94,7 @@ int bsprintf(babel_env *be, mword *buf, mword *offset, const char *format, ... )
 
 }
 
-#if 0
+
 
 // string_to_ul# --> string_to_ul
 //
@@ -126,7 +126,7 @@ mword *string_to_array(babel_env *be, mword *string){ // string_to_array#
 
     mword length = u8_toucs((uint32_t *)result, u8_length+1, (char *)string, length8);
 
-    array_shrink(be, result, 0, (length*4), BYTE_ASIZE);
+    array_shrink(be, result, 0, (length*4), U8_ASIZE);
 
     return result;
 
@@ -135,7 +135,6 @@ mword *string_to_array(babel_env *be, mword *string){ // string_to_array#
 /* Footnotes:
     [1] bstr-array is 32-bits per entry (UCS4)
 */
-#endif
 
 
 // Clayton Bauman 2018

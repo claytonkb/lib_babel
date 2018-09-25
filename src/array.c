@@ -6,80 +6,6 @@
 #include "mem.h"
 #include "utf8.h"
 
-#if 0
-
-/*****************************************************************************
- *                                                                           *
- *                           ARRAY PRIMITIVES                                *
- *                                                                           *
- ****************************************************************************/
-
-
-//
-//
-arr array_th(babel_env *be, mword *bs, mword entry){ // array_th#
-
-    if(is_val(bs)){
-        return _val(be, rdv(bs, entry%size(bs)));
-    }
-    else if(is_tptr(bs)){ // ignores entry
-        return tcar(bs);
-    } 
-    //else is_ptr(bs)
-
-    return rdp(bs, entry%size(bs));
-
-}
-
-
-/*****************************************************************************
- *                                                                           *
- *                          ARRAY-8 PRIMITIVES                               *
- *                                                                           *
- ****************************************************************************/
-
-#define array8_mask_generate(off,arr,mask,sel)      \
-    mword sel         = (off / MWORD_SIZE);         \
-    mword byte_offset = (off % MWORD_SIZE);         \
-                                                    \
-    if(sel > size(arr)-1){                          \
-        _fatal("error");                            \
-    }                                               \
-                                                    \
-    mword mask = (0xff<<UNITS_8TO1(byte_offset));
-
-//
-//
-mword array8_read(mword *array, mword offset){ // array8_read#
-
-    array8_mask_generate(offset, array, read_mask, mword_select);
-    return ((rdv(array,mword_select) & read_mask) >> UNITS_8TO1(offset));
-
-}
-
-
-//
-//
-void array8_write(mword *array, mword offset, mword value){ // array8_write#
-
-    array8_mask_generate(offset, array, write_mask, mword_select);
-    ldv(array,mword_select) = (rdv(array,mword_select) & ~write_mask) | ((value & MASK_1_BYTE) << UNITS_8TO1(byte_offset));
-
-}
-
-
-// Returns a val containing the byte at val_entry[entry] (byte-wise addressing)
-//
-mword *array8_th(babel_env *be, mword *val_array, mword entry8){ // array8_th#
-
-    mword *byte = mem_new_str(be, 1, 0);
-    ldv(byte,0) = array8_read(val_array, entry8);
-
-    return byte;
-
-}
-
-#endif
 
 // calculates array8 size from sfield and alignment word
 //
@@ -634,7 +560,7 @@ int array_cmp_num_signed(mword *left, mword *right){ // array_cmp_num_signed#
 
 }
 
-
+#endif
 
 /*****************************************************************************
  *                                                                           *
@@ -654,13 +580,13 @@ void array_move(babel_env *be, mword *dest, mword dest_index, mword *src, mword 
     mword size_limit;
     mword final_size;
 
-    if(access_size == MWORD_ASIZE){
+    if(asize == MWORD_ASIZE){
 
         src_size  = size(src );
         dest_size = size(dest);
 
     }
-    else{ // access_size = BYTE_ASIZE
+    else{ // asize = BYTE_ASIZE
 
         src_size  = array8_size(src );
         dest_size = array8_size(dest);
@@ -679,12 +605,12 @@ void array_move(babel_env *be, mword *dest, mword dest_index, mword *src, mword 
 
 //    final_size = size_arg;
 
-    if(access_size == MWORD_ASIZE){
+    if(asize == MWORD_ASIZE){
 
         memmove( dest+dest_index, src+src_index, (size_t)UNITS_MTO8(final_size) );
 
     }
-    else{ // access_size = BYTE_ASIZE
+    else{ // asize = BYTE_ASIZE
 
         memmove( ((char*)dest+dest_index), ((char*)src+src_index), (size_t)final_size );
 
@@ -733,14 +659,14 @@ mword *array8_slice(babel_env *be, mword *array, mword start, mword end){ // arr
     if(end>start){
 
         result = mem_new_str(be, end-start, ' ');
-        array_move(be, result, 0, array, start, end-start, BYTE_ASIZE);
+        array_move(be, result, 0, array, start, end-start, U8_ASIZE);
 
     }
 
     return result;
 
 }
- 
+#if 0 
 
 ////
 ////
@@ -1301,7 +1227,7 @@ mword *array_shrink(babel_env *be, mword *array, mword new_begin, mword new_end,
 
 }
 
-#if 0
+
 
 //
 //
@@ -1338,6 +1264,7 @@ mword *array_to_string(babel_env *be, mword *array){ // array_to_string#
 
 }
 
+#if 0
 
 //// XXX The return-value from this function contains unsafe pointers!!! XXX
 //// XXX internal interp use ONLY                                        XXX

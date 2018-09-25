@@ -3,28 +3,21 @@
 
 #include "babel.h"
 #include "list.h"
-
-#if 0
-
 #include "bstruct.h"
-#include "tptr.h"
 #include "array.h"
-#include "string.h"
 #include "mem.h"
-#include "introspect.h"
-#include "io.h"
 
 
 //
 //
-mword *list_insert(pyr_cache *this_pyr, mword *src_list, mword *dest_list){ // list_insert#
+mword *list_insert(babel_env *be, mword *src_list, mword *dest_list){ // list_insert#
 
     if(is_nil(dest_list)){
         return src_list;
     }
 
     mword *next_dest_list = pcdr(dest_list);
-    mword *end_src_list   = list_find_end(this_pyr, src_list);
+    mword *end_src_list   = list_find_end(be, src_list);
 
     ldp(dest_list,1)      = src_list;
     ldp(end_src_list,1)   = next_dest_list;
@@ -36,10 +29,10 @@ mword *list_insert(pyr_cache *this_pyr, mword *src_list, mword *dest_list){ // l
 
 //
 //
-mword *list_unshift(pyr_cache *this_pyr, mword *list, mword *bs){ // list_unshift#
+mword *list_unshift(babel_env *be, mword *list, mword *bs){ // list_unshift#
 
-    mword *endls = list_find_end(this_pyr, list);
-    ldp(endls,1) = _cons(this_pyr,  bs, nil );
+    mword *endls = list_find_end(be, list);
+    ldp(endls,1) = list_cons(be,  bs, be->nil );
 
     return list;
 
@@ -48,18 +41,18 @@ mword *list_unshift(pyr_cache *this_pyr, mword *list, mword *bs){ // list_unshif
 
 //
 //
-mword *list_shift(pyr_cache *this_pyr, mword *list){ // list_shift#
+mword *list_shift(babel_env *be, mword *list){ // list_shift#
 
-    if(is_nil(list)) return nil;
+    if(is_nil(list)) return be->nil;
 
-    if(list_len(this_pyr,list) < 2) return list;
+    if(list_len(be,list) < 2) return list;
 
-    mword *endls = list_find_next_to_end(this_pyr, list);
+    mword *endls = list_find_next_to_end(be, list);
 
-    if(is_nil(endls)) return nil;
+    if(is_nil(endls)) return be->nil;
 
     mword *temp = rdp(endls,1);
-    ldp(endls,1) = nil;
+    ldp(endls,1) = be->nil;
 
     return temp;
 
@@ -69,7 +62,7 @@ mword *list_shift(pyr_cache *this_pyr, mword *list){ // list_shift#
 // NOTE: _push does not update list to point to the new head, it
 // is the caller's responsibility to maintain this
 //
-void list_push(pyr_cache *this_pyr, mword *list, mword *bs){ // list_push#
+void list_push(babel_env *be, mword *list, mword *bs){ // list_push#
 
     ldp(bs,1) = list;
 
@@ -78,12 +71,12 @@ void list_push(pyr_cache *this_pyr, mword *list, mword *bs){ // list_push#
 
 //
 //
-mword *list_pop(pyr_cache *this_pyr, mword *list){ // list_pop#
+mword *list_pop(babel_env *be, mword *list){ // list_pop#
 
-    if(is_nil(list)) return nil;
+    if(is_nil(list)) return be->nil;
 
     mword *temp = pcdr(list);
-    ldp(list,1) = nil;
+    ldp(list,1) = be->nil;
 
     return temp;
 
@@ -92,7 +85,7 @@ mword *list_pop(pyr_cache *this_pyr, mword *list){ // list_pop#
 
 //
 //
-mword *list_find_end(pyr_cache *this_pyr, mword *list){ // list_find_end#
+mword *list_find_end(babel_env *be, mword *list){ // list_find_end#
 
     while(!is_nil(pcdr(list))){
         list = pcdr(list);
@@ -104,7 +97,7 @@ mword *list_find_end(pyr_cache *this_pyr, mword *list){ // list_find_end#
 
 //
 //
-mword *list_find_next_to_end(pyr_cache *this_pyr, mword *list){ // *list_find_next_to_end#
+mword *list_find_next_to_end(babel_env *be, mword *list){ // *list_find_next_to_end#
 
     while(!is_nil(pcdr(pcdr(list)))){
         list = pcdr(list);
@@ -116,7 +109,7 @@ mword *list_find_next_to_end(pyr_cache *this_pyr, mword *list){ // *list_find_ne
 
 //
 //
-mword list_len(pyr_cache *this_pyr, mword *list){ // list_len#
+mword list_len(babel_env *be, mword *list){ // list_len#
 
     mword length = 0;
 
@@ -132,10 +125,10 @@ mword list_len(pyr_cache *this_pyr, mword *list){ // list_len#
 
 //
 //
-mword *list_to_ptr_array(pyr_cache *this_pyr, mword *list){ // list_to_ptr_array#
+mword *list_to_ptr_array(babel_env *be, mword *list){ // list_to_ptr_array#
 
     mword *head = list;
-    mword *arr = mem_new_ptr(this_pyr, list_len(this_pyr, list));
+    mword *arr = mem_new_ptr(be, list_len(be, list));
     mword *curr_node;
 
     int i=0;
@@ -159,7 +152,7 @@ mword *list_to_ptr_array(pyr_cache *this_pyr, mword *list){ // list_to_ptr_array
 
 //
 //
-mword *list_to_val_array(pyr_cache *this_pyr, mword *list){ // list_to_val_array#
+mword *list_to_val_array(babel_env *be, mword *list){ // list_to_val_array#
 
     mword *head = list;
     int total_size=0;
@@ -175,10 +168,10 @@ mword *list_to_val_array(pyr_cache *this_pyr, mword *list){ // list_to_val_array
     }
 
     if(!list_length){
-        return mem_new_val(this_pyr, 1, 0);
+        return mem_new_val(be, 1, 0);
     }
 
-    mword *arr = mem_new_val(this_pyr, total_size, 0);
+    mword *arr = mem_new_val(be, total_size, 0);
 
     list = head;
 
@@ -200,7 +193,7 @@ mword *list_to_val_array(pyr_cache *this_pyr, mword *list){ // list_to_val_array
 
 // equiv to Lisp's cdrn
 //
-mword *list_cdri(pyr_cache *this_pyr, mword *list, mword i){ // list_cdri#
+mword *list_cdri(babel_env *be, mword *list, mword i){ // list_cdri#
 
     while(i > 0){
         i--;
@@ -214,9 +207,9 @@ mword *list_cdri(pyr_cache *this_pyr, mword *list, mword i){ // list_cdri#
 
 //
 //
-mword *list_ith(pyr_cache *this_pyr, mword *list, mword i){ // list_ith#
+mword *list_ith(babel_env *be, mword *list, mword i){ // list_ith#
 
-    list = list_cdri(this_pyr, list, i);
+    list = list_cdri(be, list, i);
 
     return pcar(list);
 
@@ -226,7 +219,7 @@ mword *list_ith(pyr_cache *this_pyr, mword *list, mword i){ // list_ith#
 
 //
 //
-mword *list_reverse(pyr_cache *this_pyr, mword *list, mword *new_cdr){ // list_reverse#
+mword *list_reverse(babel_env *be, mword *list, mword *new_cdr){ // list_reverse#
 
     mword *temp = pcdr(list);
 
@@ -235,35 +228,35 @@ mword *list_reverse(pyr_cache *this_pyr, mword *list, mword *new_cdr){ // list_r
     if(is_nil(temp))
         return list;
 
-    return list_reverse(this_pyr, temp, list);
+    return list_reverse(be, temp, list);
 
 }
 
 
 //
 //
-mword *list_split(pyr_cache *this_pyr, mword *list, mword *indices){ // list_split#
+mword *list_split(babel_env *be, mword *list, mword *indices){ // list_split#
 
-    return list_split_r(this_pyr, list,indices,0);
+    return list_split_r(be, list,indices,0);
 
 }
 
 
 //
 //
-mword *list_split_r(pyr_cache *this_pyr, mword *list, mword *indices, mword count){ // list_split_r#
+mword *list_split_r(babel_env *be, mword *list, mword *indices, mword count){ // list_split_r#
 
     mword *orig_list = list;
 
-    if (is_nil(indices)) return _cons(this_pyr,  orig_list, nil );
+    if (is_nil(indices)) return list_cons(be,  orig_list, be->nil );
 
-    if (is_nil(list)) return nil;// 
+    if (is_nil(list)) return be->nil;// 
 
     mword curr_index = vcar(pcar(indices));
 
-    if (curr_index < count) return _cons(this_pyr,  orig_list, nil );
+    if (curr_index < count) return list_cons(be,  orig_list, be->nil );
 
-    if (curr_index == 0) return _cons(this_pyr,  nil, _cons(this_pyr,  orig_list, nil ) );
+    if (curr_index == 0) return list_cons(be,  be->nil, list_cons(be,  orig_list, be->nil ) );
 
     indices = pcdr(indices);
 
@@ -290,56 +283,56 @@ mword *list_split_r(pyr_cache *this_pyr, mword *list, mword *indices, mword coun
     }
 
     if(!is_nil(pcdr(prev_list))){
-        ldp(prev_list,1) = nil;
+        ldp(prev_list,1) = be->nil;
     }
 
-    return _cons(this_pyr,  orig_list, list_split_r(this_pyr, list, indices, count) );
+    return list_cons(be,  orig_list, list_split_r(be, list, indices, count) );
 
 }
 
 
 // XXX Isn't this just a special case of list_split? XXX
 //
-mword *list_cut(pyr_cache *this_pyr, mword *list, mword index){ // list_cut#
+mword *list_cut(babel_env *be, mword *list, mword index){ // list_cut#
 
     mword *temp;
 
-    if(is_nil(list)) return nil;
+    if(is_nil(list)) return be->nil;
 
     if(index == 0) return list;
 
     if(index == 1){
 
         temp = pcdr(list);
-        ldp(list,1) = nil;
+        ldp(list,1) = be->nil;
 
         return temp;
 
     }
 
-    return list_cut(this_pyr, pcdr(list), index-1 );
+    return list_cut(be, pcdr(list), index-1 );
 
 }
 
 
 //
 //
-mword *list_append(pyr_cache *this_pyr, mword *lists){ // list_append#
+mword *list_append(babel_env *be, mword *lists){ // list_append#
 
     if(is_nil(pcdr(lists)))
         return pcar(lists);
         //return lists;
 
-    return list_append_direct(this_pyr, list_ith(this_pyr, lists,0),list_append(this_pyr, pcdr(lists)));
+    return list_append_direct(be, list_ith(be, lists,0), list_append(be, pcdr(lists)));
 
 }
 
 
 ///
 //
-mword *list_append_direct(pyr_cache *this_pyr, mword *head_list, mword *tail_list){ // list_append_direct#
+mword *list_append_direct(babel_env *be, mword *head_list, mword *tail_list){ // list_append_direct#
 
-    mword *endls = list_find_end(this_pyr, head_list);
+    mword *endls = list_find_end(be, head_list);
 
     ldp(endls,1) = tail_list;
 
@@ -357,9 +350,9 @@ mword *list_append_direct(pyr_cache *this_pyr, mword *head_list, mword *tail_lis
 
 //
 //
-mword *dlist_append_direct(pyr_cache *this_pyr, mword *head_list, mword *tail_list){ // dlist_append_direct#
+mword *dlist_append_direct(babel_env *be, mword *head_list, mword *tail_list){ // dlist_append_direct#
 
-    mword *endls = dlist_find_end(this_pyr, head_list);
+    mword *endls = dlist_find_end(be, head_list);
 
     ldp(endls,     1) = tail_list;
     ldp(tail_list, 2) = endls;
@@ -371,7 +364,7 @@ mword *dlist_append_direct(pyr_cache *this_pyr, mword *head_list, mword *tail_li
 
 // insert into double-list
 //
-mword *dlist_insert(pyr_cache *this_pyr, mword *src_list, mword *dest_list){ // dlist_insert#
+mword *dlist_insert(babel_env *be, mword *src_list, mword *dest_list){ // dlist_insert#
 
     if(is_nil(dest_list)){
         return src_list;
@@ -382,7 +375,7 @@ mword *dlist_insert(pyr_cache *this_pyr, mword *src_list, mword *dest_list){ // 
     }
 
     mword *next_dest_list = pcdr(dest_list);
-    mword *end_src_list   = dlist_find_end(this_pyr, src_list);
+    mword *end_src_list   = dlist_find_end(be, src_list);
 
     ldp(dest_list,    1) = src_list;
     ldp(end_src_list, 1) = next_dest_list;
@@ -401,7 +394,7 @@ mword *dlist_insert(pyr_cache *this_pyr, mword *src_list, mword *dest_list){ // 
 
 // insert into double-list
 //
-mword *dlist_insert_prev(pyr_cache *this_pyr, mword *src_list, mword *dest_list){ // dlist_insert_prev#
+mword *dlist_insert_prev(babel_env *be, mword *src_list, mword *dest_list){ // dlist_insert_prev#
 
     if(is_nil(dest_list)){
         return src_list;
@@ -412,7 +405,7 @@ mword *dlist_insert_prev(pyr_cache *this_pyr, mword *src_list, mword *dest_list)
     }
 
     mword *prev_dest_list = pcpr(dest_list);
-    mword *end_src_list   = dlist_find_end(this_pyr, src_list);
+    mword *end_src_list   = dlist_find_end(be, src_list);
 
     ldp(end_src_list,  1) = dest_list;
     ldp(dest_list,     2) = end_src_list;
@@ -427,7 +420,7 @@ mword *dlist_insert_prev(pyr_cache *this_pyr, mword *src_list, mword *dest_list)
 
 //
 //
-mword *dlist_find_end(pyr_cache *this_pyr, mword *list){ // dlist_find_end#
+mword *dlist_find_end(babel_env *be, mword *list){ // dlist_find_end#
 
     mword *head = list;
     
@@ -442,7 +435,7 @@ mword *dlist_find_end(pyr_cache *this_pyr, mword *list){ // dlist_find_end#
 
 //
 //
-mword dlist_len(pyr_cache *this_pyr, mword *list){ // dlist_len#
+mword dlist_len(babel_env *be, mword *list){ // dlist_len#
 
     mword length = 0;
     mword *head = list;
@@ -461,10 +454,10 @@ mword dlist_len(pyr_cache *this_pyr, mword *list){ // dlist_len#
 
 // This function assumes the dlist is well-formed
 //
-mword *dlist_reverse(pyr_cache *this_pyr, mword *list, mword *head, mword direction){ // dlist_reverse#
+mword *dlist_reverse(babel_env *be, mword *list, mword *head, mword direction){ // dlist_reverse#
 
     if(is_nil(list))
-        return nil;
+        return be->nil;
 
     mword *next = rdp(list,1+direction);
     mword *prev = rdp(list,2-direction);
@@ -481,18 +474,18 @@ mword *dlist_reverse(pyr_cache *this_pyr, mword *list, mword *head, mword direct
     if(next == head || is_nil(next))
         return list;
 
-    return dlist_reverse(this_pyr, next, head, direction);
+    return dlist_reverse(be, next, head, direction);
 
 }
 
 
 //
 //
-mword *dlist_cut(pyr_cache *this_pyr, mword *list, mword index, mword direction){ // dlist_cut#
+mword *dlist_cut(babel_env *be, mword *list, mword index, mword direction){ // dlist_cut#
 
     mword *temp;
 
-    if(is_nil(list)) return nil;
+    if(is_nil(list)) return be->nil;
 
     if(index == 0) return list;
 
@@ -505,65 +498,17 @@ mword *dlist_cut(pyr_cache *this_pyr, mword *list, mword index, mword direction)
 
     if(index == 1){
 
-        ldp(list,1+direction) = nil;
-        ldp(temp,2-direction) = nil;
+        ldp(list,1+direction) = be->nil;
+        ldp(temp,2-direction) = be->nil;
 
         return temp;
 
     }
 
-    return dlist_cut(this_pyr, temp, index-1, direction);
+    return dlist_cut(be, temp, index-1, direction);
 
 }
 
 
-
-//list operators
-//--------------
-//
-//(a) (b c d)   append  --> (a b c d)
-//(a b c d) (1) part    --> (a) (b c d)
-//(a) (b c d)   cons    --> [(a) (b c d)]
-//(b c d) (a)   push    --> (a b c d)
-//(a b c d)     pop     --> (b c d) (a)
-//(a b c) (d)   unshift --> (a b c d)
-//(a b c d)     shift   --> (a b c) (d)
-
-
-//
-//
-blob list_to_map(pyr_cache *this_pyr, blob lists){ // list_to_map#
-
-    return nil;
-
-}
-
-
-// append goes from last element to first element in order to avoid re-traversing
-// the intermediate result list
-blob list_append_pyr_op(pyr_cache *this_pyr, blob lists){ // list_append_pyr_op#
-
-    if(is_nil(lists))
-        return nil;
-
-    int i = size(lists) - 1;
-
-    mword *result = nil;
-    mword *curr_list = nil;
-
-    for(;i>=0;i--){
-        curr_list = rdp(lists,i);
-        list_append_direct(this_pyr,
-                curr_list,
-                result);
-        result = curr_list;
-    }
-
-    return result;
-
-}
-
-#endif
-
-// Clayton Bauman 2017
+// Clayton Bauman 2018
 

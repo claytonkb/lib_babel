@@ -34,8 +34,8 @@ _trace;
         level0_pg  = mem_sys_new_bstruct(UNITS_MTO8(mword_mem_size));
 
         for(i=0;i<PA_DIR_SIZE;i++){ // manual initializion of ptr-arrays
-            ldp(level1_dir,i) = gnil;
-            ldp(level2_dir,i) = gnil;
+            ldp(level1_dir,i) = be->nil;
+            ldp(level2_dir,i) = be->nil;
         }
 
         memset((char*)level0_pg, 0, init_mem_size); // zero out memory

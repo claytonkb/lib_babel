@@ -265,7 +265,7 @@ mword bstruct_rnptr(babel_env *be, mword *bs, void *v){ // _rnptr#
 
 }
 
-#if 0
+
 //
 //
 mword *bstruct_cp(babel_env *be, mword *bs){ // bstruct_cp#
@@ -277,7 +277,6 @@ mword *bstruct_cp(babel_env *be, mword *bs){ // bstruct_cp#
     return bs;
 
 }
-#endif
 
 
 //

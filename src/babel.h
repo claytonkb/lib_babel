@@ -55,20 +55,6 @@ int dev_i;
 
 /*****************************************************************************
  *                                                                           *
- *                             GLOBAL NIL                                    *
- *                                                                           *
- ****************************************************************************/
-#define gnil (be->nil)
-
-    // XXX
-    //      This #define is utilized as an internal short-hand since every
-    // NOTE instance of a babel_env is named "be" in lib_babel. Use of this
-    //      #define in other code may have undefined/unpredictable consequences.
-    // XXX
-
-
-/*****************************************************************************
- *                                                                           *
  *                        FUNCTION DECLARATIONS                              *
  *                                                                           *
  ****************************************************************************/

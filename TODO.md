@@ -11,36 +11,21 @@ Migration
 
 *TOS*
 
-Staging (see below)  
-
-*Order of migration*
-
-introspect\_\*  
 sexpr\*  
+
+    array_to_string
+    array_slice
+    array8_slice
+    list_unshift
+    list_len
+    string_to_ul
+
 bstruct_load_str() --> implementation can wait, but stub it in  
 bstruct/array/list/trie  
 aop/sap  
 array1  
 
 Will call this "lib_babel 0.5"; ready for external use  
-
-
-*Files*
-
-array.c  
-bstruct.c  
-introspect.c  
-io.c  
-list.c  
-mem.c  
-mt19937ar.c  
-pearson.c  
-sexpr.c  
-string.c  
-tptr.c  
-trie.c  
-utf8.c  
-
 
 *Edits*
 
@@ -54,10 +39,6 @@ utf8.c
     sed -i -e 's/\baccess_size_sel\b/access_size/g' array.h
 
     sed -i -e 's/pyr_cache \*this_pyr/babel_env *be/g' *
-
-* There is no global_irt
-* nil?
-* mem_new\_\* ?
 
 
 DONEISH

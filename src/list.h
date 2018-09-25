@@ -10,8 +10,6 @@
 #define CDR_DIRECTION 0
 #define CPR_DIRECTION 1
 
-bstruct list_to_map(babel_env *be, bstruct lists);
-
 mword *list_insert(babel_env *be, mword *src_list, mword *dest_list);
 mword *list_unshift(babel_env *be, mword *list, mword *bs);
 mword *list_shift(babel_env *be, mword *list);
@@ -38,9 +36,6 @@ mword *dlist_find_end(babel_env *be, mword *list);
 mword  dlist_len(babel_env *be, mword *list);
 mword *dlist_reverse(babel_env *be, mword *list, mword *head, mword direction);
 mword *dlist_cut(babel_env *be, mword *list, mword index, mword direction);
-
-// pyr_op's
-bstruct list_append_pyr_op(babel_env *be, bstruct lists);
 
 #endif //LIST_H
 

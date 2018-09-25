@@ -141,7 +141,7 @@
 // MISC
 //
 #define UNINIT_VAL 0xdbadbadbadbadbad                           // UNINIT_VAL#
-#define UNINIT_PTR gnil                                          // UNINIT_PTR#
+#define UNINIT_PTR (be->nil)
 
 #define EMPTY_CSTRING ""                                        // EMPTY_CSTRING#
 
