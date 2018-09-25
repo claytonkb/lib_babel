@@ -63,7 +63,7 @@
 #define  ret(x) j--;  goto x;     //retard
 #define  esc(x) j+=2; goto x;     //escape
 #define advi(x) i=j; j++; goto x; //advance, set i
-#define parse_error do{ _trace; return be->nil; } while(0)
+#define parse_error do{ _warn("parse error"); return be->nil; } while(0)
 
 #define chkdone    if(!(j<length)){goto done;}
 
@@ -115,7 +115,7 @@ null_context:
 
 
 comment_required:
-//_trace;
+_trace;
     chkdone;
     switch(bstring[j]){
         case '-': adv(comment);
@@ -124,7 +124,7 @@ comment_required:
 
 
 comment:
-//_trace;
+_trace;
     chkdone;
     switch(bstring[j]){
         case 0x0d: 

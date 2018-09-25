@@ -6,6 +6,8 @@
 #include "pearson.h"
 #include "introspect.h"
 #include "bstruct.h"
+#include "sexpr.h"
+#include "bstring.h"
 
 #include "cutils.h"
 #include <stdio.h>
@@ -41,6 +43,7 @@ void dev_prompt(void){
 
     bstruct ACC;
     bstruct temp;
+    char   *tempc;
 
     mem_context *mc;
     babel_env *be;
@@ -134,9 +137,9 @@ void dev_prompt(void){
                 break;
 
             case 11:
-//                tempc = cmd_code_str + strlen(cmd_code_str) + 1;
-//                _say((char*)tempc);
-//                ACC = sexpr_from_string(be, string_c2b(be, tempc, 300));
+                tempc = cmd_code_str + strlen(cmd_code_str) + 1;
+                _say((char*)tempc);
+                ACC = sexpr_from_string(be, string_c2b(be, tempc, 300));
                 break;
 
             case 12:
@@ -205,12 +208,11 @@ void dev_menu(void){
             "7     .....    ACC <== nil\n"
             "8  p  .....    ACC <== p\n"
             "9  n  .....    ACC <== rdp(ACC,n)\n"
-            "10 n  .....    ACC <== rdv(ACC,n)\n");
-
+            "10 n  .....    ACC <== rdv(ACC,n)\n"
 //            "11 S  .....    ACC <== sexpr(S)\n"
-//            "12    .....    introspect_str(ACC)\n"
-//            "13    .....    introspect_gv(ACC)\n"
-//            "14    .....    introspect_svg(ACC)\n"
+            "12    .....    introspect_str(ACC)\n"
+            "13    .....    introspect_gv(ACC)\n"
+            "14    .....    introspect_svg(ACC)\n");
 
 }
 

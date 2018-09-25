@@ -13,12 +13,13 @@ Migration
 
 sexpr\*  
 
-    array_to_string
-    array_slice
-    array8_slice
-    list_unshift
-    list_len
-    string_to_ul
+    Issues:
+        Currently assumes sizeof(mword)=sizeof(uint32_t)
+        Just upscaling to uint64_t is needlessly wasteful
+        Instead,
+            typedef uint32_t* ucs4
+        Do the same for the utf8 converter
+        Clean up all the cruft in sexpr.* it's a disaster area
 
 bstruct_load_str() --> implementation can wait, but stub it in  
 bstruct/array/list/trie  
