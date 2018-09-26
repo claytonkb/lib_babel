@@ -242,22 +242,22 @@ mword *mem_new_str(babel_env *be, mword size8, char set_char){ // mem_new_str#
 }
 
 
-//// Intended for internal-use... 
-////
-//mword *_newbits(babel_env *be, mword size1){ // _newbits#
 //
-//    mword arlength = array1_mword_size(be, size1);
 //
-//    mword *result = mem_new_val(be, arlength, 0);
-//
-//    mword alignment_word = array1_enc_align(be, size1);
-//
-//    ldv(result, arlength-1) = alignment_word;
-//    ldv(result, arlength-2) = (rdv(result, arlength-2)) & ~alignment_word;
-//
-//    return result;
-//
-//}
+mword *mem_new_bits(babel_env *be, mword size1){
+
+    mword arlength = array1_mword_size(be, size1);
+
+    mword *result = mem_new_val(be, arlength, 0);
+
+    mword alignment_word = array1_enc_align(be, size1);
+
+    ldv(result, arlength-1) = alignment_word;
+    ldv(result, arlength-2) = (rdv(result, arlength-2)) & ~alignment_word;
+
+    return result;
+
+}
 
 
 //
@@ -330,6 +330,43 @@ void *_mkptr(babel_env *be, mword array_size, ...){ // _mkptr#
     return ptr;
 
 }
+
+
+// creates a new list of given size
+// note that the list is created in REVERSE order:
+// _newls(this_pyr, 3, _val(this_pyr,3), _val(this_pyr,2), _val(this_pyr,1)) --> (1 2 3)
+//
+// [ptr [val 0x1 ] [ptr [val 0x2 ] [ptr [val 0x3 ]  nil ] ] ]
+//
+mword *_mkls(babel_env *be, mword list_size, ...){ // _mkls#
+
+    va_list vl;
+    va_start(vl,list_size);
+
+    int i;
+
+    mword *last_cons = be->nil;
+//    mword *new_cons = mem_new_ptr(be, 2);
+    mword *new_cons = list_cons(be, be->nil, be->nil);
+    mword *head = new_cons;
+
+    ldp(new_cons,0) = va_arg(vl,mword*);
+
+    for(i=1;i<list_size;i++){
+
+        last_cons = new_cons;
+        new_cons = mem_new_ptr(be, 2);
+        ldp(new_cons,0) = va_arg(vl,mword*);
+        ldp(last_cons,1) = new_cons;
+
+    }
+
+    va_end(vl);
+
+    return head;
+
+}
+
 
 
 //// make aop ==> make "array-of-pairs"

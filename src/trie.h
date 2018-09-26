@@ -22,8 +22,8 @@
 
 mword *trie_new(babel_env *be);
 
-mword *trie_new_cell(babel_env *be, mword *key, mword *secondary_key, mword *payload);
-mword *trie_new_cell2(babel_env *be, mword *key, mword *secondary_key, mword *payload);
+//mword *trie_new_cell(babel_env *be, mword *key, mword *secondary_key, mword *payload);
+//mword *trie_new_cell2(babel_env *be, mword *key, mword *secondary_key, mword *payload);
 
 void trie_insert(babel_env *be, mword *trie, mword *key, mword *secondary_key, mword *payload);
 //void rtrie_insert(babel_env *be, mword *trie, mword *key, mword *entry, mword level);

@@ -201,8 +201,8 @@
 // HASH#  --> Hash a Babel string    (allocating)
 // HASHM# --> Hash a val-array       (allocating)
 
-#define HASHI(be,res,str) do{    pearson128( (str)res, (bstruct)be->zero_hash, (char*)str, STRLEN(str) ) } while(0)
-#define HASHC(be,str)     do{ pearson_hash8( be      , (bstruct)be->zero_hash, (char*)str, STRLEN(str) ) } while(0)
+#define HASHI(be,res,str)    pearson128( (str)res, (bstruct)be->zero_hash, (char*)str, STRLEN(str) )
+#define HASHC(be,str)     pearson_hash8( be      , (bstruct)be->zero_hash, (char*)str, STRLEN(str) )
 
 //#define HASHI(result,str) (pearson_marsaglia16( (char*)result, (char*)global_irt->tags->PYR_TAG_ZERO_HASH, (char*)str, STRLEN(str) ))
 //#define HASHC(pyr,str)    HASHA_FORM(pearson_marsaglia16a, pyr, str, STRLEN(str) )

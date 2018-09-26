@@ -22,11 +22,12 @@ void *mem_new_tptr(babel_env *be, const mword *hash, mword *bs);
 void *_val(babel_env *be, mword value);
 void *_ptr(babel_env *be, mword *unsafe_ptr);
 mword *mem_new_str(babel_env *be, mword size8, char set_char);
-//mword *_newbits(babel_env *be, mword size1);
+mword *mem_new_bits(babel_env *be, mword size1);
 mword *list_cons(babel_env *be, mword *car, mword *cdr);
 mword *list_dcons(babel_env *be, mword *car, mword *cdr, mword *cpr);
 void *_mkval(babel_env *be, mword array_size, ...);
 void *_mkptr(babel_env *be, mword array_size, ...);
+mword *_mkls(babel_env *be, mword list_size, ...);
 //void *_mk_aop(babel_env *be, mword array_size, ...);
 
 #endif //MEM_H

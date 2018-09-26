@@ -75,14 +75,13 @@ mword array8_mword_size(mword size8){ // array8_mword_size#
 
 }
 
-#if 0
-///*****************************************************************************
-// *                                                                           *
-// *                          ARRAY-1 PRIMITIVES                               *
-// *                                                                           *
-// ****************************************************************************/
-//
-/*
+
+/*****************************************************************************
+ *                                                                           *
+ *                          ARRAY-1 PRIMITIVES                               *
+ *                                                                           *
+ ****************************************************************************/
+
 #define array1_mask_generate(off,arr,mask,sel)      \
     mword sel          = (off / MWORD_BIT_SIZE);    \
     mword bit_offset   = (off % MWORD_BIT_SIZE);    \
@@ -93,108 +92,112 @@ mword array8_mword_size(mword size8){ // array8_mword_size#
                                                     \
     mword mask = (1<<bit_offset);
     
-*/
-//// XXX TESTED XXX
-////
-//mword array1_read(mword *array, mword offset){ // array1_read#
+
+// XXX TESTED XXX
 //
-//    array1_mask_generate(offset, array, read_mask, mword_select);
-//    return ((rdv(array,mword_select) & read_mask) >> offset);
+mword array1_read(mword *array, mword offset){ // array1_read#
+
+    array1_mask_generate(offset, array, read_mask, mword_select);
+    return ((rdv(array,mword_select) & read_mask) >> offset);
+
+}
+
+
+// XXX TESTED XXX
 //
-//}
+void array1_write(mword *array, mword offset, mword value){ // array1_write#
+
+    array1_mask_generate(offset, array, write_mask, mword_select);
+    ldv(array,mword_select) = (rdv(array,mword_select) & ~write_mask) | ((value<<bit_offset) & write_mask);
+
+}
+
+
+// Returns a val containing the bit at val_array[entry1] (bitwise addressing)
+// XXX TESTED XXX
 //
-//
-//// XXX TESTED XXX
-////
-//void array1_write(mword *array, mword offset, mword value){ // array1_write#
-//
-//    array1_mask_generate(offset, array, write_mask, mword_select);
-//    ldv(array,mword_select) = (rdv(array,mword_select) & ~write_mask) | ((value<<bit_offset) & write_mask);
-//
-//}
-//
-//
-//// Returns a val containing the bit at val_array[entry1] (bitwise addressing)
-//// XXX TESTED XXX
-////
-//mword *array1_th(babel_env *be, mword *val_array, mword entry1){ // array1_th#
-//
+mword *array1_th(babel_env *be, mword *val_array, mword entry1){ // array1_th#
+
 //    mword *bit = _newbits(be, 1);
-//    ldv(bit,0) = array1_read(val_array, entry1);
-//
-//    return bit;
-//
-//}
-//
-//
-////
-////
-//mword array1_size(babel_env *be, mword *string){ // array1_size#
-//
-//    mword strsize = size(string) - 1;
-//    mword last_mword = rdv(string, strsize);
-//    mword alignment = array1_dec_align(be, last_mword);
-//
-//    if(last_mword){
-//        return  (strsize * MWORD_BIT_SIZE) - (MWORD_BIT_SIZE - alignment);
-//    }
-//    else{
-//        return (strsize * MWORD_BIT_SIZE);
-//    }
-//
-//}
+    mword *bit = mem_new_bits(be, 1);
+    ldv(bit,0) = array1_read(val_array, entry1);
+
+    return bit;
+
+}
+
+
 //
 //
-//// decodes the alignment word
-////
-//mword array1_dec_align(babel_env *be, mword alignment_word){ // array1_dec_align#
+mword array1_size(babel_env *be, mword *string){ // array1_size#
+
+    mword strsize = size(string) - 1;
+    mword last_mword = rdv(string, strsize);
+    mword alignment = array1_dec_align(be, last_mword);
+
+    if(last_mword){
+        return  (strsize * MWORD_BIT_SIZE) - (MWORD_BIT_SIZE - alignment);
+    }
+    else{
+        return (strsize * MWORD_BIT_SIZE);
+    }
+
+}
+
+
+// decodes the alignment word
 //
-//    if(alignment_word == 0){
-//        return 0;
-//    }
+mword array1_dec_align(babel_env *be, mword alignment_word){ // array1_dec_align#
+
+    if(alignment_word == 0){
+        return 0;
+    }
+
+    alignment_word = ~alignment_word;
+    mword alignment = 0;
+
+    while(alignment_word != 0){ //FIXME: PERF ... really inefficient
+        alignment_word = alignment_word >> 1;
+        alignment++;
+    }
+
+    return alignment;
+
+}
+
+
+//Returns an alignment word based on size1
 //
-//    alignment_word = ~alignment_word;
-//    mword alignment = 0;
-//
-//    while(alignment_word != 0){ //FIXME: PERF ... really inefficient
-//        alignment_word = alignment_word >> 1;
-//        alignment++;
-//    }
-//
-//    return alignment;
-//
-//}
-//
-//
-////Returns an alignment word based on size1
-////
-//mword array1_enc_align(babel_env *be, mword size1){ // array1_enc_align#
-//
-//    if((size1 % MWORD_BIT_SIZE) == 0)
-//        return 0;
-//
-//    mword alignment = FMAX; //(mword)-1;
-//
-//    return alignment << (size1 % MWORD_BIT_SIZE);
-//
-//}
-//
-//
-////
-////
-//mword array1_mword_size(babel_env *be, mword size1){ // array1_mword_size#
-//
-//    mword size = (size1 / MWORD_BIT_SIZE);
-//
-//    if((size1 % MWORD_BIT_SIZE) != 0){ //XXX Assumes that int div rounds to floor
-//        size++;
-//    }
-//
-//    return size+1; //for the alignment_word
-//
-//}
+mword array1_enc_align(babel_env *be, mword size1){ // array1_enc_align#
+
+    if((size1 % MWORD_BIT_SIZE) == 0)
+        return 0;
+
+    mword alignment = FMAX; //(mword)-1;
+
+    return alignment << (size1 % MWORD_BIT_SIZE);
+
+}
+
+
 //
 //
+mword array1_mword_size(babel_env *be, mword size1){ // array1_mword_size#
+
+    mword size = (size1 / MWORD_BIT_SIZE);
+
+    if((size1 % MWORD_BIT_SIZE) != 0){ //XXX Assumes that int div rounds to floor
+        size++;
+    }
+
+    return size+1; //for the alignment_word
+
+}
+
+
+
+
+#if 0
 ///*****************************************************************************
 // *                                                                           *
 // *                            ARRAY CONVERSION                               *

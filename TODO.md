@@ -11,37 +11,11 @@ Migration
 
 *TOS*
 
-sexpr\*  
-
-    Issues:
-
-        [val 1 2 3]
-         | 
-         v
-        [bs 
-          s001 [ptr s004 s00c ]
-          s004 [val 0x760000005b 0x6c00000061 0x3100000020 0x3200000020 0x3300000020 0x5d 0xffffffff00000000 ]
-          s00c [ptr s00f s017 ]
-          s00f [val 0x6100000076000000 0x200000006c000000 0x2000000031000000 0x2000000032000000 0x5d00000033000000 0x0 0xffffffffff000000 ]
-          s017 [ptr s01a s022 ]
-          s01a [val 0x6100000076000000 0x200000006c000000 0x2000000031000000 0x2000000032000000 0x5d00000033000000 0x0 0xffffffffff000000 ]
-          s022 [ptr s025 nil ]
-          s025 [val 0x61000000760000 0x200000006c0000 0x20000000310000 0x20000000320000 0x5d000000330000 0x0 0xffffffffffff0000 ] ]
-
-        Complete garbage; probably a bug in array* or bstruct*
-
-        [bs 
-          s001 [ptr nil s009 ]
-          s009 [ptr nil s00c ]
-          s00c [ptr nil s00f ]
-          s00f [ptr nil nil ] ]
-
-        ^^^^^After replacing array_slice in capture_token with be->nil
-
-bstruct_load_str() --> implementation can wait, but stub it in  
-bstruct/array/list/trie  
-aop/sap  
-array1  
+    bstruct_load_str() --> implementation can wait, but stub it in  
+    bstruct/array/list/trie  
+    aop/sap  
+    array1  
+    Toy Code pearson
 
 Will call this "lib_babel 0.5"; ready for external use  
 

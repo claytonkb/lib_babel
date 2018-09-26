@@ -4,7 +4,6 @@
 #ifndef IO_H
 #define IO_H
 
-//FILE *io_open_file(babel_env *be, mword *filename);
 FILE *io_open_file(babel_env *be, mword *filename, char *attr);
 mword io_file_size(babel_env *be, FILE *file);
 babel_env *io_close_file(babel_env *be, FILE *file);

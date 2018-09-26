@@ -1,8 +1,6 @@
 // pearson.c
 //
 
-// pearson.c
-//
 // cite: Fast Hashing of Variable-Length Text Strings, Peter K. Pearson 
 // http://epaperpress.com/vbhash/download/p677-pearson.pdf
 //
@@ -16,24 +14,22 @@
 // This property allows a frequently-used prefix to be hashed once and then
 // extended with suffixes by passing the prefix as the init argument to the
 // hash function.
-//
-// build hint: gcc pearson.c -o pearson
 
 #include "babel.h"
 #include "pearson.h"
-//#include "mem.h"
+#include "mem.h"
 
 
-//// allocating version of pearson128()
-////
-//hash pearson_hash8(pyr_context *pc, const bstruct init, const char *key, const unsigned strlen){
+// allocating version of pearson128()
 //
-//    hash result = mem_new_val(pc, HASH_BYTE_SIZE, 0);
-//    pearson128(result,init,key,strlen);
-//
-//    return result;
-//
-//}
+hash pearson_hash8(babel_env *be, const bstruct init, const char *key, const unsigned strlen){
+
+    hash result = mem_new_val(be, HASH_BYTE_SIZE, 0);
+    pearson128(result,init,key,strlen);
+
+    return result;
+
+}
 
 // result must be a uint64_t[2] array
 // init must be a uint64_t[2] array
