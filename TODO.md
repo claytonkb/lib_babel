@@ -11,8 +11,10 @@ Migration
 
 *TOS*
 
-    aop/sap  
     Toy Code pearson
+    aop/sap  
+    lossy
+    basic graph support
     un-crapify mem_alloc so that it uses be->paging_base
     bstruct_load_str() --> implementation can wait, but stub it in  
 
