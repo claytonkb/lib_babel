@@ -9,8 +9,8 @@
 #include "sexpr.h"
 #include "bstring.h"
 #include "array.h"
+#include "io.h"
 
-#include "cutils.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -48,7 +48,9 @@ void dev_prompt(void){
     mword   tempv;
 
     mem_context *mc;
-    babel_env *be;
+//    babel_env *be;
+    babel_env *be = babel_env_new(MEM_SUGGEST_INIT_ALLOC,MEM_SUGGEST_INIT_ALLOC);
+    ACC = be->mem->paging_base;
    
     _say("type 0 for menu");
 
@@ -68,8 +70,6 @@ void dev_prompt(void){
                 break;
 
             case 1:
-                be = babel_env_new(MEM_SUGGEST_INIT_ALLOC,MEM_SUGGEST_INIT_ALLOC);
-//                ACC = be->mem->paging_base;
 //                temp = _mkptr(be, 5, // 0xf0f0f0f0f0f0f0f0, 0x0f0f0f0f0f0f0f0f, 0xf0f0f0f0f0f0f0f0, 0x0f0f0f0f0f0f0f0f
 //                    _mkval(be, 2, 0x0121312141213121, 0x1512131214121312),
 //                    _mkval(be, 2, 0x2161213121412131, 0x3215121312141213),
@@ -77,12 +77,13 @@ void dev_prompt(void){
 //                    _mkval(be, 2, 0x6131216121312141, 0x7213121512131214),
 //                    _mkval(be, 2, 0x8121312181213121, 0x9412131215121312));
 
-//                temp = _mkval(be, 10,
+//                ACC = _mkval(be, 10,
 //                    0x0121312141213121, 0x1512131214121312,
 //                    0x2161213121412131, 0x3215121312141213,
 //                    0x4121712131214121, 0x5312151213121412,
 //                    0x6131216121312141, 0x7213121512131214,
 //                    0x8121312181213121, 0x9412131215121312);
+
 //_dq(temp);
 //                ACC = bstruct_cp(be, temp);
 
@@ -90,10 +91,12 @@ void dev_prompt(void){
 //                ACC = bstruct_unload(be, temp);
 //                ACC = (mword*)string_to_array(be, C2B("[val 1 2 3]\n"));
 
-//                cmd_code_str = strtok(NULL, " ");
-//                if(cmd_code_str == NULL){ continue; }
-//                tempv = array8_enc_align(atoi((char*)cmd_code_str));
-//                _dq( tempv );
+//                ACC = _mkaop(be, 5,
+//                    _val(be, 0x0121312141213121), _val(be, 0x1512131214121312),
+//                    _val(be, 0x2161213121412131), _val(be, 0x3215121312141213),
+//                    _val(be, 0x4121712131214121), _val(be, 0x5312151213121412),
+//                    _val(be, 0x6131216121312141), _val(be, 0x7213121512131214),
+//                    _val(be, 0x8121312181213121), _val(be, 0x9412131215121312));
 
                 break;
 
@@ -106,11 +109,11 @@ void dev_prompt(void){
                 break;
 
             case 4:
-//                _dc((mword)ACC);
-//                _say("");
-//                _d((mword)ACC);
+                //_dc((mword)ACC);
+                //_say("");
+                //_d((mword)ACC);
                 _dq((mword)ACC);
-//                _df((mword)ACC);
+                //_df((mword)ACC);
                 break;
 
             case 5:
@@ -162,16 +165,16 @@ void dev_prompt(void){
 
             case 13:
                 temp = introspect_gv(be, ACC);
-                _say((char*)temp);
-//                io_spit(be, "test.dot", temp, U8_ASIZE, OVERWRITE);
-//                _say("introspect_gv(ACC) ==> test.dot");
+                //_say((char*)temp);
+                io_spit(be, "work/test.dot", temp, U8_ASIZE, OVERWRITE);
+                _say("introspect_gv(ACC) ==> work/test.dot");
                 break;
 
             case 14:
-                temp = introspect_svg(be, ACC, 8, 0, MWORD_ASIZE);
-                _say((char*)temp);
-//                io_spit(be, "intro.svg", temp, BYTE_ASIZE, OVERWRITE);
-//                _say("introspect_svg(ACC) ==> intro.svg");
+                temp = introspect_svg(be, ACC, MWORD_SIZE, 0, MWORD_ASIZE);
+                //_say((char*)temp);
+                io_spit(be, "work/intro.svg", temp, U8_ASIZE, OVERWRITE);
+                _say("introspect_svg(ACC) ==> work/intro.svg");
                 break;
 
             default:

@@ -11,11 +11,10 @@ Migration
 
 *TOS*
 
-    bstruct_load_str() --> implementation can wait, but stub it in  
-    bstruct/array/list/trie  
     aop/sap  
-    array1  
     Toy Code pearson
+    un-crapify mem_alloc so that it uses be->paging_base
+    bstruct_load_str() --> implementation can wait, but stub it in  
 
 Will call this "lib_babel 0.5"; ready for external use  
 

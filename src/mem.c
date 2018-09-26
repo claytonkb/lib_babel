@@ -102,7 +102,7 @@ void mem_sys_destroy_bstruct(bstruct b){
 
 // size is in units of bytes
 //
-void *mem_sys_alloc(int size){ // mem_sys_alloc#
+void *mem_sys_alloc(int size){
 
     void *alloc_attempt = malloc(size); // XXX WAIVER(malloc) XXX
 
@@ -117,7 +117,7 @@ void *mem_sys_alloc(int size){ // mem_sys_alloc#
 
 //
 //
-void mem_sys_free(void *p){ // mem_sys_free#
+void mem_sys_free(void *p){
 
     free(p); // XXX WAIVER(free) XXX
 
@@ -126,7 +126,7 @@ void mem_sys_free(void *p){ // mem_sys_free#
 
 // FIXME: Temporary sol'n until GC is in place
 //
-bstruct mem_alloc(babel_env *be, mword alloc_sfield){ // mem_alloc#
+bstruct mem_alloc(babel_env *be, mword alloc_sfield){
 
     mword alloc_request_size = mem_alloc_size(alloc_sfield)+1; // +1 is for s-field
 
@@ -141,7 +141,7 @@ bstruct mem_alloc(babel_env *be, mword alloc_sfield){ // mem_alloc#
 
 //
 //
-void *mem_new_val(babel_env *be, mword size, mword init){ // mem_new_val#
+void *mem_new_val(babel_env *be, mword size, mword init){
 
     mword local_size = UNITS_MTO8(size);
 
@@ -156,7 +156,7 @@ void *mem_new_val(babel_env *be, mword size, mword init){ // mem_new_val#
 
 //
 //
-void *mem_new_ptr(babel_env *be, mword size){ // mem_new_ptr#
+void *mem_new_ptr(babel_env *be, mword size){
 
     void *ptr;
 
@@ -201,7 +201,7 @@ void *mem_new_tptr(babel_env *be, const mword *hash, mword *bs){
 // Accepts a data value and returns a val-array of size 1 containing that 
 // data value
 //
-void *_val(babel_env *be, mword value){ // _val#
+void *_val(babel_env *be, mword value){
 
     void *ptr = mem_new_val(be, 1, 0);
     ldv(ptr,0) = value;
@@ -214,7 +214,7 @@ void *_val(babel_env *be, mword value){ // _val#
 // Accepts a single unsafe pointer and returns a safe ptr-array of size
 // 1 containing the unsafe pointer
 //
-void *_ptr(babel_env *be, mword *unsafe_ptr){ // _ptr#
+void *_ptr(babel_env *be, mword *unsafe_ptr){
 
     void *ptr = mem_new_ptr(be, 1);
     ldp(ptr,0) = unsafe_ptr;
@@ -226,7 +226,7 @@ void *_ptr(babel_env *be, mword *unsafe_ptr){ // _ptr#
 
 // Intended for internal-use... 
 //
-mword *mem_new_str(babel_env *be, mword size8, char set_char){ // mem_new_str#
+mword *mem_new_str(babel_env *be, mword size8, char set_char){
 
     mword arlength = array8_mword_size(size8);
 
@@ -262,7 +262,7 @@ mword *mem_new_bits(babel_env *be, mword size1){
 
 //
 //
-mword *list_cons(babel_env *be, mword *car, mword *cdr){ // list_cons#
+mword *list_cons(babel_env *be, mword *car, mword *cdr){
 
     mword **cons_cell = (mword**)mem_new_cons(be);
     ldp(cons_cell,0) = car;
@@ -275,7 +275,7 @@ mword *list_cons(babel_env *be, mword *car, mword *cdr){ // list_cons#
 
 // Make a double-linked list cons cell (three entries instead of two)
 //
-mword *list_dcons(babel_env *be, mword *car, mword *cdr, mword *cpr){ // list_dcons#
+mword *list_dcons(babel_env *be, mword *car, mword *cdr, mword *cpr){
 
     mword **dcons_cell = (mword**)mem_new_cons(be);
     ldp(dcons_cell,0) = car;
@@ -289,7 +289,7 @@ mword *list_dcons(babel_env *be, mword *car, mword *cdr, mword *cpr){ // list_dc
 
 //
 //
-void *_mkval(babel_env *be, mword array_size, ...){ // _mkval#
+void *_mkval(babel_env *be, mword array_size, ...){
 
     void *val = (void*)mem_new_val(be, array_size, 0);
 
@@ -312,7 +312,7 @@ void *_mkval(babel_env *be, mword array_size, ...){ // _mkval#
 
 //
 //
-void *_mkptr(babel_env *be, mword array_size, ...){ // _mkptr#
+void *_mkptr(babel_env *be, mword array_size, ...){
 
     void *ptr = (void*)mem_new_ptr(be, array_size);
 
@@ -338,7 +338,7 @@ void *_mkptr(babel_env *be, mword array_size, ...){ // _mkptr#
 //
 // [ptr [val 0x1 ] [ptr [val 0x2 ] [ptr [val 0x3 ]  nil ] ] ]
 //
-mword *_mkls(babel_env *be, mword list_size, ...){ // _mkls#
+mword *_mkls(babel_env *be, mword list_size, ...){
 
     va_list vl;
     va_start(vl,list_size);
@@ -369,32 +369,31 @@ mword *_mkls(babel_env *be, mword list_size, ...){ // _mkls#
 
 
 
-//// make aop ==> make "array-of-pairs"
-//// array_size = number-of-arguments / 2
-////
-//void *_mk_aop(babel_env *be, mword array_size, ...){ // _mk_aop#
+// make aop ==> make "array-of-pairs"
+// array_size = number-of-arguments / 2
 //
-//    void *ptr = (void*)mem_new_ptr(be, array_size);
-//
-//    va_list vl;
-//    va_start(vl,array_size);
-//
-//    int i;
-//    mword *car;
-//    mword *cdr;
-//
-//    for(i=0;i<array_size;i++){
-//        car = va_arg(vl,mword*);
-//        cdr = va_arg(vl,mword*);
-//        ldp(ptr,i) = list_cons(be, car, cdr);
-//    }
-//
-//    va_end(vl);
-//
-//    return ptr;
-//
-//}
-//
+void *_mkaop(babel_env *be, mword array_size, ...){
+
+    void *ptr = (void*)mem_new_ptr(be, array_size);
+
+    va_list vl;
+    va_start(vl,array_size);
+
+    int i;
+    mword *car;
+    mword *cdr;
+
+    for(i=0;i<array_size;i++){
+        car = va_arg(vl,mword*);
+        cdr = va_arg(vl,mword*);
+        ldp(ptr,i) = list_cons(be, car, cdr);
+    }
+
+    va_end(vl);
+
+    return ptr;
+
+}
 
 
 
