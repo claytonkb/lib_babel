@@ -12,10 +12,15 @@ Migration
 *TOS*
 
     Toy Code pearson
+    misc array functions are disabled
+    trie code untested, might be broken
     aop/sap  
     lossy
     basic graph support
     un-crapify mem_alloc so that it uses be->paging_base
+    test whether quotes are working in sexpr
+    sort out the tags issue (tags.h)
+    diff ai_ml/pyramid and pyramid; may still need to migrate some functions
     bstruct_load_str() --> implementation can wait, but stub it in  
 
 Will call this "lib_babel 0.5"; ready for external use  
