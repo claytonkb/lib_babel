@@ -46,12 +46,13 @@ void dev_prompt(void){
     bstruct temp;
     char   *tempc;
     mword   tempv;
+    char *c = "a";
 
     mem_context *mc;
 //    babel_env *be;
     babel_env *be = babel_env_new(MEM_SUGGEST_INIT_ALLOC,MEM_SUGGEST_INIT_ALLOC);
     ACC = be->mem->paging_base;
-   
+
     _say("type 0 for menu");
 
     while(1){
@@ -97,6 +98,9 @@ void dev_prompt(void){
 //                    _val(be, 0x4121712131214121), _val(be, 0x5312151213121412),
 //                    _val(be, 0x6131216121312141), _val(be, 0x7213121512131214),
 //                    _val(be, 0x8121312181213121), _val(be, 0x9412131215121312));
+
+                ACC = pearson_hash8(be, be->zero_hash, "foobarbananabox", STRLEN("foobarbananabox"));
+//                *c++;
 
                 break;
 

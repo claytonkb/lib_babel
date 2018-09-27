@@ -24,7 +24,7 @@
 //
 hash pearson_hash8(babel_env *be, const bstruct init, const char *key, const unsigned strlen){
 
-    hash result = mem_new_val(be, HASH_BYTE_SIZE, 0);
+    hash result = mem_new_val(be, HASH_SIZE, 0);
     pearson128(result,init,key,strlen);
 
     return result;
@@ -47,28 +47,28 @@ void pearson128(hash result, const bstruct init, const char *key, const unsigned
 
     for(i=0;i<strlen;i++){ // if strlen==0, result=init
 
-        result[0] ^= 0x01326457fecd9ba8;
-        result[1] ^= 0x8ab9dcef75462310;
+        result[0] = result[1] ^ 0x01326754cdfeab98;
+        result[1] = result[0] ^ 0x89baefdc45762310;
 
-        round_key = key[i] ^ pearson_perm[ cresult[8] ];
+        round_key = key[i];
 
-        temp = cresult[0];
-        cresult[ 0] = pearson_perm[ cresult[ 1] ^ round_key++ ];
-        cresult[ 1] = pearson_perm[ cresult[ 2] ^ round_key++ ];
-        cresult[ 2] = pearson_perm[ cresult[ 3] ^ round_key++ ];
-        cresult[ 3] = pearson_perm[ cresult[ 4] ^ round_key++ ];
-        cresult[ 4] = pearson_perm[ cresult[ 5] ^ round_key++ ];
-        cresult[ 5] = pearson_perm[ cresult[ 6] ^ round_key++ ];
-        cresult[ 6] = pearson_perm[ cresult[ 7] ^ round_key++ ];
-        cresult[ 7] = pearson_perm[ cresult[ 8] ^ round_key++ ];
-        cresult[ 8] = pearson_perm[ cresult[ 9] ^ round_key++ ];
-        cresult[ 9] = pearson_perm[ cresult[10] ^ round_key++ ];
-        cresult[10] = pearson_perm[ cresult[11] ^ round_key++ ];
-        cresult[11] = pearson_perm[ cresult[12] ^ round_key++ ];
-        cresult[12] = pearson_perm[ cresult[13] ^ round_key++ ];
-        cresult[13] = pearson_perm[ cresult[14] ^ round_key++ ];
-        cresult[14] = pearson_perm[ cresult[15] ^ round_key++ ];
-        cresult[15] = pearson_perm[ temp        ^ round_key   ];
+        //temp = cresult[0];
+        cresult[ 0] = pearson_perm[ cresult[ 0] ^ (round_key + 167) ];
+        cresult[ 1] = pearson_perm[ cresult[ 1] ^ (round_key + 173) ];
+        cresult[ 2] = pearson_perm[ cresult[ 2] ^ (round_key + 179) ];
+        cresult[ 3] = pearson_perm[ cresult[ 3] ^ (round_key + 181) ];
+        cresult[ 4] = pearson_perm[ cresult[ 4] ^ (round_key + 191) ];
+        cresult[ 5] = pearson_perm[ cresult[ 5] ^ (round_key + 193) ];
+        cresult[ 6] = pearson_perm[ cresult[ 6] ^ (round_key + 197) ];
+        cresult[ 7] = pearson_perm[ cresult[ 7] ^ (round_key + 199) ];
+        cresult[ 8] = pearson_perm[ cresult[ 8] ^ (round_key + 211) ];
+        cresult[ 9] = pearson_perm[ cresult[ 9] ^ (round_key + 223) ];
+        cresult[10] = pearson_perm[ cresult[10] ^ (round_key + 227) ];
+        cresult[11] = pearson_perm[ cresult[11] ^ (round_key + 229) ];
+        cresult[12] = pearson_perm[ cresult[12] ^ (round_key + 233) ];
+        cresult[13] = pearson_perm[ cresult[13] ^ (round_key + 239) ];
+        cresult[14] = pearson_perm[ cresult[14] ^ (round_key + 241) ];
+        cresult[15] = pearson_perm[ cresult[15] ^ (round_key + 251) ];
 
         // xoroshiro128
         result[1] ^= result[0];
@@ -104,7 +104,6 @@ static const char pearson_perm[] = // pearson_perm#
 
 };
 
+
 // Clayton Bauman 2018
-
-
 
