@@ -10,10 +10,6 @@
 //
 mem_context *mem_context_new(babel_env *be, mword init_mem_size){
 
-#ifdef GC_TRACE
-_trace;
-#endif
-
     int i;
 
     mem_context *mc = malloc(sizeof(mem_context)); // XXX WAIVER(malloc) XXX
@@ -98,8 +94,6 @@ void mem_sys_destroy_bstruct(bstruct b){
 }
 
 
-
-
 // size is in units of bytes
 //
 void *mem_sys_alloc(int size){
@@ -124,25 +118,56 @@ void mem_sys_free(void *p){
 }
 
 
-// FIXME: Temporary sol'n until GC is in place
+//// FIXME: Temporary sol'n until GC is in place
+////
+//bstruct mem_alloc(babel_env *be, mword alloc_sfield){
+//
+//    mword alloc_request_size = mem_alloc_size(alloc_sfield)+1; // +1 is for s-field
+//
+//    bstruct result = mem_sys_alloc(UNITS_MTO8(alloc_request_size));
+//    result++;
+//    sfield(result) = alloc_sfield;
+//
+//    return result;
+//
+//}
+
+
+//
 //
 bstruct mem_alloc(babel_env *be, mword alloc_sfield){
 
     mword alloc_request_size = mem_alloc_size(alloc_sfield)+1; // +1 is for s-field
 
-    // large page?
-    //      mem_sys_alloc (warn?)
-    // find current leaf in paging pyramid
-    // enough space to fulfill this request?
-    //      yes: allocate the requested memory and return
-    //      no:  allocate another leaf, add to the paging pyramid
-    //           allocate the requested memory and return
+    bstruct result;
 
-    // XXX: nested memory (semi-auto mem mgt)
+    if(alloc_request_size >= LARGE_PAGE_SIZE){
+        result = mem_sys_alloc(UNITS_MTO8(alloc_request_size));
+        result++;
+        sfield(result) = alloc_sfield;
+        _warn("large page allocation");
+        return result;
+    }
 
-    bstruct result = mem_sys_alloc(UNITS_MTO8(alloc_request_size));
-    result++;
-    sfield(result) = alloc_sfield;
+    thread_context *tc = be->threads[be->thread_id];
+
+    bstruct paging_base = tc->mem->paging_base;
+
+    mword *alloc_dir  = rdp(paging_base,tc->mem->alloc_ptr.level2_index);
+    mword *alloc_pg   = rdp(alloc_dir,  tc->mem->alloc_ptr.level1_index);
+    mword *alloc_ptr  = alloc_pg + tc->mem->alloc_ptr.level0_index;
+
+    // calculate headroom in alloc_pg from alloc_ptr
+    // if(greater than alloc_request_size)
+    //      result = alloc_ptr
+    //      alloc_ptr.level0_index adjust to new free space
+    //      add result to managed_dyn list
+    //      return result;
+    // else
+    //      alloc new page
+    //      alloc as above
+    //      add result to managed_dyn list
+    //      return result;
 
     return result;
 

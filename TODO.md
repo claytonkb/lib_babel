@@ -12,6 +12,12 @@ Migration
 *TOS*
 
     un-crapify mem_alloc so that it uses be->paging_base
+        change to per-thread paging-base
+        when closing a nested mem context, allow to specify a pointer to
+            save from deallocation
+        this pointer gets "bstruct_to_array()" called to ensure that none of
+            its children get de-allocated
+        de-allocation proceeds backward toward the snapshot point
     aop/sap  
     lossy
     vvvvv mid priority

@@ -124,23 +124,38 @@ typedef struct{
 
 
 typedef struct{
-    bstruct paging_base;
+    mword   level2_index;
+    mword   level1_index;
+    mword   level0_index;
+} page_addr;
+
+
+typedef struct{
+    bstruct     paging_base;
+    page_addr   alloc_ptr;
+    bstruct     managed_dyn;
+    mword       sys_alloc_count;
+    mword       sys_free_count;
     // GC flags
     // nested context list
-    mword sys_alloc_count;
-    mword sys_free_count;
-
 } mem_context;
 
 
 typedef struct{
-    mword *zero_hash;
-    mword *nil;
+    mword        thread_id;
     mem_context *mem;
-    sap static_env;
-    map dynamic_env;
-} babel_env;
+} thread_context;
 
+
+typedef struct{
+    mword           *zero_hash;
+    mword           *nil;
+    mem_context     *mem;
+    mword            thread_id;
+    thread_context **threads;
+    sap              static_env;
+    map              dynamic_env;
+} babel_env;
 
 
 // Clayton Bauman 2018
