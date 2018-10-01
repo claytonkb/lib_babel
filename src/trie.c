@@ -26,6 +26,16 @@ mword *trie_new(babel_env *be){
 
 //
 //
+mword *trie_new_cell(babel_env *be, mword *key, mword *secondary_key, mword *payload){
+
+    return tptr_new(be, HASHC(be, "/babel/tag/trie_entry"),
+                    trie_new_entry(be, payload, secondary_key, key));
+
+}
+
+
+//
+//
 void trie_insert(babel_env *be, mword *trie, mword *key, mword *secondary_key, mword *payload){
 
     if(is_tptr(trie)){ 
@@ -85,7 +95,10 @@ void rtrie_insert(babel_env *be, mword *trie, mword *key, mword *secondary_key, 
     else if(is_nil(next_level)){
 
         ldp(trie,cons_side) =
-            tptr_new(be, be->zero_hash, trie_new_entry(be, payload, secondary_key, key));
+            tptr_new(be, HASHC(be, "/babel/tag/trie_entry"), trie_new_entry(be, payload, secondary_key, key));
+
+//        ldp(trie,cons_side) =
+//            tptr_new(be, be->zero_hash, trie_new_entry(be, payload, secondary_key, key));
 
     }
     else if(is_tptr(next_level)){ //XXX: We are ASSUMING it's a trie_entry...

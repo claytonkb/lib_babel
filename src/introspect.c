@@ -91,7 +91,8 @@ str introspect_str(babel_env *be, mword *bs){ // introspect_str#
 
             // print tag
             for(i=0; i < HASH_SIZE; i++){            
-                bsprintf(be, result, &str_offset, "0x%08x ", (unsigned)rdv(bs_base,i));
+//                bsprintf(be, result, &str_offset, "0x%08x ", (unsigned)rdv(bs_base,i));
+                bsprintf(be, result, &str_offset, "0x%016lx ", (unsigned)rdv(bs_base,i));
             }
 
             // print inte ptr
@@ -334,7 +335,7 @@ void introspect_gv_r(babel_env *be, mword *bs, mword *result, mword *str_offset,
 
                 for(i=0; i<HASH_SIZE; i++){ // XXX 13 * 4 = 52
 
-                    bsprintf(be, result, str_offset, "<f%d> %x", i, *(mword *)(bs+i)); // XXX 12
+                    bsprintf(be, result, str_offset, "<f%d> %016lx", i, *(mword *)(bs+i)); // XXX 12
 
                     if(i<(HASH_SIZE-1)){
                         bsprintf(be, result, str_offset, "|"); // XXX 1

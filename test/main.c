@@ -10,6 +10,9 @@
 #include "bstring.h"
 #include "array.h"
 #include "io.h"
+#include "trie.h"
+#include "tptr.h"
+#include "list.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -53,6 +56,12 @@ void dev_prompt(void){
     babel_env *be = babel_env_new(MEM_SUGGEST_INIT_ALLOC,MEM_SUGGEST_INIT_ALLOC);
     ACC = be->mem->paging_base;
 
+        temp = trie_new(be);
+        trie_insert(be, temp, HASH8(be, "foo"), be->nil, _val(be, 0x01234567));
+        trie_insert(be, temp, HASH8(be, "bar"), be->nil, _val(be, 0x89abcdef));
+        trie_insert(be, temp, HASH8(be, "baz"), be->nil, _val(be, 0x00112233));
+
+
     _say("type 0 for menu");
 
     while(1){
@@ -71,36 +80,35 @@ void dev_prompt(void){
                 break;
 
             case 1:
-//                temp = _mkptr(be, 5, // 0xf0f0f0f0f0f0f0f0, 0x0f0f0f0f0f0f0f0f, 0xf0f0f0f0f0f0f0f0, 0x0f0f0f0f0f0f0f0f
-//                    _mkval(be, 2, 0x0121312141213121, 0x1512131214121312),
-//                    _mkval(be, 2, 0x2161213121412131, 0x3215121312141213),
-//                    _mkval(be, 2, 0x4121712131214121, 0x5312151213121412),
-//                    _mkval(be, 2, 0x6131216121312141, 0x7213121512131214),
-//                    _mkval(be, 2, 0x8121312181213121, 0x9412131215121312));
+//                ACC = HASHC(be, "/babel/tag/trie");
+//                ACC = HASHC(be, "foo");
 
-//                ACC = _mkval(be, 10,
-//                    0x0121312141213121, 0x1512131214121312,
-//                    0x2161213121412131, 0x3215121312141213,
-//                    0x4121712131214121, 0x5312151213121412,
-//                    0x6131216121312141, 0x7213121512131214,
-//                    0x8121312181213121, 0x9412131215121312);
+                //---------------- 0000000000000010
+                //0000000000000000 cdeed55d2583ab94
+                //0000000000000008 a385809743a25530
 
-//_dq(temp);
-//                ACC = bstruct_cp(be, temp);
+//#define HASH8(be,str) (pearson_hash8(be, be->zero_hash, (char*)string_c2b(be, str, STRLEN(str)), STRLEN(str)))
+//#define trie_exists(pyr, trie, key, secondary_key) (!is_nil(trie_lookup_hash(pyr, trie, key, secondary_key))) // trie_exists#
 
+//                temp = trie_new(be);
+//                trie_insert(be, temp, HASH8(be, "foo"), be->nil, _val(be, 0x01234567));
+//                trie_insert(be, temp, HASH8(be, "bar"), be->nil, _val(be, 0x89abcdef));
+//                trie_insert(be, temp, HASH8(be, "baz"), be->nil, _val(be, 0x00112233));
 //                ACC = temp;
-//                ACC = bstruct_unload(be, temp);
-//                ACC = (mword*)string_to_array(be, C2B("[val 1 2 3]\n"));
 
-//                ACC = _mkaop(be, 5,
-//                    _val(be, 0x0121312141213121), _val(be, 0x1512131214121312),
-//                    _val(be, 0x2161213121412131), _val(be, 0x3215121312141213),
-//                    _val(be, 0x4121712131214121), _val(be, 0x5312151213121412),
-//                    _val(be, 0x6131216121312141), _val(be, 0x7213121512131214),
-//                    _val(be, 0x8121312181213121), _val(be, 0x9412131215121312));
+//                ACC = _val(be, trie_exists(be, temp, HASH8(be, "fop"), be->nil));
+//                ACC = trie_lookup_hash(be, temp, be->nil, C2B("foo"));
 
-                ACC = pearson_hash8(be, be->zero_hash, "foobarbananabox", STRLEN("foobarbananabox"));
-//                *c++;
+//                cmd_code_str = strtok(NULL, " ");
+//                if(cmd_code_str == NULL){ _say("Not enough arguments"); continue; }
+//
+//                ACC = _val(be, trie_exists(be, temp, pearson_hash8(be,be->zero_hash,cmd_code_str,strlen(cmd_code_str)), be->nil));
+
+//                trie_remove(be, temp, pearson_hash8(be,be->zero_hash,"foo",STRLEN("foo")), be->nil);
+//                ACC = temp;
+
+//                ACC = be, trie_entries(be, temp);
+//                ACC = list_to_ptr_array(be, trie_entries(be, temp)); // array-of-pairs form
 
                 break;
 
@@ -135,7 +143,7 @@ void dev_prompt(void){
 
             case 8:
                 cmd_code_str = strtok(NULL, " ");
-                if(cmd_code_str == NULL){ continue; }
+                if(cmd_code_str == NULL){  continue; }
                 ACC = (mword*)strtoul((char*)cmd_code_str,NULL,16);
                 _say("ACC <== p");
                 break;

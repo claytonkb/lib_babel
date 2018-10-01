@@ -203,13 +203,12 @@
 
 #define HASHI(be,res,str)    pearson128( (str)res, (bstruct)be->zero_hash, (char*)str, STRLEN(str) )
 #define HASHC(be,str)     pearson_hash8( be      , (bstruct)be->zero_hash, (char*)str, STRLEN(str) )
+#define HASH8(be,str)    (pearson_hash8( be      , be->zero_hash         , (char*)string_c2b(be, str, STRLEN(str)), STRLEN(str)))
 
 //#define HASHI(result,str) (pearson_marsaglia16( (char*)result, (char*)global_irt->tags->PYR_TAG_ZERO_HASH, (char*)str, STRLEN(str) ))
 //#define HASHC(pyr,str)    HASHA_FORM(pearson_marsaglia16a, pyr, str, STRLEN(str) )
 //#define HASH(pyr,str)     HASHA_FORM(pearson_marsaglia16a, pyr, str, array8_size(pyr,str) )
 //#define HASHM(pyr,str)    HASHA_FORM(pearson_marsaglia16a, pyr, str, UNITS_MTO8(array_size(pyr,str) )
-//
-//#define HASH8(pyr,str) (pearson_hash8(pyr,string_c2b(this_pyr, str, STRLEN(str)))) // HASH8#
 
 // signature is HASHM of unloaded bstruct
 

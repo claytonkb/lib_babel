@@ -15,10 +15,7 @@ tptr tptr_new(babel_env *be, const mword *hash, mword *bs){ // tptr_new#
 
     mword *ptr = mem_alloc( be, TPTR_SFIELD );
 
-    int i;
-    for(i=0; i<HASH_SIZE; i++){ // FIXME: PERF... use memcpy
-        ptr[i] = hash[i];
-    }
+    memcpy((char*)ptr, hash, HASH_BYTE_SIZE);
 
     ldv(ptr,HASH_SIZE) = NEG_ONE*MWORD_SIZE;
 

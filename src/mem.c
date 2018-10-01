@@ -130,6 +130,16 @@ bstruct mem_alloc(babel_env *be, mword alloc_sfield){
 
     mword alloc_request_size = mem_alloc_size(alloc_sfield)+1; // +1 is for s-field
 
+    // large page?
+    //      mem_sys_alloc (warn?)
+    // find current leaf in paging pyramid
+    // enough space to fulfill this request?
+    //      yes: allocate the requested memory and return
+    //      no:  allocate another leaf, add to the paging pyramid
+    //           allocate the requested memory and return
+
+    // XXX: nested memory (semi-auto mem mgt)
+
     bstruct result = mem_sys_alloc(UNITS_MTO8(alloc_request_size));
     result++;
     sfield(result) = alloc_sfield;

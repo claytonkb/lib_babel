@@ -73,6 +73,17 @@ int array_cmp_num_signed(mword *left, mword *right);
 #define array8_gt(pyr, l, r) (array_cmp_lex(l, r, U8_ASIZE)  >  0) // array8_gt#
 
 
+mword *array1_slice(babel_env *be, mword *array, mword start, mword end);
+void array1_move(babel_env *be, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg);
+void array1_move_unsafe(babel_env *be, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg);
+mword array1_calc_splits(mword begin, mword size_arg);
+void array1_move_split_0_0(babel_env *be, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg);
+void array1_move_split_0_1(babel_env *be, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg);
+void array1_move_split_1_0(babel_env *be, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg);
+void array1_move_split_1_1(babel_env *be, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg);
+void array1_move_split_2_1(babel_env *be, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg);
+void array1_move_split_1_2(babel_env *be, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg);
+void array1_move_split_n(babel_env *be, mword *dest, int dest_begin, mword *src, int src_begin, mword size_arg);
 
 mword *array_shrink(babel_env *be, mword *array, mword new_begin, mword new_end, access_size asize);
 
@@ -86,6 +97,7 @@ mword array_search(babel_env *be, mword *array, mword *target, sort_type st);
 mword array_search_binary(babel_env *be, mword *begin, mword *end, mword *target, sort_type st);
 mword array_search_linear(babel_env *be, mword *array, int start, int end, mword *target, sort_type st);
 
+void array_max_heapify(mword *array, mword i, mword array_size);
 
 #endif //ARRAY_H
 
