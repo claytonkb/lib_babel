@@ -8,6 +8,45 @@
 
 // init_mem_size is in units of bytes
 //
+mem_context *mem_context_new(babel_env *be){
+
+    int i;
+
+    mem_context *mc = malloc(sizeof(mem_context)); // XXX WAIVER(malloc) XXX
+
+     ptr level2_page = mem_sys_new_bstruct(VAL_TO_PTR(UNITS_MTO8(PA_DIR_SIZE)));
+     ptr level1_page = mem_sys_new_bstruct(VAL_TO_PTR(UNITS_MTO8(PA_DIR_SIZE)));
+    cptr level0_page = mem_sys_alloc(UNITS_MTO8(LARGE_PAGE_SIZE));
+
+    for(i=0;i<PA_DIR_SIZE;i++){ // manual initializion of ptr-arrays
+        ldp(level1_page,i) = be->nil;
+        ldp(level2_page,i) = be->nil;
+    }
+
+    ldp(level1_page,0) = level0_page;
+    ldp(level2_page,0) = level1_page;
+
+    mc->paging_base    = level2_page;
+
+    mc->alloc_ptr.level2_index = 1;
+    mc->alloc_ptr.level1_index = 1;
+    mc->alloc_ptr.level0_index = 0;
+
+    mc->sys_alloc_count=0;
+    mc->sys_free_count=0;
+
+    // TODO: init frame_list
+
+    // TODO: init GC flags
+
+    return mc;
+
+}
+
+
+#if 0
+// init_mem_size is in units of bytes
+//
 mem_context *mem_context_new(babel_env *be, mword init_mem_size){
 
     int i;
@@ -17,28 +56,28 @@ mem_context *mem_context_new(babel_env *be, mword init_mem_size){
     if(!init_mem_size) // Returns an uninitialized mem_context
         return mc;
 
-    ptr level2_dir;
-    ptr level1_dir;
-    val level0_pg;
+    ptr level2_page;
+    ptr level1_page;
+    val level0_page;
 
     mword mword_mem_size = UNITS_8TOM(init_mem_size);
 
     if(mword_mem_size < LARGE_PAGE_SIZE){
 
-        level2_dir = mem_sys_new_bstruct(VAL_TO_PTR(UNITS_MTO8(PA_DIR_SIZE)));
-        level1_dir = mem_sys_new_bstruct(VAL_TO_PTR(UNITS_MTO8(PA_DIR_SIZE)));
-        level0_pg  = mem_sys_new_bstruct(UNITS_MTO8(mword_mem_size));
+        level2_page = mem_sys_new_bstruct(VAL_TO_PTR(UNITS_MTO8(PA_DIR_SIZE)));
+        level1_page = mem_sys_new_bstruct(VAL_TO_PTR(UNITS_MTO8(PA_DIR_SIZE)));
+        level0_page = mem_sys_new_bstruct(UNITS_MTO8(mword_mem_size));
 
         for(i=0;i<PA_DIR_SIZE;i++){ // manual initializion of ptr-arrays
-            ldp(level1_dir,i) = be->nil;
-            ldp(level2_dir,i) = be->nil;
+            ldp(level1_page,i) = be->nil;
+            ldp(level2_page,i) = be->nil;
         }
 
-        memset((char*)level0_pg, 0, init_mem_size); // zero out memory
+        memset((char*)level0_page, 0, init_mem_size); // zero out memory
 
-        ldp(level1_dir,0) = level0_pg;
-        ldp(level2_dir,0) = level1_dir;
-        mc->paging_base   = level2_dir;
+        ldp(level1_page,0) = level0_page;
+        ldp(level2_page,0) = level1_page;
+        mc->paging_base    = level2_page;
 
     }
     else{
@@ -54,6 +93,7 @@ mem_context *mem_context_new(babel_env *be, mword init_mem_size){
     return mc;
 
 }
+#endif
 
 
 //
@@ -66,7 +106,53 @@ void mem_context_destroy(mem_context *mc){
 
     mem_sys_destroy_bstruct(init_level2_dir);
     mem_sys_destroy_bstruct(init_level1_dir);
-    mem_sys_destroy_bstruct(init_level0_pg);
+    mem_sys_free(init_level0_pg);
+
+}
+
+
+//
+//
+cptr mem_context_expand(mem_context *mc){
+
+    bstruct new_page;
+
+    bstruct paging_base = mc->paging_base;
+
+    mword *level1_page = rdp(paging_base, mc->alloc_ptr.level2_index);
+    mword *level0_page = rdp(level1_page, mc->alloc_ptr.level1_index);
+    mword *alloc_ptr   = level0_page + mc->alloc_ptr.level0_index;
+
+    // if level1 is maxed out
+    //      if level2 is maxed out
+    //          fatal
+    //      level1 <-- alloc a new level1 page (register in level2)
+    //
+    // alloc new level0 page (register in level1)
+    // return base address of level0 page
+    if(mc->alloc_ptr.level1_index == PA_DIR_SIZE){ // level1 page is maxed out
+
+        if(mc->alloc_ptr.level2_index == PA_DIR_SIZE){ // level2 page is maxed out
+            _fatal("paging directories full"); // FIXME: fail gracefully!
+        }
+
+        ptr new_level1_page = mem_sys_new_bstruct(VAL_TO_PTR(UNITS_MTO8(PA_DIR_SIZE)));
+        mc->alloc_ptr.level2_index++;
+        ldp(paging_base, mc->alloc_ptr.level2_index) = level1_page;
+
+        mc->alloc_ptr.level1_index=0;
+
+    }
+
+    cptr new_level0_page = mem_sys_alloc(UNITS_MTO8(LARGE_PAGE_SIZE));
+    ldp(level1_page, mc->alloc_ptr.level1_index) = new_level0_page;
+    mc->alloc_ptr.level1_index++;
+
+    mc->alloc_ptr.level0_index=0;
+
+    new_page = new_level0_page;
+
+    return new_page;
 
 }
 
@@ -117,22 +203,25 @@ void mem_sys_free(void *p){
 
 }
 
+//#if 0
+// FIXME: Temporary sol'n until GC is in place
+//
+bstruct mem_alloc(babel_env *be, mword alloc_sfield){
 
-//// FIXME: Temporary sol'n until GC is in place
-////
-//bstruct mem_alloc(babel_env *be, mword alloc_sfield){
-//
-//    mword alloc_request_size = mem_alloc_size(alloc_sfield)+1; // +1 is for s-field
-//
-//    bstruct result = mem_sys_alloc(UNITS_MTO8(alloc_request_size));
-//    result++;
-//    sfield(result) = alloc_sfield;
-//
-//    return result;
-//
-//}
+    mword alloc_request_size = mem_alloc_size(alloc_sfield)+1; // +1 is for s-field
 
+    bstruct result = mem_sys_alloc(UNITS_MTO8(alloc_request_size));
+    result++;
+    sfield(result) = alloc_sfield;
 
+    return result;
+
+}
+//#endif
+
+#define LEVEL0_PAGE_SIZE LARGE_PAGE_SIZE
+
+#if 0
 //
 //
 bstruct mem_alloc(babel_env *be, mword alloc_sfield){
@@ -153,26 +242,29 @@ bstruct mem_alloc(babel_env *be, mword alloc_sfield){
 
     bstruct paging_base = tc->mem->paging_base;
 
-    mword *alloc_dir  = rdp(paging_base,tc->mem->alloc_ptr.level2_index);
-    mword *alloc_pg   = rdp(alloc_dir,  tc->mem->alloc_ptr.level1_index);
-    mword *alloc_ptr  = alloc_pg + tc->mem->alloc_ptr.level0_index;
+    mword *level1_page = rdp(paging_base, tc->mem->alloc_ptr.level2_index);
+    mword *level0_page = rdp(level1_page, tc->mem->alloc_ptr.level1_index);
+    mword *alloc_ptr   = level0_page + tc->mem->alloc_ptr.level0_index;
 
     // calculate headroom in alloc_pg from alloc_ptr
-    // if(greater than alloc_request_size)
-    //      result = alloc_ptr
-    //      alloc_ptr.level0_index adjust to new free space
-    //      add result to managed_dyn list
-    //      return result;
-    // else
-    //      alloc new page
-    //      alloc as above
-    //      add result to managed_dyn list
-    //      return result;
+    mword level0_remaining = LEVEL0_PAGE_SIZE - tc->mem->alloc_ptr.level0_index;
+
+    // XXX Note: previous iterations of Babel used high-to-low allocation;
+    //      lib_babel uses low-to-high allocation
+
+    if(alloc_request_size > level0_remaining){
+        _enhance("alloc_request_size > level0_remaining");
+        // mem_context_expand() (returns new alloc_ptr)
+        // alloc_ptr = mem_context_expand(tc);
+    }
+
+    result = alloc_ptr;
+    tc->mem->alloc_ptr.level0_index += alloc_request_size;
 
     return result;
 
 }
-
+#endif
 
 //
 // 

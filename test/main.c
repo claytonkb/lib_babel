@@ -52,16 +52,15 @@ void dev_prompt(void){
     char *c = "a";
 
     mem_context *mc;
-    babel_env *be;
-//    babel_env *be = babel_env_new(MEM_SUGGEST_INIT_ALLOC,MEM_SUGGEST_INIT_ALLOC);
-//    ACC = be->mem->paging_base;
-//
-//        temp = trie_new(be);
-//        trie_insert(be, temp, HASH8(be, "foo"), be->nil, _val(be, 0x01234567));
-//        trie_insert(be, temp, HASH8(be, "bar"), be->nil, _val(be, 0x89abcdef));
-//        trie_insert(be, temp, HASH8(be, "baz"), be->nil, _val(be, 0x00112233));
+//    babel_env *be;
+    babel_env *be = babel_env_new();
+    ACC = be->mem->paging_base;
 
-    _say("Something is seg-faulting");
+        temp = trie_new(be);
+        trie_insert(be, temp, HASH8(be, "foo"), be->nil, _val(be, 0x01234567));
+        trie_insert(be, temp, HASH8(be, "bar"), be->nil, _val(be, 0x89abcdef));
+        trie_insert(be, temp, HASH8(be, "baz"), be->nil, _val(be, 0x00112233));
+
     _say("type 0 for menu");
 
     while(1){
@@ -99,10 +98,10 @@ void dev_prompt(void){
 //                ACC = _val(be, trie_exists(be, temp, HASH8(be, "fop"), be->nil));
 //                ACC = trie_lookup_hash(be, temp, be->nil, C2B("foo"));
 
-//                cmd_code_str = strtok(NULL, " ");
-//                if(cmd_code_str == NULL){ _say("Not enough arguments"); continue; }
-//
-//                ACC = _val(be, trie_exists(be, temp, pearson_hash8(be,be->zero_hash,cmd_code_str,strlen(cmd_code_str)), be->nil));
+                cmd_code_str = strtok(NULL, " ");
+                if(cmd_code_str == NULL){ _say("Not enough arguments"); continue; }
+
+                ACC = _val(be, trie_exists(be, temp, pearson_hash8(be,be->zero_hash,cmd_code_str,strlen(cmd_code_str)), be->nil));
 
 //                trie_remove(be, temp, pearson_hash8(be,be->zero_hash,"foo",STRLEN("foo")), be->nil);
 //                ACC = temp;

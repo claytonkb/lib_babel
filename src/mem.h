@@ -7,8 +7,10 @@
 #define mem_new_valz(pyr,size) mem_new_val(pyr, size, 0) // mem_new_valz#
 #define mem_new_cons(x) (mem_new_ptr(x, 2)) // mem_new_cons#
 
-mem_context *mem_context_new(babel_env *be, mword init_mem_size);
+mem_context *mem_context_new(babel_env *be);
 void mem_context_destroy(mem_context *mc);
+cptr mem_context_expand(mem_context *mc);
+
 bstruct mem_sys_new_bstruct(mword alloc_sfield);
 void mem_sys_destroy_bstruct(bstruct b);
 

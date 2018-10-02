@@ -58,7 +58,7 @@ int dev_i;
  *                        FUNCTION DECLARATIONS                              *
  *                                                                           *
  ****************************************************************************/
-babel_env *babel_env_new(int init_mem_size, int max_mem_size);
+babel_env *babel_env_new();
 
 
 #endif //BABEL_H
