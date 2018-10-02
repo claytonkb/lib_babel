@@ -130,10 +130,16 @@ typedef struct{
 } page_addr;
 
 
+typedef struct mem_ll {
+    page_addr a;
+    struct mem_ll *next;
+} mem_ll;
+
+
 typedef struct{
     bstruct     paging_base;
     page_addr   alloc_ptr;
-    bstruct     managed_dyn;
+    mem_ll     *frame_list;
     mword       sys_alloc_count;
     mword       sys_free_count;
     // GC flags

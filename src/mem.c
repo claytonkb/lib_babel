@@ -175,6 +175,29 @@ bstruct mem_alloc(babel_env *be, mword alloc_sfield){
 
 
 //
+// 
+void mem_frame_open(mem_context *mc){
+
+    // save the current alloc_ptr for later unwinding of the heap
+
+}
+
+
+//
+//
+void mem_frame_close(void){
+
+    // if is_nil(ptr), ptr = last entry in mem_context list
+    // locate ptr in the mem_context list (search backwards from the end)
+    // unwind all allocations in paging table for this thread
+    //      free level2/level1/level0 pages as needed
+    // when finished, the current alloc_ptr shall have been restored to its
+    //      saved value
+
+}
+
+
+//
 //
 void *mem_new_val(babel_env *be, mword size, mword init){
 

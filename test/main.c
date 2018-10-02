@@ -52,16 +52,16 @@ void dev_prompt(void){
     char *c = "a";
 
     mem_context *mc;
-//    babel_env *be;
-    babel_env *be = babel_env_new(MEM_SUGGEST_INIT_ALLOC,MEM_SUGGEST_INIT_ALLOC);
-    ACC = be->mem->paging_base;
+    babel_env *be;
+//    babel_env *be = babel_env_new(MEM_SUGGEST_INIT_ALLOC,MEM_SUGGEST_INIT_ALLOC);
+//    ACC = be->mem->paging_base;
+//
+//        temp = trie_new(be);
+//        trie_insert(be, temp, HASH8(be, "foo"), be->nil, _val(be, 0x01234567));
+//        trie_insert(be, temp, HASH8(be, "bar"), be->nil, _val(be, 0x89abcdef));
+//        trie_insert(be, temp, HASH8(be, "baz"), be->nil, _val(be, 0x00112233));
 
-        temp = trie_new(be);
-        trie_insert(be, temp, HASH8(be, "foo"), be->nil, _val(be, 0x01234567));
-        trie_insert(be, temp, HASH8(be, "bar"), be->nil, _val(be, 0x89abcdef));
-        trie_insert(be, temp, HASH8(be, "baz"), be->nil, _val(be, 0x00112233));
-
-
+    _say("Something is seg-faulting");
     _say("type 0 for menu");
 
     while(1){
