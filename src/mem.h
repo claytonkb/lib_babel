@@ -19,7 +19,7 @@ void  mem_sys_free(void *p);
 bstruct mem_alloc(babel_env *be, mword alloc_sfield);
 
 void mem_frame_open(mem_context *mc);
-void mem_frame_close(void);
+void mem_frame_close(babel_env *be);
 
 void *mem_new_val(babel_env *be, mword size, mword init);
 void *mem_new_ptr(babel_env *be, mword size);

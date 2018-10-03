@@ -12,7 +12,7 @@ mem_context *mem_context_new(babel_env *be){
 
     int i;
 
-    mem_context *mc = malloc(sizeof(mem_context)); // XXX WAIVER(malloc) XXX
+    mem_context *mc = mem_sys_alloc(sizeof(mem_context)); // XXX WAIVER(malloc) XXX
 
      ptr level2_page = mem_sys_new_bstruct(VAL_TO_PTR(UNITS_MTO8(PA_DIR_SIZE)));
      ptr level1_page = mem_sys_new_bstruct(VAL_TO_PTR(UNITS_MTO8(PA_DIR_SIZE)));
@@ -36,8 +36,13 @@ mem_context *mem_context_new(babel_env *be){
     mc->sys_free_count=0;
 
     // TODO: init frame_list
+    mc->frame_list = mem_sys_alloc(sizeof(mem_ll));
 
-    // TODO: init GC flags
+    mc->frame_list->a.level2_index = 1;
+    mc->frame_list->a.level1_index = 1;
+    mc->frame_list->a.level0_index = 0;
+
+    mc->frame_list->next = (mem_ll*)be->nil;
 
     return mc;
 
@@ -184,7 +189,7 @@ void mem_sys_destroy_bstruct(bstruct b){
 //
 void *mem_sys_alloc(int size){
 
-    void *alloc_attempt = malloc(size); // XXX WAIVER(malloc) XXX
+    void *alloc_attempt = malloc(size);
 
     if(alloc_attempt == NULL){ // malloc failed
         _fatal("malloc failed");
@@ -199,7 +204,7 @@ void *mem_sys_alloc(int size){
 //
 void mem_sys_free(void *p){
 
-    free(p); // XXX WAIVER(free) XXX
+    free(p); 
 
 }
 
@@ -266,25 +271,48 @@ bstruct mem_alloc(babel_env *be, mword alloc_sfield){
 }
 #endif
 
+
 //
 // 
 void mem_frame_open(mem_context *mc){
 
     // save the current alloc_ptr for later unwinding of the heap
+    mem_ll *new_frame = mem_sys_alloc(sizeof(mem_ll));
+
+    new_frame->a.level2_index = mc->alloc_ptr.level2_index;
+    new_frame->a.level1_index = mc->alloc_ptr.level1_index;
+    new_frame->a.level0_index = mc->alloc_ptr.level0_index;
+
+    new_frame->next = mc->frame_list;
+    mc->frame_list = new_frame;
 
 }
 
 
 //
 //
-void mem_frame_close(void){
+void mem_frame_close(babel_env *be){
 
-    // if is_nil(ptr), ptr = last entry in mem_context list
-    // locate ptr in the mem_context list (search backwards from the end)
-    // unwind all allocations in paging table for this thread
-    //      free level2/level1/level0 pages as needed
-    // when finished, the current alloc_ptr shall have been restored to its
-    //      saved value
+//    mem_context *mc = be->mem; // XXX wrong, use threads
+//
+//    // if is_nil(ptr), ptr = last entry in mem_context list
+//    if(is_nil(mc->frame_list->next)){
+//        return; // there are no more frames to close
+//    }
+//
+//    mem_ll *curr_frame = mc->frame_list;
+//    mc->frame_list = curr_frame->next;
+//
+////    mword *level2_page = mc->paging_base;
+////    mword *level1_page = rdp(level2_page, mc->alloc_ptr.level2_index);
+////    mword *level0_page = rdp(level1_page, mc->alloc_ptr.level1_index);
+//
+//    bstruct paging_base = tc->mem->paging_base;
+//
+//    mword *level1_page = rdp(paging_base, tc->mem->alloc_ptr.level2_index);
+//    mword *level0_page = rdp(level1_page, tc->mem->alloc_ptr.level1_index);
+//    mword *alloc_ptr   = level0_page + tc->mem->alloc_ptr.level0_index;
+//
 
 }
 
