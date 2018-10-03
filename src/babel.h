@@ -58,7 +58,7 @@ int dev_i;
  *                        FUNCTION DECLARATIONS                              *
  *                                                                           *
  ****************************************************************************/
-babel_env *babel_env_new();
+babel_env *babel_env_new(int num_threads);
 
 
 #endif //BABEL_H

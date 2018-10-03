@@ -53,13 +53,19 @@ void dev_prompt(void){
 
     mem_context *mc;
 //    babel_env *be;
-    babel_env *be = babel_env_new();
+    babel_env *be = babel_env_new(10);
     ACC = be->mem->paging_base;
 
         temp = trie_new(be);
         trie_insert(be, temp, HASH8(be, "foo"), be->nil, _val(be, 0x01234567));
         trie_insert(be, temp, HASH8(be, "bar"), be->nil, _val(be, 0x89abcdef));
         trie_insert(be, temp, HASH8(be, "baz"), be->nil, _val(be, 0x00112233));
+
+    thread_context *tc;
+    bstruct paging_base;
+    mword *level1_page;
+    mword *level0_page;
+    mword *alloc_ptr;
 
     _say("type 0 for menu");
 
@@ -98,16 +104,35 @@ void dev_prompt(void){
 //                ACC = _val(be, trie_exists(be, temp, HASH8(be, "fop"), be->nil));
 //                ACC = trie_lookup_hash(be, temp, be->nil, C2B("foo"));
 
-                cmd_code_str = strtok(NULL, " ");
-                if(cmd_code_str == NULL){ _say("Not enough arguments"); continue; }
-
-                ACC = _val(be, trie_exists(be, temp, pearson_hash8(be,be->zero_hash,cmd_code_str,strlen(cmd_code_str)), be->nil));
+//                cmd_code_str = strtok(NULL, " ");
+//                if(cmd_code_str == NULL){ _say("Not enough arguments"); continue; }
+//
+//                ACC = _val(be, trie_exists(be, temp, pearson_hash8(be,be->zero_hash,cmd_code_str,strlen(cmd_code_str)), be->nil));
 
 //                trie_remove(be, temp, pearson_hash8(be,be->zero_hash,"foo",STRLEN("foo")), be->nil);
 //                ACC = temp;
 
 //                ACC = be, trie_entries(be, temp);
 //                ACC = list_to_ptr_array(be, trie_entries(be, temp)); // array-of-pairs form
+
+//                _d(be->thread_id);
+
+                for(i=0; i<10; i++){
+                             tc = be->threads[i];
+                    paging_base = tc->mem->paging_base;
+                    level1_page = rdp(paging_base, 0);
+                    level0_page = rdp(level1_page, 0);
+                    alloc_ptr   = level0_page + tc->mem->alloc_ptr.level0_index;
+_d( i );
+_d( *paging_base );
+_d( *level1_page );
+_d( *level0_page );
+_d( *alloc_ptr );
+                }
+
+//                _dd(tc->mem->alloc_ptr.level2_index);
+//                _dd(tc->mem->alloc_ptr.level1_index);
+//                _dd(tc->mem->alloc_ptr.level0_index);
 
                 break;
 

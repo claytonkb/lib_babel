@@ -49,58 +49,6 @@ mem_context *mem_context_new(babel_env *be){
 }
 
 
-#if 0
-// init_mem_size is in units of bytes
-//
-mem_context *mem_context_new(babel_env *be, mword init_mem_size){
-
-    int i;
-
-    mem_context *mc = malloc(sizeof(mem_context)); // XXX WAIVER(malloc) XXX
-
-    if(!init_mem_size) // Returns an uninitialized mem_context
-        return mc;
-
-    ptr level2_page;
-    ptr level1_page;
-    val level0_page;
-
-    mword mword_mem_size = UNITS_8TOM(init_mem_size);
-
-    if(mword_mem_size < LARGE_PAGE_SIZE){
-
-        level2_page = mem_sys_new_bstruct(VAL_TO_PTR(UNITS_MTO8(PA_DIR_SIZE)));
-        level1_page = mem_sys_new_bstruct(VAL_TO_PTR(UNITS_MTO8(PA_DIR_SIZE)));
-        level0_page = mem_sys_new_bstruct(UNITS_MTO8(mword_mem_size));
-
-        for(i=0;i<PA_DIR_SIZE;i++){ // manual initializion of ptr-arrays
-            ldp(level1_page,i) = be->nil;
-            ldp(level2_page,i) = be->nil;
-        }
-
-        memset((char*)level0_page, 0, init_mem_size); // zero out memory
-
-        ldp(level1_page,0) = level0_page;
-        ldp(level2_page,0) = level1_page;
-        mc->paging_base    = level2_page;
-
-    }
-    else{
-        _enhance("init_mem_size >= LARGE_PAGE_SIZE");
-    }
-
-    mc->sys_alloc_count=0;
-    mc->sys_free_count=0;
-
-    // TODO: init GC flags
-    // TODO: init nested context list
-
-    return mc;
-
-}
-#endif
-
-
 //
 //
 void mem_context_destroy(mem_context *mc){

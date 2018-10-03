@@ -158,6 +158,7 @@ typedef struct{
     mword           *nil;
     mem_context     *mem;
     mword            thread_id;
+    mword            num_threads;
     thread_context **threads;
     sap              static_env;
     map              dynamic_env;

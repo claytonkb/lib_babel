@@ -151,31 +151,6 @@ void access_api_wr_ptr(ptr p, mword offset, cptr payload){
 }
 
 
-//// non-reentrant due to statics
-//// XXX measure: better perf?
-//void access_pa_rd(babel_env *be, bstruct b, mword offset, cptr result, access_size asize){
-//
-//    static mword last_level2_offset; // primitive TLB
-//    static mword last_level1_offset;
-//
-//    mword level2_offset = BIT_SELECT(offset, PA_LEVEL2_MSB, PA_LEVEL2_LSB);
-//    mword level1_offset = BIT_SELECT(offset, PA_LEVEL1_MSB, PA_LEVEL1_LSB);
-//    mword level0_offset = BIT_SELECT(offset, PA_LEVEL0_MSB, PA_LEVEL0_LSB);
-//
-//           mword *result2;
-//    static mword *result1;
-//
-//    if(    (level2_offset != last_level2_offset) 
-//        || (level1_offset != last_level1_offset) ){
-//        result2 = rdp(be->mem->paging_base, level2_offset);
-//        result1 = rdp(result2, level1_offset);
-//    }
-//
-//    access_api_rd(be, result1, level0_offset, result, asize); // XXX this can live-lock!
-//
-//}
-
-
 //
 //
 void access_pa_rd(babel_env *be, bstruct b, mword offset, cptr result, access_size asize){
