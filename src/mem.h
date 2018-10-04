@@ -17,6 +17,7 @@ void mem_sys_destroy_bstruct(bstruct b);
 void *mem_sys_alloc(int size);
 void  mem_sys_free(void *p);
 bstruct mem_alloc(babel_env *be, mword alloc_sfield);
+bstruct mem_alloc_threaded(babel_env *be, mword alloc_sfield);
 
 void mem_frame_open(mem_context *mc);
 void mem_frame_close(babel_env *be);

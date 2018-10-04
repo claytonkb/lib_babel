@@ -161,11 +161,17 @@ void mem_sys_free(void *p){
 //
 bstruct mem_alloc(babel_env *be, mword alloc_sfield){
 
-    mword alloc_request_size = mem_alloc_size(alloc_sfield)+1; // +1 is for s-field
+    bstruct result;
 
-    bstruct result = mem_sys_alloc(UNITS_MTO8(alloc_request_size));
-    result++;
-    sfield(result) = alloc_sfield;
+    if(flag_clr(be->THREADED_ALLOC)){
+        mword alloc_request_size = mem_alloc_size(alloc_sfield)+1; // +1 is for s-field
+        result = mem_sys_alloc(UNITS_MTO8(alloc_request_size));
+        result++;
+        sfield(result) = alloc_sfield;
+    }
+    else{
+        return mem_alloc_threaded(be, alloc_sfield);        
+    }
 
     return result;
 
@@ -174,10 +180,10 @@ bstruct mem_alloc(babel_env *be, mword alloc_sfield){
 
 #define LEVEL0_PAGE_SIZE LARGE_PAGE_SIZE
 
-#if 0
+//#if 0
 //
 //
-bstruct mem_alloc(babel_env *be, mword alloc_sfield){
+bstruct mem_alloc_threaded(babel_env *be, mword alloc_sfield){
 
     mword alloc_request_size = mem_alloc_size(alloc_sfield)+1; // +1 is for s-field
 
@@ -217,7 +223,7 @@ bstruct mem_alloc(babel_env *be, mword alloc_sfield){
     return result;
 
 }
-#endif
+//#endif
 
 
 //

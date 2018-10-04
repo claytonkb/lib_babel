@@ -143,6 +143,11 @@
 // place-holder for compilation; belongs in tptr.*
 #define is_builtin(x) (0)
 
+#define flag_set(x) ((x) == SET_FLAG)
+#define flag_clr(x) ((x) == CLR_FLAG)
+#define flag_ign(x) ((x) == IGN_FLAG)
+#define flag_def(x) (flag_set(x) || flag_clr(x) || flag_ign(x))
+
 
 /*****************************************************************************
  *                                                                           *

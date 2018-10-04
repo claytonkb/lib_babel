@@ -57,7 +57,7 @@ typedef bstruct sym;    // general-purpose symbol
 // enums
 //
 typedef enum flag_val_enum
-        {CLR, SET, IGN} flag_val;
+        {CLR_FLAG, SET_FLAG, IGN_FLAG} flag_val;
 
 typedef enum access_size_enum
         {U1_ASIZE,   U8_ASIZE,  U16_ASIZE,
@@ -152,10 +152,10 @@ typedef struct{
     mem_context *mem;
 } thread_context;
 
-
 typedef struct{
     mword           *zero_hash;
     mword           *nil;
+    flag_val         THREADED_ALLOC;
     mem_context     *mem;
     mword            thread_id;
     mword            num_threads;

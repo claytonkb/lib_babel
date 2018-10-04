@@ -30,6 +30,8 @@ babel_env *babel_env_new(int num_threads){
 //    mem_context *mc = mem_context_new(be);
 //    be->mem = mc;
 
+    be->THREADED_ALLOC = CLR_FLAG;
+
     be->num_threads = num_threads;
     be->threads = malloc(num_threads*sizeof(thread_context*));
 
