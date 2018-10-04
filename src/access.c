@@ -159,10 +159,10 @@ void access_pa_rd(babel_env *be, bstruct b, mword offset, cptr result, access_si
     mword level1_offset = BIT_SELECT(offset, PA_LEVEL1_MSB, PA_LEVEL1_LSB);
     mword level0_offset = BIT_SELECT(offset, PA_LEVEL0_MSB, PA_LEVEL0_LSB);
 
-    mword *result2 = rdp(be->mem->paging_base, level2_offset);
-    mword *result1 = rdp(result2, level1_offset);
-
-    access_api_rd(be, result1, level0_offset, result, asize); // XXX this can live-lock!
+//    mword *result2 = rdp(be->mem->paging_base, level2_offset);
+//    mword *result1 = rdp(result2, level1_offset);
+//
+//    access_api_rd(be, result1, level0_offset, result, asize); // XXX this can live-lock!
 
 }
 
@@ -175,10 +175,10 @@ void access_pa_wr(babel_env *be, bstruct b, mword offset, bstruct payload, acces
     mword level1_offset = BIT_SELECT(offset, PA_LEVEL1_MSB, PA_LEVEL1_LSB);
     mword level0_offset = BIT_SELECT(offset, PA_LEVEL0_MSB, PA_LEVEL0_LSB);
 
-    mword *result2 = rdp(be->mem->paging_base, level2_offset);
-    mword *result1 = rdp(result2, level1_offset);
-
-    access_api_wr(be, result1, level0_offset, payload, asize); // XXX this can live-lock!
+//    mword *result2 = rdp(be->mem->paging_base, level2_offset);
+//    mword *result1 = rdp(result2, level1_offset);
+//
+//    access_api_wr(be, result1, level0_offset, payload, asize); // XXX this can live-lock!
 
 }
 
@@ -191,10 +191,10 @@ mword access_pa_rd_val(babel_env *be, bstruct b, mword offset, access_size asize
     mword level1_offset = BIT_SELECT(offset, PA_LEVEL1_MSB, PA_LEVEL1_LSB);
     mword level0_offset = BIT_SELECT(offset, PA_LEVEL0_MSB, PA_LEVEL0_LSB);
 
-    mword *result2 = rdp(be->mem->paging_base, level2_offset);
-    mword *result1 = rdp(result2, level1_offset);
-
-    return access_api_rd_val(be, result1, level0_offset, asize); // XXX this can live-lock!
+//    mword *result2 = rdp(be->mem->paging_base, level2_offset);
+//    mword *result1 = rdp(result2, level1_offset);
+//
+//    return access_api_rd_val(be, result1, level0_offset, asize); // XXX this can live-lock!
 
 }
 
@@ -207,10 +207,10 @@ void access_pa_wr_val(babel_env *be, bstruct b, mword offset, bstruct payload, a
     mword level1_offset = BIT_SELECT(offset, PA_LEVEL1_MSB, PA_LEVEL1_LSB);
     mword level0_offset = BIT_SELECT(offset, PA_LEVEL0_MSB, PA_LEVEL0_LSB);
 
-    mword *result2 = rdp(be->mem->paging_base, level2_offset);
-    mword *result1 = rdp(result2, level1_offset);
-
-    access_api_wr_val(be, result1, level0_offset, payload, asize); // XXX this can live-lock!
+//    mword *result2 = rdp(be->mem->paging_base, level2_offset);
+//    mword *result1 = rdp(result2, level1_offset);
+//
+//    access_api_wr_val(be, result1, level0_offset, payload, asize); // XXX this can live-lock!
 
 }
 
@@ -223,10 +223,10 @@ mword *access_pa_rd_ptr(babel_env *be, bstruct b, mword offset){
     mword level1_offset = BIT_SELECT(offset, PA_LEVEL1_MSB, PA_LEVEL1_LSB);
     mword level0_offset = BIT_SELECT(offset, PA_LEVEL0_MSB, PA_LEVEL0_LSB);
 
-    mword *result2 = rdp(be->mem->paging_base, level2_offset);
-    mword *result1 = rdp(result2, level1_offset);
-
-    return access_api_rd_ptr(result1, level0_offset); // XXX this can live-lock!
+//    mword *result2 = rdp(be->mem->paging_base, level2_offset);
+//    mword *result1 = rdp(result2, level1_offset);
+//
+//    return access_api_rd_ptr(result1, level0_offset); // XXX this can live-lock!
 
 }
 
@@ -239,10 +239,10 @@ void access_pa_wr_ptr(babel_env *be, bstruct b, mword offset, bstruct payload, a
     mword level1_offset = BIT_SELECT(offset, PA_LEVEL1_MSB, PA_LEVEL1_LSB);
     mword level0_offset = BIT_SELECT(offset, PA_LEVEL0_MSB, PA_LEVEL0_LSB);
 
-    mword *result2 = rdp(be->mem->paging_base, level2_offset);
-    mword *result1 = rdp(result2, level1_offset);
-
-    access_api_wr_ptr(result1, level0_offset, payload); // XXX this can live-lock!
+//    mword *result2 = rdp(be->mem->paging_base, level2_offset);
+//    mword *result1 = rdp(result2, level1_offset);
+//
+//    access_api_wr_ptr(result1, level0_offset, payload); // XXX this can live-lock!
 
 }
 
