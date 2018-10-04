@@ -12,10 +12,8 @@ Migration
 *TOS*
 
     un-crapify mem_alloc so that it uses be->paging_base
-        eliminate be->mem (somebody's using it, segfault when disabled
-            in babel_env_new())
-        initialize be->threads
-            re-factor babel_env_new()
+        flag_val THREADED_ALLOC
+            use to implement/test mem_alloc_threaded (better name?)
         mem_context_expand() implemented -- TEST it
         implement frame_list 
         when closing a mem_frame, allow to specify a pointer to
