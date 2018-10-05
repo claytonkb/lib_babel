@@ -53,7 +53,8 @@ void dev_prompt(void){
 
     mem_context *mc;
 //    babel_env *be;
-    babel_env *be = babel_env_new(10);
+    babel_env *be = babel_env_new(1);
+    be->THREADED_ALLOC = SET_FLAG;
     ACC = be->nil;
 
         temp = trie_new(be);

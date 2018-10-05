@@ -1,3 +1,19 @@
+//    // calculate headroom in alloc_pg from alloc_ptr
+//    mword level0_remaining = LEVEL0_PAGE_SIZE - tc->mem->alloc_ptr.level0_index;
+//
+//    // XXX Note: previous iterations of Babel used high-to-low allocation;
+//    //      lib_babel uses low-to-high allocation
+//
+//    if(alloc_request_size > level0_remaining){
+//        _enhance("alloc_request_size > level0_remaining");
+//        // mem_context_expand() (returns new alloc_ptr)
+//        // alloc_ptr = mem_context_expand(tc);
+//    }
+//
+//    result = alloc_ptr;
+//    tc->mem->alloc_ptr.level0_index += alloc_request_size;
+
+
 //// non-reentrant due to statics
 //// XXX measure: better perf?
 //void access_pa_rd(babel_env *be, bstruct b, mword offset, cptr result, access_size asize){

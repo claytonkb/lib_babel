@@ -188,37 +188,27 @@ bstruct mem_alloc_threaded(babel_env *be, mword alloc_sfield){
     mword alloc_request_size = mem_alloc_size(alloc_sfield)+1; // +1 is for s-field
 
     bstruct result;
+//    mword *alloc_ptr;
 
     if(alloc_request_size >= LARGE_PAGE_SIZE){
         result = mem_sys_alloc(UNITS_MTO8(alloc_request_size));
-        result++;
-        sfield(result) = alloc_sfield;
         _warn("large page allocation");
-        return result;
+    }
+    else{
+
+        thread_context *tc = be->threads[be->thread_id];
+        bstruct paging_base = tc->mem->paging_base;
+
+        mword *level1_page = rdp(paging_base, tc->mem->alloc_ptr.level2_index-1);
+        mword *level0_page = rdp(level1_page, tc->mem->alloc_ptr.level1_index-1);
+               result   = level0_page + tc->mem->alloc_ptr.level0_index;
+
+        tc->mem->alloc_ptr.level0_index += alloc_request_size;
+
     }
 
-    thread_context *tc = be->threads[be->thread_id];
-
-    bstruct paging_base = tc->mem->paging_base;
-
-    mword *level1_page = rdp(paging_base, tc->mem->alloc_ptr.level2_index);
-    mword *level0_page = rdp(level1_page, tc->mem->alloc_ptr.level1_index);
-    mword *alloc_ptr   = level0_page + tc->mem->alloc_ptr.level0_index;
-
-    // calculate headroom in alloc_pg from alloc_ptr
-    mword level0_remaining = LEVEL0_PAGE_SIZE - tc->mem->alloc_ptr.level0_index;
-
-    // XXX Note: previous iterations of Babel used high-to-low allocation;
-    //      lib_babel uses low-to-high allocation
-
-    if(alloc_request_size > level0_remaining){
-        _enhance("alloc_request_size > level0_remaining");
-        // mem_context_expand() (returns new alloc_ptr)
-        // alloc_ptr = mem_context_expand(tc);
-    }
-
-    result = alloc_ptr;
-    tc->mem->alloc_ptr.level0_index += alloc_request_size;
+    result++;
+    sfield(result) = alloc_sfield;
 
     return result;
 
