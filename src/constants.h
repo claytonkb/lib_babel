@@ -36,8 +36,10 @@
 
 #define SMALL_PAGE_SIZE   (1<<12)
 #define LARGE_PAGE_SIZE   (1<<PA_LEVEL1_LSB)
+//#define LARGE_PAGE_SIZE   (128)
 #define PA_LO_THRESH (LARGE_PAGE_SIZE/2)
 #define PA_DIR_SIZE 256
+//#define PA_DIR_SIZE 16
 
 #define MEM_SUGGEST_INIT_ALLOC (1<<21)
 

@@ -61,6 +61,13 @@ void dev_prompt(void){
         trie_insert(be, temp, HASH8(be, "foo"), be->nil, _val(be, 0x01234567));
         trie_insert(be, temp, HASH8(be, "bar"), be->nil, _val(be, 0x89abcdef));
         trie_insert(be, temp, HASH8(be, "baz"), be->nil, _val(be, 0x00112233));
+        trie_insert(be, temp, HASH8(be, "bap"), be->nil, _val(be, 0x00112233));
+        trie_insert(be, temp, HASH8(be, "baq"), be->nil, _val(be, 0x00112233));
+    
+    for(i=0; i<72; i++){
+        trie_insert(be, temp, HASH8(be, c), be->nil, _val(be, i*793));
+        *c++;
+    }
 
     thread_context *tc;
     bstruct paging_base;

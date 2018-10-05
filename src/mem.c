@@ -72,32 +72,24 @@ cptr mem_context_expand(mem_context *mc){
 
     bstruct paging_base = mc->paging_base;
 
-    mword *level1_page = rdp(paging_base, mc->alloc_ptr.level2_index);
-    mword *level0_page = rdp(level1_page, mc->alloc_ptr.level1_index);
-    mword *alloc_ptr   = level0_page + mc->alloc_ptr.level0_index;
+    mword *level1_page = rdp(paging_base, mc->alloc_ptr.level2_index-1);
+    mword *level0_page = rdp(level1_page, mc->alloc_ptr.level1_index-1);
 
-    // if level1 is maxed out
-    //      if level2 is maxed out
-    //          fatal
-    //      level1 <-- alloc a new level1 page (register in level2)
-    //
-    // alloc new level0 page (register in level1)
-    // return base address of level0 page
-    if(mc->alloc_ptr.level1_index == PA_DIR_SIZE){ // level1 page is maxed out
+    if(mc->alloc_ptr.level1_index > PA_DIR_SIZE){ // level1 page is maxed out
 
-        if(mc->alloc_ptr.level2_index == PA_DIR_SIZE){ // level2 page is maxed out
+        if(mc->alloc_ptr.level2_index > PA_DIR_SIZE){ // level2 page is maxed out
             _fatal("paging directories full"); // FIXME: fail gracefully!
         }
 
-        ptr new_level1_page = mem_sys_new_bstruct(VAL_TO_PTR(UNITS_MTO8(PA_DIR_SIZE)));
-        mc->alloc_ptr.level2_index++;
+        level1_page = mem_sys_new_bstruct(VAL_TO_PTR(UNITS_MTO8(PA_DIR_SIZE)));
         ldp(paging_base, mc->alloc_ptr.level2_index) = level1_page;
+        mc->alloc_ptr.level2_index++;
 
         mc->alloc_ptr.level1_index=0;
 
     }
 
-    cptr new_level0_page = mem_sys_alloc(UNITS_MTO8(LARGE_PAGE_SIZE));
+    val new_level0_page = mem_sys_alloc(UNITS_MTO8(LARGE_PAGE_SIZE));
     ldp(level1_page, mc->alloc_ptr.level1_index) = new_level0_page;
     mc->alloc_ptr.level1_index++;
 
@@ -188,20 +180,30 @@ bstruct mem_alloc_threaded(babel_env *be, mword alloc_sfield){
     mword alloc_request_size = mem_alloc_size(alloc_sfield)+1; // +1 is for s-field
 
     bstruct result;
-//    mword *alloc_ptr;
 
-    if(alloc_request_size >= LARGE_PAGE_SIZE){
+    thread_context *tc;
+    bstruct paging_base;
+    mword *level1_page;
+    mword *level0_page;
+
+    if(alloc_request_size >= LEVEL0_PAGE_SIZE){
         result = mem_sys_alloc(UNITS_MTO8(alloc_request_size));
         _warn("large page allocation");
     }
     else{
 
-        thread_context *tc = be->threads[be->thread_id];
-        bstruct paging_base = tc->mem->paging_base;
+        tc          = be->threads[be->thread_id];
+        paging_base = tc->mem->paging_base;
 
-        mword *level1_page = rdp(paging_base, tc->mem->alloc_ptr.level2_index-1);
-        mword *level0_page = rdp(level1_page, tc->mem->alloc_ptr.level1_index-1);
-               result   = level0_page + tc->mem->alloc_ptr.level0_index;
+        level1_page = rdp(paging_base, tc->mem->alloc_ptr.level2_index-1);
+        level0_page = rdp(level1_page, tc->mem->alloc_ptr.level1_index-1);
+        result      = level0_page + tc->mem->alloc_ptr.level0_index;
+
+        mword headroom = LEVEL0_PAGE_SIZE - tc->mem->alloc_ptr.level0_index;
+
+        if(headroom < alloc_request_size){
+            result = mem_context_expand(tc->mem);
+        }
 
         tc->mem->alloc_ptr.level0_index += alloc_request_size;
 
