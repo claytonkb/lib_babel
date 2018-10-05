@@ -53,13 +53,13 @@ mem_context *mem_context_new(babel_env *be){
 //
 void mem_context_destroy(mem_context *mc){
 
-    bstruct init_level2_dir = mc->paging_base;
-    bstruct init_level1_dir = rdp(init_level2_dir,0);
-    bstruct init_level0_pg  = rdp(init_level1_dir,0);
+    bstruct init_level2_page = mc->paging_base;
+    bstruct init_level1_page = rdp(init_level2_page,0);
+    bstruct init_level0_page  = rdp(init_level1_page,0);
 
-    mem_sys_destroy_bstruct(init_level2_dir);
-    mem_sys_destroy_bstruct(init_level1_dir);
-    mem_sys_free(init_level0_pg);
+    mem_sys_destroy_bstruct(init_level2_page);
+    mem_sys_destroy_bstruct(init_level1_page);
+    mem_sys_free(init_level0_page);
 
 }
 
@@ -148,8 +148,8 @@ void mem_sys_free(void *p){
 
 }
 
-//#if 0
-// FIXME: Temporary sol'n until GC is in place
+
+//
 //
 bstruct mem_alloc(babel_env *be, mword alloc_sfield){
 
@@ -168,11 +168,8 @@ bstruct mem_alloc(babel_env *be, mword alloc_sfield){
     return result;
 
 }
-//#endif
 
-#define LEVEL0_PAGE_SIZE LARGE_PAGE_SIZE
 
-//#if 0
 //
 //
 bstruct mem_alloc_threaded(babel_env *be, mword alloc_sfield){
@@ -215,7 +212,6 @@ bstruct mem_alloc_threaded(babel_env *be, mword alloc_sfield){
     return result;
 
 }
-//#endif
 
 
 //
