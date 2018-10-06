@@ -59,9 +59,13 @@ void dev_prompt(void){
     ACC = be->nil;
 
         temp = trie_new(be);
-        trie_insert(be, temp, HASH8(be, "foo"), be->nil, _val(be, 0x01234567));
-        trie_insert(be, temp, HASH8(be, "bar"), be->nil, _val(be, 0x89abcdef));
-        trie_insert(be, temp, HASH8(be, "baz"), be->nil, _val(be, 0x00112233));
+//        trie_insert(be, temp, HASH8(be, "foo"), be->nil, _val(be, 0x01234567));
+//        trie_insert(be, temp, HASH8(be, "bar"), be->nil, _val(be, 0x89abcdef));
+//        trie_insert(be, temp, HASH8(be, "baz"), be->nil, _val(be, 0x00112233));
+
+        trie_insert(be, temp, be->nil, C2B("foo"), _val(be, 0x01234567));
+        trie_insert(be, temp, be->nil, C2B("bar"), _val(be, 0x89abcdef));
+        trie_insert(be, temp, be->nil, C2B("baz"), _val(be, 0x00112233));
 
 //    for(i=0; i<72; i++){
 //        trie_insert(be, temp, HASH8(be, c), be->nil, _val(be, i*793));
@@ -122,9 +126,20 @@ void dev_prompt(void){
 //                ACC = trie_entries(be, temp);
 //                ACC = list_to_ptr_array(be, trie_entries(be, temp)); // array-of-pairs form
 
-                ACC  = aop_from_trie(be, temp);
-                temp = aop_to_trie(be, ACC);
-                ACC = temp;
+//                ACC  = aop_from_trie(be, temp);
+                ACC  = aop_from_trie_keys(be, temp);
+//                temp = aop_to_trie_keys(be, ACC);
+//                temp = aop_to_array(be, ACC);
+//                ACC  = aop_from_array(be, pcar(temp), pcdr(temp));
+
+//                temp = aop_to_list(be, ACC);
+//                ACC = aop_from_list(be, pcar(temp), pcdr(temp));
+
+//                temp = aop_to_sap(be, ACC, LEX_MWORD_ST);
+//                temp = aop_to_sap(be, ACC, ALPHA_BYTE_ST);
+//                ACC = aop_from_list(be, pcar(temp), pcdr(temp));
+
+//                ACC = temp;
 
 //                _d(be->thread_id);
 

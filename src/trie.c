@@ -38,6 +38,9 @@ mword *trie_new_cell(babel_env *be, mword *key, mword *secondary_key, mword *pay
 //
 void trie_insert(babel_env *be, mword *trie, mword *key, mword *secondary_key, mword *payload){
 
+//_d(is_nil(key));
+//_d(is_nil(secondary_key));
+
     if(is_tptr(trie)){ 
         trie = tcar(trie);  // XXX We don't check the tag
     }
@@ -69,6 +72,9 @@ void trie_insert(babel_env *be, mword *trie, mword *key, mword *secondary_key, m
 
     if(!is_nil(secondary_key))
         secondary_key = bstruct_cp(be, secondary_key);
+
+//_d(is_nil(key));
+//_d(is_nil(secondary_key));
 
     rtrie_insert(be, trie, key, secondary_key, payload, 0);
 

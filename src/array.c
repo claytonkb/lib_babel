@@ -11,7 +11,7 @@
 
 // calculates array8 size from sfield and alignment word
 //
-mword array8_size(mword *string){ // array8_size#
+mword array8_size(const mword *string){ // array8_size#
 
     mword strsize = size(string) - 1;
     mword last_mword = rdv(string, strsize);
@@ -403,8 +403,9 @@ int array_cmp_lex(const mword *left, const mword *right, access_size asize){ // 
         right_size = UNITS_MTO8(size_special(right));
     }
     else{ // asize == U8_SIZE
-//        left_size  = array8_size(left);
-//        right_size = array8_size(right);
+//        _fatal("BUG when asize==U8_ASIZE"); // FIXME
+        left_size  = array8_size(left);
+        right_size = array8_size(right);
     }
 
     if(left_size > right_size){
@@ -454,7 +455,7 @@ int array_ncmp(babel_env *be, mword *left, mword left_offset, mword *right, mwor
 
 //
 //
-int array_cmp_alpha(babel_env *be, mword *left, mword *right, access_size asize){ // array_cmp_alpha#
+int array_cmp_alpha(mword *left, mword *right, access_size asize){ // array_cmp_alpha#
 
     mword left_size;
     mword right_size;

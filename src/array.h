@@ -22,7 +22,7 @@ arr array_th(babel_env *be, mword *bs, mword entry);
 mword array8_read(mword *array, mword offset);
 void array8_write(mword *array, mword offset, mword value);
 mword *array8_th(babel_env *be, mword *val_array, mword entry8);
-mword array8_size(mword *string);
+mword array8_size(const mword *string);
 mword array8_dec_align(mword alignment_word);
 mword array8_enc_align(mword size8);
 mword array8_mword_size(mword size8);
@@ -31,6 +31,7 @@ mword *array8_slice(babel_env *be, mword *array, mword start, mword end);
 
 mword *array_slice(babel_env *be, mword *array, mword start, mword end);
 mword *array_to_string(babel_env *be, mword *array);
+
 
 /*****************************************************************************
  *                                                                           *
@@ -54,7 +55,7 @@ mword array1_mword_size(babel_env *be, mword size1);
  ****************************************************************************/
 int array_cmp_lex(const mword *left, const mword *right, access_size asize);
 int array_ncmp(babel_env *be, mword *left, mword left_offset, mword *right, mword length, access_size asize);
-int array_cmp_alpha(babel_env *be, mword *left, mword *right, access_size asize);
+int array_cmp_alpha(mword *left, mword *right, access_size asize);
 int array_cmp_num(mword *left, mword *right);
 int array_cmp_num_range(mword *left, mword *left_end, mword *right, mword *right_end);
 int array_cmp_num_signed(mword *left, mword *right);
@@ -96,6 +97,8 @@ mword *array_shrink(babel_env *be, mword *array, mword new_begin, mword new_end,
 mword array_search(babel_env *be, mword *array, mword *target, sort_type st);
 mword array_search_binary(babel_env *be, mword *begin, mword *end, mword *target, sort_type st);
 mword array_search_linear(babel_env *be, mword *array, int start, int end, mword *target, sort_type st);
+
+mword *array_to_list(babel_env *be, mword *arr);
 
 void array_max_heapify(mword *array, mword i, mword array_size);
 
