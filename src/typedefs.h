@@ -20,6 +20,7 @@ typedef bstruct pair;   // ptr-array of size 2 (synonymous with cons-box)
 typedef bstruct val;    // val-array
 typedef bstruct arr;    // mword array (ptr or val)
 typedef bstruct tarr;   // tag array
+typedef bstruct trie;   // trie
 typedef bstruct val8;   // byte val-array
 typedef bstruct val1;   // byte val-array
 typedef bstruct tptr;   // tagged-pointer

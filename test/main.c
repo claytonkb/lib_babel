@@ -13,6 +13,7 @@
 #include "trie.h"
 #include "tptr.h"
 #include "list.h"
+#include "aop.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -61,13 +62,11 @@ void dev_prompt(void){
         trie_insert(be, temp, HASH8(be, "foo"), be->nil, _val(be, 0x01234567));
         trie_insert(be, temp, HASH8(be, "bar"), be->nil, _val(be, 0x89abcdef));
         trie_insert(be, temp, HASH8(be, "baz"), be->nil, _val(be, 0x00112233));
-        trie_insert(be, temp, HASH8(be, "bap"), be->nil, _val(be, 0x00112233));
-        trie_insert(be, temp, HASH8(be, "baq"), be->nil, _val(be, 0x00112233));
-    
-    for(i=0; i<72; i++){
-        trie_insert(be, temp, HASH8(be, c), be->nil, _val(be, i*793));
-        *c++;
-    }
+
+//    for(i=0; i<72; i++){
+//        trie_insert(be, temp, HASH8(be, c), be->nil, _val(be, i*793));
+//        *c++;
+//    }
 
     thread_context *tc;
     bstruct paging_base;
@@ -112,16 +111,20 @@ void dev_prompt(void){
 //                ACC = _val(be, trie_exists(be, temp, HASH8(be, "fop"), be->nil));
 //                ACC = trie_lookup_hash(be, temp, be->nil, C2B("foo"));
 
-                cmd_code_str = strtok(NULL, " ");
-                if(cmd_code_str == NULL){ _say("Not enough arguments"); continue; }
-
-                ACC = _val(be, trie_exists(be, temp, pearson_hash8(be,be->zero_hash,cmd_code_str,strlen(cmd_code_str)), be->nil));
+//                cmd_code_str = strtok(NULL, " ");
+//                if(cmd_code_str == NULL){ _say("Not enough arguments"); continue; }
+//
+//                ACC = _val(be, trie_exists(be, temp, pearson_hash8(be,be->zero_hash,cmd_code_str,strlen(cmd_code_str)), be->nil));
 
 //                trie_remove(be, temp, pearson_hash8(be,be->zero_hash,"foo",STRLEN("foo")), be->nil);
 //                ACC = temp;
 
-//                ACC = be, trie_entries(be, temp);
+//                ACC = trie_entries(be, temp);
 //                ACC = list_to_ptr_array(be, trie_entries(be, temp)); // array-of-pairs form
+
+                ACC  = aop_from_trie(be, temp);
+                temp = aop_to_trie(be, ACC);
+                ACC = temp;
 
 //                _d(be->thread_id);
 
