@@ -223,3 +223,21 @@
 
 
 
+/*****************************************************************************
+ *                                                                           *
+ *                                   DEV                                     *
+ *                                                                           *
+ ****************************************************************************/
+
+#define _dump(x)        do{ fprintf(stderr, "%s\n", (char*)introspect_str(be, bstruct_unload(be,(x)))); } while(0)
+
+#define _mem(x)                                                       \
+    fprintf(stderr, "---------------- %016lx\n", sfield(x));          \
+    for(dev_i=0; dev_i<alloc_size(x)-1; dev_i++){                     \
+        if(dev_i>=0){                                                 \
+            fprintf(stderr, "%016lx ", (uint64_t)dev_i*MWORD_SIZE);   \
+        }                                                             \
+        fprintf(stderr, "%016lx\n", *((uint64_t*)x+dev_i));           \
+    }
+
+

@@ -58,6 +58,13 @@ int cmp_aop_alpha_byte(const void *a, const void *b){
 //
 //
 int cmp_aop_lex_mword(const void *a, const void *b){
+
+//_d(sfield(*(void**)a));
+//_d(sfield(*(void**)b));
+
+//_mem((*(void**)a));
+//_mem((*(void**)b));
+
     return array_cmp_lex(pcar(*(void**)a),pcar(*(void**)b),MWORD_ASIZE);
 }
 

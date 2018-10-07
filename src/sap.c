@@ -5,6 +5,13 @@
 #include "sap.h"
 #include "aop.h"
 #include "mem.h"
+#include "bstruct.h"
+#include "introspect.h"
+
+// NOTE: The csort_fn expects keys to be in pair form. When calling an sap_*
+// function, be sure to "wrap" a bare hash key in a pair, as follows:
+//
+//      sap_key = list_cons(be, hash_key, be->nil);
 
 
 //
@@ -66,7 +73,7 @@ mword sap_find_index_linear(babel_env *be, mword *sap, mword start, mword end, m
     csort_fn cmp_fn = aop_select_cmp_fn(st);
 
     for(; i<end; i++){
-        if( cmp_fn(key, rdp(sap,i)) == 0 ){
+        if(cmp_fn(&key, &(rdp(sap,i))) == 0){
             return i;
         }
     }
@@ -99,7 +106,7 @@ mword sap_find_index_binary(babel_env *be, mword *sap, mword *key, sort_type st)
 
     while(local_sap_size){
 
-        comparison = cmp_fn(key, rdp(sap,guess_index));
+        comparison = cmp_fn(&key, &(rdp(sap,guess_index)));
 
         if(comparison < 0){
             lower_bound = guess_index;

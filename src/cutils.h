@@ -3,20 +3,6 @@
 #ifndef CUTILS_H
 #define CUTILS_H
 
-//#include <stdio.h>
-//#include <string.h>
-//#include <stdlib.h>
-//#include <stddef.h>
-//#include <assert.h>
-//#include <setjmp.h>
-//#include <stdarg.h>
-//#include <time.h>
-//#include <stdint.h>
-//#include <inttypes.h>
-//#include <time.h>
-//#include <unistd.h>
-//#include <math.h>
-
 #include <stddef.h>
 #include <stdio.h>
 #include <memory.h>
@@ -55,15 +41,6 @@
 #define _say(x)         do{ fprintf(stderr, "%s\n", x); fflush(stderr); } while(0)
 #define _msg(x)         do{ _say("LIB_BABEL: " x); } while(0)
 #define _trace          do{ fprintf(stderr, "TRACE: %s() in %s line %d\n", __func__, __FILE__, __LINE__); fflush(stderr); } while(0)
-
-#define _mem(x)                                                       \
-    fprintf(stderr, "---------------- %016lx\n", sfield(x));          \
-    for(dev_i=0; dev_i<alloc_size(x)-1; dev_i++){                     \
-        if(dev_i>=0){                                                 \
-            fprintf(stderr, "%016lx ", (uint64_t)dev_i*MWORD_SIZE);   \
-        }                                                             \
-        fprintf(stderr, "%016lx\n", *((uint64_t*)x+dev_i));              \
-    }
 
 #endif // CUTILS_H
 

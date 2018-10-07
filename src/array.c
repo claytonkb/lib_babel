@@ -415,7 +415,7 @@ int array_cmp_lex(const mword *left, const mword *right, access_size asize){ // 
         return -1;
     }
     //else:
-
+//_trace;
     return memcmp(left, right, left_size);
 
 }

@@ -14,6 +14,7 @@
 #include "tptr.h"
 #include "list.h"
 #include "aop.h"
+#include "sap.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -133,19 +134,16 @@ void dev_prompt(void){
 //                ACC = list_to_ptr_array(be, trie_entries(be, temp)); // array-of-pairs form
 
 //                ACC  = aop_from_trie(be, temp);
-                ACC  = aop_from_trie_keys(be, temp);
 //                temp = aop_to_trie_keys(be, ACC);
 //                temp = aop_to_array(be, ACC);
 //                ACC  = aop_from_array(be, pcar(temp), pcdr(temp));
 
 //                temp = aop_to_list(be, ACC);
 //                ACC = aop_from_list(be, pcar(temp), pcdr(temp));
-
-                temp = aop_to_sap(be, ACC, LEX_MWORD_ST);
 //                temp = aop_to_sap(be, ACC, ALPHA_BYTE_ST);
 //                ACC = aop_from_list(be, pcar(temp), pcdr(temp));
 
-                ACC = temp;
+//                ACC = temp;
 
 //                _d(be->thread_id);
 
@@ -165,6 +163,16 @@ void dev_prompt(void){
 //                _dd(tc->mem->alloc_ptr.level2_index);
 //                _dd(tc->mem->alloc_ptr.level1_index);
 //                _dd(tc->mem->alloc_ptr.level0_index);
+
+//                ACC = list_cons(be, C2B("coo"), be->nil);
+//                _dump(ACC);
+
+                ACC  = aop_from_trie_keys(be, temp);
+                temp = aop_to_sap(be, ACC, LEX_MWORD_ST);
+//                ACC = temp;
+
+                tempv = sap_find_index_linear(be, temp, 0, size(temp), list_cons(be, C2B("coo"), be->nil), LEX_MWORD_ST);
+                ACC = rdp(temp,tempv);
 
                 break;
 
