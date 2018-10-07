@@ -169,40 +169,41 @@ aop aop_from_sap(babel_env *be, sap a){
 //
 sap aop_to_sap(babel_env *be, aop a, sort_type st){
 
-    void *sort_fn;
+//    void *sort_fn = aop_select_cmp_fn(st);
+//    qsort(a, size(a), sizeof(mword), sort_fn);
 
-    switch(st){
-        case UNSIGNED_ST:
-            sort_fn = cmp_aop_unsigned;
-            break;
-        case SIGNED_ST:
-            sort_fn = cmp_aop_signed;
-            break;
-        case LEX_MWORD_ST:
-            sort_fn = cmp_aop_lex_mword;
-            break;
-        case LEX_BYTE_ST:
-            sort_fn = cmp_aop_lex_byte;
-            break;
-        case ALPHA_MWORD_ST:
-            sort_fn = cmp_aop_alpha_mword;
-            break;
-        case ALPHA_BYTE_ST:
-            sort_fn = cmp_aop_alpha_byte;
-            break;
-        case VAL_ST:
-            sort_fn = cmp_cuint;
-            break;
-        case CUSTOM_ST: // use array_sort() for this
-            return a; // do nothing
-        default:
-            _pigs_fly;
-    }
-
-    qsort(a, size(a), sizeof(mword), sort_fn);
+    qsort(a, size(a), sizeof(mword), aop_select_cmp_fn(st));
 
     return a;
 
+}
+
+
+//
+//
+void *aop_select_cmp_fn(sort_type st){
+
+    switch(st){
+        case UNSIGNED_ST:
+            return cmp_aop_unsigned;
+        case SIGNED_ST:
+            return cmp_aop_signed;
+        case LEX_MWORD_ST:
+            return cmp_aop_lex_mword;
+        case LEX_BYTE_ST:
+            return cmp_aop_lex_byte;
+        case ALPHA_MWORD_ST:
+            return cmp_aop_alpha_mword;
+        case ALPHA_BYTE_ST:
+            return cmp_aop_alpha_byte;
+        case VAL_ST:
+            return cmp_cuint;
+        case CUSTOM_ST: // use array_sort() for this
+            return cmp_aop_custom;
+        default:
+            _pigs_fly;
+    }
+ 
 }
 
 

@@ -18,6 +18,7 @@ bstruct aop_to_list(babel_env *be, aop a);
 aop aop_from_sap(babel_env *be, sap a);
 sap aop_to_sap(babel_env *be, aop a, sort_type st);
 
+void *aop_select_cmp_fn(sort_type st);
 
 #endif //AOP_H
 

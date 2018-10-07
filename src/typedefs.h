@@ -65,6 +65,9 @@ typedef enum access_size_enum
          U32_ASIZE,  U64_ASIZE, U128_ASIZE, 
          MWORD_ASIZE} access_size;
 
+typedef enum search_type_enum
+        {LINEAR_S, BINARY_S, PROBE_S} search_type;
+
 typedef enum sort_type_enum
         {UNSIGNED_ST,  SIGNED_ST,   ALPHA_MWORD_ST, ALPHA_BYTE_ST, 
          LEX_MWORD_ST, LEX_BYTE_ST, VAL_ST,         CUSTOM_ST} sort_type;
@@ -72,10 +75,9 @@ typedef enum sort_type_enum
 typedef enum fileout_type_enum 
         {OVERWRITE, APPEND} fileout_type;
 
-// generic_fn
-//
-typedef void generic_fn(void* out, void* in); // generic_fn#
-
+// fn pointers
+typedef void generic_fn(void* out, void* in);
+typedef int  (*csort_fn)(const void*,const void*);
 
 // ranges
 //

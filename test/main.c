@@ -63,9 +63,15 @@ void dev_prompt(void){
 //        trie_insert(be, temp, HASH8(be, "bar"), be->nil, _val(be, 0x89abcdef));
 //        trie_insert(be, temp, HASH8(be, "baz"), be->nil, _val(be, 0x00112233));
 
-        trie_insert(be, temp, be->nil, C2B("foo"), _val(be, 0x01234567));
-        trie_insert(be, temp, be->nil, C2B("bar"), _val(be, 0x89abcdef));
-        trie_insert(be, temp, be->nil, C2B("baz"), _val(be, 0x00112233));
+        trie_insert(be, temp, be->nil, C2B("aoo"), _val(be, 0x12345678));
+        trie_insert(be, temp, be->nil, C2B("boo"), _val(be, 0x23456789));
+        trie_insert(be, temp, be->nil, C2B("coo"), _val(be, 0x3456789a));
+        trie_insert(be, temp, be->nil, C2B("doo"), _val(be, 0x456789ab));
+        trie_insert(be, temp, be->nil, C2B("eoo"), _val(be, 0x56789abc));
+        trie_insert(be, temp, be->nil, C2B("foo"), _val(be, 0x6789abcd));
+
+//        trie_insert(be, temp, be->nil, C2B("bar"), _val(be, 0x89abcdef));
+//        trie_insert(be, temp, be->nil, C2B("bap"), _val(be, 0x00112233));
 
 //    for(i=0; i<72; i++){
 //        trie_insert(be, temp, HASH8(be, c), be->nil, _val(be, i*793));
@@ -135,11 +141,11 @@ void dev_prompt(void){
 //                temp = aop_to_list(be, ACC);
 //                ACC = aop_from_list(be, pcar(temp), pcdr(temp));
 
-//                temp = aop_to_sap(be, ACC, LEX_MWORD_ST);
+                temp = aop_to_sap(be, ACC, LEX_MWORD_ST);
 //                temp = aop_to_sap(be, ACC, ALPHA_BYTE_ST);
 //                ACC = aop_from_list(be, pcar(temp), pcdr(temp));
 
-//                ACC = temp;
+                ACC = temp;
 
 //                _d(be->thread_id);
 
