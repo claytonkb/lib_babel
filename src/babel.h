@@ -35,6 +35,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <math.h>
+#include <limits.h>
 
 #include "constants.h"
 #include "typedefs.h"

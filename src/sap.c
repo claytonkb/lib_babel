@@ -142,35 +142,16 @@ mword sap_find_index_probe(babel_env *be, mword *sap, mword *key){
         return sap_find_index_linear(be, sap, 0, sap_size, key, LEX_MWORD_ST);
 
     csort_fn cmp_fn = aop_select_cmp_fn(LEX_MWORD_ST);
-//    int comparison;
 
-//    mword guess_index = ();
-//
-//
-//    while(local_sap_size){
-//
-//        comparison = cmp_fn(key, rdp(sap,guess_index));
-//
-//        if(comparison < 0){
-//            lower_bound = guess_index;
-//            guess_index += shift;
-//        }
-//        else if(comparison > 0){
-//            upper_bound = guess_index;
-//            guess_index -= shift;
-//        }
-//        else{ // comparison == 0
-//            return guess_index;
-//        }
-//
-//        shift >>= 1;
-//        shift = (shift == 0) ? 1 : shift;
-//
-//        local_sap_size >>= 1;
-//
-//    }
-//
-//    return sap_find_index_linear(be, sap, lower_bound, upper_bound+1, key, st);
+    mword *search_key = pcar(key);
+
+    double partition_num = (double)(search_key[0]/2) / (double)ULONG_MAX;
+
+    mword guess_index = sap_size * partition_num;
+
+    return sap_find_index_linear(be, sap, guess_index-(sap_size/64), guess_index+(sap_size/64), key, LEX_MWORD_ST);
+
+//    return guess_index;
 
 }
 

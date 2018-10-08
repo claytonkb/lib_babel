@@ -202,9 +202,13 @@ void dev_prompt(void){
 //                ACC = temp;
 
 //                tempv = sap_find_index_linear(be, temp, 0, size(temp), list_cons(be, C2B("coo"), be->nil), LEX_MWORD_ST);
-//                tempv = sap_find_index_linear(be, temp, 0, size(temp), list_cons(be, HASH8(be, "000"), be->nil), LEX_MWORD_ST);
+                tempv = sap_find_index_linear(be, temp, 0, size(temp), list_cons(be, HASH8(be, "000"), be->nil), LEX_MWORD_ST);
+                _dd(tempv);
                 tempv = sap_find_index_binary(be, temp, list_cons(be, HASH8(be, "000"), be->nil), LEX_MWORD_ST);
-                ACC = pcar(rdp(temp,tempv));
+                _dd(tempv);
+                tempv = sap_find_index_probe(be, temp, HASH8(be, "000"));
+                _dd(tempv);
+//                ACC = pcdr(rdp(temp,tempv));
 //                ACC = (mword*)tempv;
 
 //                _mem(be->nil);
