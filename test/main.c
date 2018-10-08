@@ -43,7 +43,7 @@ void dev_prompt(void){
 
     char buffer[256];
 
-    int i;
+    int i,j,k;
 //    ptr   x;
 //    mword y;
 
@@ -51,7 +51,7 @@ void dev_prompt(void){
     bstruct temp;
     char   *tempc;
     mword   tempv;
-    char *c = "a";
+    char *c = malloc(8); 
 
     mem_context *mc;
 //    babel_env *be;
@@ -64,20 +64,49 @@ void dev_prompt(void){
 //        trie_insert(be, temp, HASH8(be, "bar"), be->nil, _val(be, 0x89abcdef));
 //        trie_insert(be, temp, HASH8(be, "baz"), be->nil, _val(be, 0x00112233));
 
-        trie_insert(be, temp, be->nil, C2B("aoo"), _val(be, 0x12345678));
-        trie_insert(be, temp, be->nil, C2B("boo"), _val(be, 0x23456789));
-        trie_insert(be, temp, be->nil, C2B("coo"), _val(be, 0x3456789a));
-        trie_insert(be, temp, be->nil, C2B("doo"), _val(be, 0x456789ab));
-        trie_insert(be, temp, be->nil, C2B("eoo"), _val(be, 0x56789abc));
-        trie_insert(be, temp, be->nil, C2B("foo"), _val(be, 0x6789abcd));
+//        trie_insert(be, temp, be->nil, C2B("aoo"), _val(be, 0x12345678));
+//        trie_insert(be, temp, be->nil, C2B("boo"), _val(be, 0x23456789));
+//        trie_insert(be, temp, be->nil, C2B("coo"), _val(be, 0x3456789a));
+//        trie_insert(be, temp, be->nil, C2B("doo"), _val(be, 0x456789ab));
+//        trie_insert(be, temp, be->nil, C2B("eoo"), _val(be, 0x56789abc));
+//        trie_insert(be, temp, be->nil, C2B("foo"), _val(be, 0x6789abcd));
 
 //        trie_insert(be, temp, be->nil, C2B("bar"), _val(be, 0x89abcdef));
 //        trie_insert(be, temp, be->nil, C2B("bap"), _val(be, 0x00112233));
 
-//    for(i=0; i<72; i++){
-//        trie_insert(be, temp, HASH8(be, c), be->nil, _val(be, i*793));
-//        *c++;
-//    }
+//_d(c[0]);
+//_d(c[1]);
+
+    c[0] = '0';
+    c[1] = '0';
+    c[2] = '0';
+    c[3] = '\0';
+    mword *temph;
+
+    for(i=0; i<10; i++){
+        for(j=0; j<10; j++){
+            for(k=0; k<10; k++){
+//                trie_insert(be, 
+//                        temp,
+//                        be->nil,
+//                        string_c2b(be, c, 3), 
+//                        _val(be, (i*100 + j*10 + k)));
+                trie_insert(be, 
+                        temp,
+                        pearson_hash8(be, be->zero_hash, (char*)string_c2b(be, c, 3), 3), 
+                        be->nil,
+                        _val(be, (i*100 + j*10 + k)));
+                c[0]++;
+            }
+            c[0] = '0';
+            c[1]++;
+        }
+        c[0] = '0';
+        c[1] = '0';
+        c[2]++;
+    }
+
+//_mem( HASH8(be, "00") );
 
     thread_context *tc;
     bstruct paging_base;
@@ -167,12 +196,22 @@ void dev_prompt(void){
 //                ACC = list_cons(be, C2B("coo"), be->nil);
 //                _dump(ACC);
 
-                ACC  = aop_from_trie_keys(be, temp);
+//                ACC  = aop_from_trie_keys(be, temp);
+                ACC  = aop_from_trie(be, temp);
                 temp = aop_to_sap(be, ACC, LEX_MWORD_ST);
 //                ACC = temp;
 
-                tempv = sap_find_index_linear(be, temp, 0, size(temp), list_cons(be, C2B("coo"), be->nil), LEX_MWORD_ST);
-                ACC = rdp(temp,tempv);
+//                tempv = sap_find_index_linear(be, temp, 0, size(temp), list_cons(be, C2B("coo"), be->nil), LEX_MWORD_ST);
+//                tempv = sap_find_index_linear(be, temp, 0, size(temp), list_cons(be, HASH8(be, "000"), be->nil), LEX_MWORD_ST);
+                tempv = sap_find_index_binary(be, temp, list_cons(be, HASH8(be, "000"), be->nil), LEX_MWORD_ST);
+                ACC = pcar(rdp(temp,tempv));
+//                ACC = (mword*)tempv;
+
+//                _mem(be->nil);
+//                _mem(be->zero_hash);
+
+//                temp = HASH8(be, "000");
+//                _mem(temp);
 
                 break;
 

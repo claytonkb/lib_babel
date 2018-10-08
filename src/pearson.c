@@ -31,12 +31,13 @@ hash pearson_hash8(babel_env *be, const bstruct init, const char *key, const uns
 
 }
 
+
 // result must be a uint64_t[2] array
 // init must be a uint64_t[2] array
 //
 void pearson128(hash result, const bstruct init, const char *key, const unsigned strlen){ // pearson128#
 
-    int i;
+    int i,j;
     unsigned char temp;
     unsigned char round_key;
 
@@ -47,28 +48,13 @@ void pearson128(hash result, const bstruct init, const char *key, const unsigned
 
     for(i=0;i<strlen;i++){ // if strlen==0, result=init
 
-        result[0] = result[1] ^ 0x01326754cdfeab98;
-        result[1] = result[0] ^ 0x89baefdc45762310;
-
         round_key = key[i];
 
-        //temp = cresult[0];
-        cresult[ 0] = pearson_perm[ cresult[ 0] ^ (round_key + 167) ];
-        cresult[ 1] = pearson_perm[ cresult[ 1] ^ (round_key + 173) ];
-        cresult[ 2] = pearson_perm[ cresult[ 2] ^ (round_key + 179) ];
-        cresult[ 3] = pearson_perm[ cresult[ 3] ^ (round_key + 181) ];
-        cresult[ 4] = pearson_perm[ cresult[ 4] ^ (round_key + 191) ];
-        cresult[ 5] = pearson_perm[ cresult[ 5] ^ (round_key + 193) ];
-        cresult[ 6] = pearson_perm[ cresult[ 6] ^ (round_key + 197) ];
-        cresult[ 7] = pearson_perm[ cresult[ 7] ^ (round_key + 199) ];
-        cresult[ 8] = pearson_perm[ cresult[ 8] ^ (round_key + 211) ];
-        cresult[ 9] = pearson_perm[ cresult[ 9] ^ (round_key + 223) ];
-        cresult[10] = pearson_perm[ cresult[10] ^ (round_key + 227) ];
-        cresult[11] = pearson_perm[ cresult[11] ^ (round_key + 229) ];
-        cresult[12] = pearson_perm[ cresult[12] ^ (round_key + 233) ];
-        cresult[13] = pearson_perm[ cresult[13] ^ (round_key + 239) ];
-        cresult[14] = pearson_perm[ cresult[14] ^ (round_key + 241) ];
-        cresult[15] = pearson_perm[ cresult[15] ^ (round_key + 251) ];
+        cresult[0] = pearson_perm[ cresult[15] ^ round_key ];
+
+        for(j=1;j<HASH_BYTE_SIZE;j++){
+            cresult[j] = pearson_perm[ cresult[j-1] ^ (round_key+j) ];
+        }
 
         // xoroshiro128
         result[1] ^= result[0];

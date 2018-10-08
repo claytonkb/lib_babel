@@ -106,7 +106,7 @@ mword sap_find_index_binary(babel_env *be, mword *sap, mword *key, sort_type st)
 
     while(local_sap_size){
 
-        comparison = cmp_fn(&key, &(rdp(sap,guess_index)));
+        comparison = cmp_fn(&(rdp(sap,guess_index)), &key);
 
         if(comparison < 0){
             lower_bound = guess_index;
@@ -121,7 +121,7 @@ mword sap_find_index_binary(babel_env *be, mword *sap, mword *key, sort_type st)
         }
 
         shift >>= 1;
-        shift = (shift == 0) ? 1 : shift;
+        shift = (shift < 1) ? 1 : shift;
 
         local_sap_size >>= 1;
 
