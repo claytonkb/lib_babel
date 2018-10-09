@@ -15,6 +15,7 @@
 #include "list.h"
 #include "aop.h"
 #include "sap.h"
+#include "approx.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -49,15 +50,17 @@ void dev_prompt(void){
 
     bstruct ACC;
     bstruct temp;
-    char   *tempc;
-    mword   tempv;
+    char   *tempc=" ";
+    mword   tempv=0;
     char *c = malloc(8); 
 
     mem_context *mc;
 //    babel_env *be;
+
     babel_env *be = babel_env_new(1);
     be->THREADED_ALLOC = SET_FLAG;
     ACC = be->nil;
+    temp = be->nil;
 
         temp = trie_new(be);
 //        trie_insert(be, temp, HASH8(be, "foo"), be->nil, _val(be, 0x01234567));
@@ -77,39 +80,41 @@ void dev_prompt(void){
 //_d(c[0]);
 //_d(c[1]);
 
-    c[0] = '0';
-    c[1] = '0';
-    c[2] = '0';
-    c[3] = '\0';
-    mword *temph;
-
-    for(i=0; i<10; i++){
-        for(j=0; j<10; j++){
-            for(k=0; k<10; k++){
+//    c[0] = '0';
+//    c[1] = '0';
+//    c[2] = '0';
+//    c[3] = '\0';
+//    mword *temph;
+//
+//    for(i=0; i<10; i++){
+//        for(j=0; j<10; j++){
+//            for(k=0; k<10; k++){
+////                trie_insert(be, 
+////                        temp,
+////                        be->nil,
+////                        string_c2b(be, c, 3), 
+////                        _val(be, (i*100 + j*10 + k)));
 //                trie_insert(be, 
 //                        temp,
+//                        pearson_hash8(be, be->zero_hash, (char*)string_c2b(be, c, 3), 3), 
 //                        be->nil,
-//                        string_c2b(be, c, 3), 
 //                        _val(be, (i*100 + j*10 + k)));
-                trie_insert(be, 
-                        temp,
-                        pearson_hash8(be, be->zero_hash, (char*)string_c2b(be, c, 3), 3), 
-                        be->nil,
-                        _val(be, (i*100 + j*10 + k)));
-                c[0]++;
-            }
-            c[0] = '0';
-            c[1]++;
-        }
-        c[0] = '0';
-        c[1] = '0';
-        c[2]++;
-    }
-    ACC  = aop_from_trie(be, temp);
-    temp = aop_to_sap(be, ACC, UNSIGNED_ST);
+//                c[0]++;
+//            }
+//            c[0] = '0';
+//            c[1]++;
+//        }
+//        c[0] = '0';
+//        c[1] = '0';
+//        c[2]++;
+//    }
+//    ACC  = aop_from_trie(be, temp);
+//    temp = aop_to_sap(be, ACC, UNSIGNED_ST);
 //    sap_update(be, temp, HASH8(be, "000"), _val(be, 0xdeadbeef), PROBE_S, UNSIGNED_ST);
 
 //_mem( HASH8(be, "00") );
+
+    ACC = mem_new_val(be, 64, 0);
 
     thread_context *tc;
     bstruct paging_base;
@@ -230,8 +235,11 @@ void dev_prompt(void){
 //                tempv = sap_find_index_binary(be, temp, pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), UNSIGNED_ST);
 //                tempv = sap_find_index_probe(be, temp, pearson_hash8(be,be->zero_hash,cmd_code_str,strlen(cmd_code_str)));
 
-                ACC = sap_lookup(be, temp, pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), PROBE_S, UNSIGNED_ST);
+//                ACC = sap_lookup(be, temp, pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), PROBE_S, UNSIGNED_ST);
 //                _dd(tempv);
+
+//                approx_update(ACC, pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), _val(be, ++tempv), U8_ASIZE);
+                approx_update(ACC, pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), _val(be, 1), U1_ASIZE);
 
                 break;
 

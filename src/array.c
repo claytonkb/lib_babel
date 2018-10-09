@@ -9,6 +9,37 @@
 #include "list.h"
 
 
+#define array8_mask_generate(off,arr,mask,sel)      \
+    mword sel         = (off / MWORD_SIZE);         \
+    mword byte_offset = (off % MWORD_SIZE);         \
+                                                    \
+    if(sel > size(arr)-1){                          \
+        _fatal("error");                            \
+    }                                               \
+                                                    \
+    mword mask = (0xff<<UNITS_8TO1(byte_offset));
+
+
+//
+//
+mword array8_read(mword *array, mword offset){ // array8_read#
+
+    array8_mask_generate(offset, array, read_mask, mword_select);
+    return ((rdv(array,mword_select) & read_mask) >> UNITS_8TO1(offset));
+
+}
+
+
+//
+//
+void array8_write(mword *array, mword offset, mword value){ // array8_write#
+
+    array8_mask_generate(offset, array, write_mask, mword_select);
+    ldv(array,mword_select) = (rdv(array,mword_select) & ~write_mask) | ((value & MASK_1_BYTE) << UNITS_8TO1(byte_offset));
+
+}
+
+
 // calculates array8 size from sfield and alignment word
 //
 mword array8_size(const mword *string){ // array8_size#
@@ -131,11 +162,11 @@ mword *array1_th(babel_env *be, mword *val_array, mword entry1){ // array1_th#
 
 //
 //
-mword array1_size(babel_env *be, mword *string){ // array1_size#
+mword array1_size(mword *string){ // array1_size#
 
     mword strsize = size(string) - 1;
     mword last_mword = rdv(string, strsize);
-    mword alignment = array1_dec_align(be, last_mword);
+    mword alignment = array1_dec_align(last_mword);
 
     if(last_mword){
         return  (strsize * MWORD_BIT_SIZE) - (MWORD_BIT_SIZE - alignment);
@@ -149,7 +180,7 @@ mword array1_size(babel_env *be, mword *string){ // array1_size#
 
 // decodes the alignment word
 //
-mword array1_dec_align(babel_env *be, mword alignment_word){ // array1_dec_align#
+mword array1_dec_align(mword alignment_word){ // array1_dec_align#
 
     if(alignment_word == 0){
         return 0;
@@ -266,7 +297,7 @@ mword *array_mwords_to_bits(babel_env *be, mword *array){ // array_mwords_to_bit
 //
 mword *array_bits_to_mwords(babel_env *be, mword *array1){ // array_bits_to_mwords#
 
-    mword arr1_size  = array1_size(be, array1);
+    mword arr1_size  = array1_size(array1);
     mword *result = mem_new_val(be, arr1_size, 0);
 
     int i;
@@ -363,8 +394,8 @@ mword *array1_cat(babel_env *be, mword *left, mword *right){ // array1_cat#
         _fatal("cannot bit-concatenate ptr-array");
     }
 
-    size_left  = array1_size(be, left);
-    size_right = array1_size(be, right);
+    size_left  = array1_size(left);
+    size_right = array1_size(right);
 
     if(   (size_left  % BITS_PER_BYTE == 0)
        && (size_right % BITS_PER_BYTE == 0)) // array8_cat is *much* faster

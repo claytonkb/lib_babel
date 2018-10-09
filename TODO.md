@@ -10,6 +10,8 @@ Migration
 
     lossy
         approx array
+            array8_write() and array1_write() appear to be buggy
+            Also, hash seems to be colliding a lot (try iterating xoroshiro?)
         bloom filter
         cms
 

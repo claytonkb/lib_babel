@@ -42,8 +42,8 @@ mword *array_to_string(babel_env *be, mword *array);
 mword array1_read(mword *array, mword offset);
 void array1_write(mword *array, mword offset, mword value);
 mword *array1_th(babel_env *be, mword *val_array, mword entry1);
-mword array1_size(babel_env *be, mword *string);
-mword array1_dec_align(babel_env *be, mword alignment_word);
+mword array1_size(mword *string);
+mword array1_dec_align(mword alignment_word);
 mword array1_enc_align(babel_env *be, mword size1);
 mword array1_mword_size(babel_env *be, mword size1);
 
