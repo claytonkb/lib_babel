@@ -107,6 +107,7 @@ void dev_prompt(void){
     }
     ACC  = aop_from_trie(be, temp);
     temp = aop_to_sap(be, ACC, UNSIGNED_ST);
+    sap_update(be, temp, HASH8(be, "000"), _val(be, 0xdeadbeef), PROBE_S, UNSIGNED_ST);
 
 //_mem( HASH8(be, "00") );
 
@@ -213,6 +214,9 @@ void dev_prompt(void){
 //                ACC = pcdr(rdp(temp,tempv));
 //                ACC = (mword*)tempv;
 
+//                tempv = sap_find_index_binary(be, temp, list_cons(be, HASH8(be, "000"), be->nil), LEX_MWORD_ST);
+
+
 //                _mem(be->nil);
 //                _mem(be->zero_hash);
 
@@ -224,8 +228,10 @@ void dev_prompt(void){
 
 //                tempv = sap_find_index_linear(be, temp, 0, size(temp), pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), LEX_MWORD_ST);
 //                tempv = sap_find_index_binary(be, temp, pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), UNSIGNED_ST);
-                tempv = sap_find_index_probe(be, temp, pearson_hash8(be,be->zero_hash,cmd_code_str,strlen(cmd_code_str)));
-                _dd(tempv);
+//                tempv = sap_find_index_probe(be, temp, pearson_hash8(be,be->zero_hash,cmd_code_str,strlen(cmd_code_str)));
+
+                ACC = sap_lookup(be, temp, pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), PROBE_S, UNSIGNED_ST);
+//                _dd(tempv);
 
                 break;
 

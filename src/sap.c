@@ -20,7 +20,12 @@
 //
 mword *sap_lookup(babel_env *be, mword *sap, mword *key, search_type s, sort_type st){
 
+    mword sap_index = sap_find_index(be, sap, key, s, st);
 
+    if(sap_index == NEG_ONE)
+        return be->nil; // FIXME: be->non_exist
+
+    return pcdr(rdp(sap,sap_index));
 
 }
 
@@ -29,7 +34,12 @@ mword *sap_lookup(babel_env *be, mword *sap, mword *key, search_type s, sort_typ
 //
 void sap_update(babel_env *be, mword *sap, mword *key, mword *payload, search_type s, sort_type st){
 
+    mword sap_index = sap_find_index(be, sap, key, s, st);
 
+    if(sap_index == NEG_ONE)
+        return; // do nothing
+
+    ldp(ldp(sap,sap_index),1) = payload;
 
 }
 
