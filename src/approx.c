@@ -87,6 +87,7 @@ void approx_update_scaled(mword *sap, mword size, mword *key, mword *payload, ac
     mword sap_index = approx_find_index(key, size);
 _dd(size);
 _dd(sap_index);
+_dq(key[1]);
     switch(asize){
         case MWORD_ASIZE:
             ldv(sap,sap_index) = *payload;

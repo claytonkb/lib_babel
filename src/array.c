@@ -34,10 +34,40 @@ mword array8_read(mword *array, mword offset){ // array8_read#
 //
 void array8_write(mword *array, mword offset, mword value){ // array8_write#
 
-    array8_mask_generate(offset, array, write_mask, mword_select);
-    ldv(array,mword_select) = (rdv(array,mword_select) & ~write_mask) | ((value & MASK_1_BYTE) << UNITS_8TO1(byte_offset));
+    mword mword_select = (offset / MWORD_SIZE);
+    mword byte_offset  = (offset % MWORD_SIZE);
+
+    if(mword_select > size(array)-1){
+        _fatal("error");
+    }
+
+    mword write_mask = ((mword)0xff<<UNITS_8TO1(byte_offset));
+
+//_dd(offset);
+//_dq(mword_select);
+//_dq(byte_offset);
+//_dq(UNITS_8TO1(byte_offset));
+//_dq(write_mask);
+//_dq(~write_mask);
+//
+//    array8_mask_generate(offset, array, write_mask, mword_select);
+    ldv(array,mword_select) = 
+          (rdv(array,mword_select) & ~write_mask) 
+        | ((value & MASK_1_BYTE) << UNITS_8TO1(byte_offset));
 
 }
+
+
+////
+////
+//void array8_write(mword *array, mword offset, mword value){ // array8_write#
+//
+//    array8_mask_generate(offset, array, write_mask, mword_select);
+//    ldv(array,mword_select) = 
+//          (rdv(array,mword_select) & ~write_mask) 
+//        | ((value & MASK_1_BYTE) << UNITS_8TO1(byte_offset));
+//
+//}
 
 
 // calculates array8 size from sfield and alignment word
@@ -123,7 +153,7 @@ mword array8_mword_size(mword size8){ // array8_mword_size#
         _fatal("error");                            \
     }                                               \
                                                     \
-    mword mask = (1<<bit_offset);
+    mword mask = ((mword)1<<bit_offset);
     
 
 // XXX TESTED XXX

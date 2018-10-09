@@ -10,8 +10,7 @@ Migration
 
     lossy
         approx array
-            array8_write() and array1_write() appear to be buggy
-            Also, hash seems to be colliding a lot (try iterating xoroshiro?)
+            Fix (mword)0xff issue in array[81]_read()
         bloom filter
         cms
 
@@ -20,6 +19,7 @@ Migration
     zebra
 
     vvvvv mid priority
+        any way to get xoroshiro to play nice with pearson?
         basic graph support
         test whether quotes are working in sexpr
         sort out the tags issue (tags.h vs dynamic tags)

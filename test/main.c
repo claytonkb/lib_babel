@@ -114,7 +114,7 @@ void dev_prompt(void){
 
 //_mem( HASH8(be, "00") );
 
-    ACC = mem_new_val(be, 64, 0);
+    ACC = mem_new_val(be, 32, 0);
 
     thread_context *tc;
     bstruct paging_base;
@@ -228,8 +228,8 @@ void dev_prompt(void){
 //                temp = HASH8(be, "000");
 //                _mem(temp);
 
-                cmd_code_str = strtok(NULL, " ");
-                if(cmd_code_str == NULL){ _say("Not enough arguments"); continue; }
+//                cmd_code_str = strtok(NULL, " ");
+//                if(cmd_code_str == NULL){ _say("Not enough arguments"); continue; }
 
 //                tempv = sap_find_index_linear(be, temp, 0, size(temp), pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), LEX_MWORD_ST);
 //                tempv = sap_find_index_binary(be, temp, pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), UNSIGNED_ST);
@@ -239,7 +239,13 @@ void dev_prompt(void){
 //                _dd(tempv);
 
 //                approx_update(ACC, pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), _val(be, ++tempv), U8_ASIZE);
-                approx_update(ACC, pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), _val(be, 1), U1_ASIZE);
+//                approx_update(ACC, pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), _val(be, 1), U1_ASIZE);
+
+//                array8_write(ACC, atoi((char*)cmd_code_str), 0xa5);
+
+                for(i=0;i<100;i++){
+                    approx_update(ACC, pearson_hash8(be, be->zero_hash, _val(be, tempv), 1), _val(be, ++tempv), U8_ASIZE);
+                }
 
                 break;
 

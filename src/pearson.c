@@ -57,9 +57,9 @@ void pearson128(hash result, const bstruct init, const char *key, const unsigned
         }
 
         // xoroshiro128
-        result[1] ^= result[0];
-        result[0]  = ROTL64(result[0], 55) ^ result[1] ^ (result[1] << 14);
-        result[1]  = ROTL64(result[1], 36);
+//        result[1] ^= result[0];
+//        result[0]  = ROTL64(result[0], 55) ^ result[1] ^ (result[1] << 14);
+//        result[1]  = ROTL64(result[1], 36);
 
    }
 
