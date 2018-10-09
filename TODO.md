@@ -6,15 +6,16 @@ TODO
 Migration
 ---------
 
-**NOTE**: \*.c files are from '16 pyramid; update to ai_ml/pyramid ('18)  
-**NOTE**: will need to re-migrate accordingly
-
 *TOS*
 
-    sap functions
-        implement read/update(overwrite)
     lossy
+        approx array
+        bloom filter
+        cms
+
     implement mem_frame_close
+
+    zebra
 
     vvvvv mid priority
         basic graph support

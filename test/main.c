@@ -107,7 +107,7 @@ void dev_prompt(void){
     }
     ACC  = aop_from_trie(be, temp);
     temp = aop_to_sap(be, ACC, UNSIGNED_ST);
-    sap_update(be, temp, HASH8(be, "000"), _val(be, 0xdeadbeef), PROBE_S, UNSIGNED_ST);
+//    sap_update(be, temp, HASH8(be, "000"), _val(be, 0xdeadbeef), PROBE_S, UNSIGNED_ST);
 
 //_mem( HASH8(be, "00") );
 
