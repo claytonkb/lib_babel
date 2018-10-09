@@ -8,36 +8,29 @@
 #include "bstruct.h"
 #include "introspect.h"
 
-// NOTE: The csort_fn expects keys to be in pair form. When calling an sap_*
-// function, be sure to "wrap" a bare hash key in a pair, as follows:
+
+// sorted array-of-pairs notes:
 //
-//      sap_key = list_cons(be, hash_key, be->nil);
-
-
-//
-//
-void sap_overwrite(babel_env *be, mword *sap, mword *key, mword *payload, search_type s, sort_type st){
-
-
-
-}
+//  sap is optimized for read/update. It is not suitable for insert/remove
+//  operations. Use a trie instead. An sap can have any sort-type but an sap
+//  used with probing is restricted to tags sorted by UNSIGNED_ST sort-type.
 
 
 //
 //
 mword *sap_lookup(babel_env *be, mword *sap, mword *key, search_type s, sort_type st){
+
+
+
 }
 
 
 //
 //
-mword  sap_remove(babel_env *be, mword *sap, mword *key, search_type s, sort_type st){
-}
+void sap_update(babel_env *be, mword *sap, mword *key, mword *payload, search_type s, sort_type st){
 
 
-//
-//
-mword *sap_entries(babel_env *be, mword *sap){
+
 }
 
 
@@ -72,8 +65,14 @@ mword sap_find_index_linear(babel_env *be, mword *sap, mword start, mword end, m
 
     csort_fn cmp_fn = aop_select_cmp_fn(st);
 
+    mword *search_key_cons[2];
+    mword *search_key = (mword*)&search_key_cons;
+
+    search_key_cons[0] = key;
+    search_key_cons[1] = be->nil;
+
     for(; i<end; i++){
-        if(cmp_fn(&key, &(rdp(sap,i))) == 0){
+        if(cmp_fn(&(rdp(sap,i)), &search_key) == 0){
             return i;
         }
     }
@@ -104,9 +103,15 @@ mword sap_find_index_binary(babel_env *be, mword *sap, mword *key, sort_type st)
     csort_fn cmp_fn = aop_select_cmp_fn(st);
     int comparison;
 
+    mword *search_key_cons[2];
+    mword *search_key = (mword*)&search_key_cons;
+
+    search_key_cons[0] = key;
+    search_key_cons[1] = be->nil;
+
     while(local_sap_size){
 
-        comparison = cmp_fn(&(rdp(sap,guess_index)), &key);
+        comparison = cmp_fn(&(rdp(sap,guess_index)), &search_key);
 
         if(comparison < 0){
             lower_bound = guess_index;
@@ -143,11 +148,8 @@ mword sap_find_index_probe(babel_env *be, mword *sap, mword *key){
 
     csort_fn cmp_fn = aop_select_cmp_fn(UNSIGNED_ST);
 
-    mword *search_key = pcar(key);
-
-    double partition_num = (double)(search_key[1]) / (double)ULONG_MAX;
-
-//printf("partition_num %lf\n", partition_num);
+    // FIXME: 64-bit specific:
+    double partition_num = (double)(key[1]) / (double)ULONG_MAX;
 
     mword guess_index = sap_size * partition_num;
 
@@ -156,35 +158,12 @@ mword sap_find_index_probe(babel_env *be, mword *sap, mword *key){
     int lower_bound = guess_index-probe_range;
     int upper_bound = guess_index+probe_range;
 
-//    lower_bound = (lower_bound < 1) ? 0 : lower_bound;
-//    upper_bound = (upper_bound > sap_size) ? sap_size : upper_bound;
-
-//_dd(lower_bound);
-//_dd(guess_index);
-//_dd(upper_bound);
-
     mword result = sap_find_index_linear(be,
                             sap,
                             lower_bound,
                             upper_bound,
                             key,
                             UNSIGNED_ST);
-
-//_dd(result);
-//
-//mword lower_comparison = cmp_fn(&key, &(rdp(sap,lower_bound)));
-//mword upper_comparison = cmp_fn(&key, &(rdp(sap,upper_bound)));
-//
-//_dd(lower_comparison);
-//_dd(upper_comparison);
-//
-//_mem(pcar(key));
-//_mem(pcar(rdp(sap,lower_bound)));
-//_mem(pcar(rdp(sap,upper_bound)));
-//
-//_die;
-
-//    mword done=0;
 
     if(result == NEG_ONE){
 
@@ -196,15 +175,6 @@ mword sap_find_index_probe(babel_env *be, mword *sap, mword *key){
             int lower_comparison = cmp_fn(&key, &(rdp(sap,lower_bound)));
             int upper_comparison = cmp_fn(&key, &(rdp(sap,upper_bound)));
 
-//_dd(lower_comparison);
-//_dd(upper_comparison);
-
-//_mem(pcar(key));
-//_mem(pcar(rdp(sap,lower_bound)));
-//_mem(pcar(rdp(sap,upper_bound)));
-//
-//_die;
-
             if((lower_comparison >= 0) && (upper_comparison <= 0)){
                 return result;
             }
@@ -212,9 +182,6 @@ mword sap_find_index_probe(babel_env *be, mword *sap, mword *key){
             probe_range *= 2;
             lower_bound = guess_index-probe_range;
             upper_bound = guess_index+probe_range;
-
-//_dd(lower_bound);
-//_dd(upper_bound);
 
             result = sap_find_index_linear(be,
                                     sap,

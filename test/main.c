@@ -219,13 +219,12 @@ void dev_prompt(void){
 //                temp = HASH8(be, "000");
 //                _mem(temp);
 
-
                 cmd_code_str = strtok(NULL, " ");
                 if(cmd_code_str == NULL){ _say("Not enough arguments"); continue; }
 
-//                ACC = _val(be, trie_exists(be, temp, pearson_hash8(be,be->zero_hash,cmd_code_str,strlen(cmd_code_str)), be->nil));
-
-                tempv = sap_find_index_probe(be, temp, list_cons(be, pearson_hash8(be,be->zero_hash,cmd_code_str,strlen(cmd_code_str)), be->nil));
+//                tempv = sap_find_index_linear(be, temp, 0, size(temp), pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), LEX_MWORD_ST);
+//                tempv = sap_find_index_binary(be, temp, pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), UNSIGNED_ST);
+                tempv = sap_find_index_probe(be, temp, pearson_hash8(be,be->zero_hash,cmd_code_str,strlen(cmd_code_str)));
                 _dd(tempv);
 
                 break;

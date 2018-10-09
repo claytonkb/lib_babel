@@ -11,12 +11,8 @@ Migration
 
 *TOS*
 
-    sap  
-        sap_find_index_probe() WIP
-            create local search_key cons to hold the key
-            allocating memory (list_cons) to search is incorrect
-        sap functions
-            read/update(overwrite)
+    sap functions
+        implement read/update(overwrite)
     lossy
     implement mem_frame_close
 
