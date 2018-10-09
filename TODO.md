@@ -12,6 +12,9 @@ Migration
 *TOS*
 
     sap  
+        sap_find_index_probe() WIP
+            (requires UNSIGNED_ST, not LEX_MWORD_ST)
+            get non-existence working correctly
         sap functions
         find/read/update(overwrite)/etc.
     lossy

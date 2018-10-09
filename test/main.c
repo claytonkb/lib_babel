@@ -105,6 +105,8 @@ void dev_prompt(void){
         c[1] = '0';
         c[2]++;
     }
+    ACC  = aop_from_trie(be, temp);
+    temp = aop_to_sap(be, ACC, UNSIGNED_ST);
 
 //_mem( HASH8(be, "00") );
 
@@ -197,17 +199,17 @@ void dev_prompt(void){
 //                _dump(ACC);
 
 //                ACC  = aop_from_trie_keys(be, temp);
-                ACC  = aop_from_trie(be, temp);
-                temp = aop_to_sap(be, ACC, LEX_MWORD_ST);
+//                ACC  = aop_from_trie(be, temp);
+//                temp = aop_to_sap(be, ACC, LEX_MWORD_ST);
 //                ACC = temp;
 
 //                tempv = sap_find_index_linear(be, temp, 0, size(temp), list_cons(be, C2B("coo"), be->nil), LEX_MWORD_ST);
-                tempv = sap_find_index_linear(be, temp, 0, size(temp), list_cons(be, HASH8(be, "000"), be->nil), LEX_MWORD_ST);
-                _dd(tempv);
-                tempv = sap_find_index_binary(be, temp, list_cons(be, HASH8(be, "000"), be->nil), LEX_MWORD_ST);
-                _dd(tempv);
-                tempv = sap_find_index_probe(be, temp, HASH8(be, "000"));
-                _dd(tempv);
+//                tempv = sap_find_index_linear(be, temp, 0, size(temp), list_cons(be, HASH8(be, "000"), be->nil), LEX_MWORD_ST);
+//                _dd(tempv);
+//                tempv = sap_find_index_binary(be, temp, list_cons(be, HASH8(be, "000"), be->nil), LEX_MWORD_ST);
+//                _dd(tempv);
+//                tempv = sap_find_index_probe(be, temp,list_cons(be, HASH8(be, "000"), be->nil));
+//                _dd(tempv);
 //                ACC = pcdr(rdp(temp,tempv));
 //                ACC = (mword*)tempv;
 
@@ -216,6 +218,15 @@ void dev_prompt(void){
 
 //                temp = HASH8(be, "000");
 //                _mem(temp);
+
+
+                cmd_code_str = strtok(NULL, " ");
+                if(cmd_code_str == NULL){ _say("Not enough arguments"); continue; }
+
+//                ACC = _val(be, trie_exists(be, temp, pearson_hash8(be,be->zero_hash,cmd_code_str,strlen(cmd_code_str)), be->nil));
+
+                tempv = sap_find_index_probe(be, temp, list_cons(be, pearson_hash8(be,be->zero_hash,cmd_code_str,strlen(cmd_code_str)), be->nil));
+                _dd(tempv);
 
                 break;
 
