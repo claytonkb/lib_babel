@@ -13,10 +13,10 @@ Migration
 
     sap  
         sap_find_index_probe() WIP
-            (requires UNSIGNED_ST, not LEX_MWORD_ST)
-            get non-existence working correctly
+            create local search_key cons to hold the key
+            allocating memory (list_cons) to search is incorrect
         sap functions
-        find/read/update(overwrite)/etc.
+            read/update(overwrite)
     lossy
     implement mem_frame_close
 

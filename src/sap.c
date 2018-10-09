@@ -147,18 +147,21 @@ mword sap_find_index_probe(babel_env *be, mword *sap, mword *key){
 
     double partition_num = (double)(search_key[1]) / (double)ULONG_MAX;
 
-printf("partition_num %lf\n", partition_num);
+//printf("partition_num %lf\n", partition_num);
 
     mword guess_index = sap_size * partition_num;
 
     mword probe_range = (sap_size/SAP_PROBE_REGION_DENOM);
 
-    mword lower_bound = guess_index-probe_range;
-    mword upper_bound = guess_index+probe_range;
+    int lower_bound = guess_index-probe_range;
+    int upper_bound = guess_index+probe_range;
 
-_dd(guess_index);
-_dd(lower_bound);
-_dd(upper_bound);
+//    lower_bound = (lower_bound < 1) ? 0 : lower_bound;
+//    upper_bound = (upper_bound > sap_size) ? sap_size : upper_bound;
+
+//_dd(lower_bound);
+//_dd(guess_index);
+//_dd(upper_bound);
 
     mword result = sap_find_index_linear(be,
                             sap,
@@ -167,39 +170,10 @@ _dd(upper_bound);
                             key,
                             UNSIGNED_ST);
 
-_dd(result);
-
-mword lower_comparison = cmp_fn(&key, &(rdp(sap,lower_bound)));
-mword upper_comparison = cmp_fn(&key, &(rdp(sap,upper_bound)));
-
-_dd(lower_comparison);
-_dd(upper_comparison);
-
-_mem(pcar(key));
-_mem(pcar(rdp(sap,lower_bound)));
-_mem(pcar(rdp(sap,upper_bound)));
-
-_die;
-
-
-    mword done=0;
-
-    if(result == NEG_ONE){
-
-        while(1){
-//_trace;
-//            if(lower_bound < 1)
-//                lower_bound=0;
+//_dd(result);
 //
-//            if(upper_bound >= sap_size-1)
-//                upper_bound = sap_size-1;
-//
-//            if((lower_bound < 1) && (upper_bound >= sap_size)){
-//                return NEG_ONE;
-//            }
-
-//            mword lower_comparison = cmp_fn(&key, &(rdp(sap,lower_bound)));
-//            mword upper_comparison = cmp_fn(&key, &(rdp(sap,upper_bound)));
+//mword lower_comparison = cmp_fn(&key, &(rdp(sap,lower_bound)));
+//mword upper_comparison = cmp_fn(&key, &(rdp(sap,upper_bound)));
 //
 //_dd(lower_comparison);
 //_dd(upper_comparison);
@@ -209,13 +183,38 @@ _die;
 //_mem(pcar(rdp(sap,upper_bound)));
 //
 //_die;
+
+//    mword done=0;
+
+    if(result == NEG_ONE){
+
+        while(1){
+
+            lower_bound = (lower_bound < 1) ? 0 : lower_bound;
+            upper_bound = (upper_bound > sap_size) ? sap_size : upper_bound;
+
+            int lower_comparison = cmp_fn(&key, &(rdp(sap,lower_bound)));
+            int upper_comparison = cmp_fn(&key, &(rdp(sap,upper_bound)));
+
+//_dd(lower_comparison);
+//_dd(upper_comparison);
+
+//_mem(pcar(key));
+//_mem(pcar(rdp(sap,lower_bound)));
+//_mem(pcar(rdp(sap,upper_bound)));
+//
+//_die;
+
             if((lower_comparison >= 0) && (upper_comparison <= 0)){
                 return result;
             }
-_trace;
+
             probe_range *= 2;
             lower_bound = guess_index-probe_range;
             upper_bound = guess_index+probe_range;
+
+//_dd(lower_bound);
+//_dd(upper_bound);
 
             result = sap_find_index_linear(be,
                                     sap,
@@ -223,6 +222,10 @@ _trace;
                                     upper_bound,
                                     key,
                                     UNSIGNED_ST);
+
+            if((lower_bound < 1) && (upper_bound >= sap_size)){
+                return result;
+            }
 
         }
     }
