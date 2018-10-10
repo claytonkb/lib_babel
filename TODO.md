@@ -8,7 +8,7 @@ Migration
 
 *TOS*
 
-    lossy
+    pds
         approx array
             Fix (mword)0xff issue in array[81]_read()
         bloom filter

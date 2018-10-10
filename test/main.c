@@ -15,7 +15,8 @@
 #include "list.h"
 #include "aop.h"
 #include "sap.h"
-#include "approx.h"
+#include "pds.h"
+//#include "approx.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -62,59 +63,13 @@ void dev_prompt(void){
     ACC = be->nil;
     temp = be->nil;
 
-        temp = trie_new(be);
-//        trie_insert(be, temp, HASH8(be, "foo"), be->nil, _val(be, 0x01234567));
-//        trie_insert(be, temp, HASH8(be, "bar"), be->nil, _val(be, 0x89abcdef));
-//        trie_insert(be, temp, HASH8(be, "baz"), be->nil, _val(be, 0x00112233));
-
-//        trie_insert(be, temp, be->nil, C2B("aoo"), _val(be, 0x12345678));
-//        trie_insert(be, temp, be->nil, C2B("boo"), _val(be, 0x23456789));
-//        trie_insert(be, temp, be->nil, C2B("coo"), _val(be, 0x3456789a));
-//        trie_insert(be, temp, be->nil, C2B("doo"), _val(be, 0x456789ab));
-//        trie_insert(be, temp, be->nil, C2B("eoo"), _val(be, 0x56789abc));
-//        trie_insert(be, temp, be->nil, C2B("foo"), _val(be, 0x6789abcd));
-
-//        trie_insert(be, temp, be->nil, C2B("bar"), _val(be, 0x89abcdef));
-//        trie_insert(be, temp, be->nil, C2B("bap"), _val(be, 0x00112233));
-
-//_d(c[0]);
-//_d(c[1]);
-
-//    c[0] = '0';
-//    c[1] = '0';
-//    c[2] = '0';
-//    c[3] = '\0';
-//    mword *temph;
-//
-//    for(i=0; i<10; i++){
-//        for(j=0; j<10; j++){
-//            for(k=0; k<10; k++){
-////                trie_insert(be, 
-////                        temp,
-////                        be->nil,
-////                        string_c2b(be, c, 3), 
-////                        _val(be, (i*100 + j*10 + k)));
-//                trie_insert(be, 
-//                        temp,
-//                        pearson_hash8(be, be->zero_hash, (char*)string_c2b(be, c, 3), 3), 
-//                        be->nil,
-//                        _val(be, (i*100 + j*10 + k)));
-//                c[0]++;
-//            }
-//            c[0] = '0';
-//            c[1]++;
-//        }
-//        c[0] = '0';
-//        c[1] = '0';
-//        c[2]++;
-//    }
-//    ACC  = aop_from_trie(be, temp);
-//    temp = aop_to_sap(be, ACC, UNSIGNED_ST);
-//    sap_update(be, temp, HASH8(be, "000"), _val(be, 0xdeadbeef), PROBE_S, UNSIGNED_ST);
-
-//_mem( HASH8(be, "00") );
-
-    ACC = mem_new_val(be, 32, 0);
+//    ACC = mem_new_val(be, 8, 0);
+    temp = mem_new_val(be, 32, 0);
+    for(i=0;i<100;i++){
+//        pds_la_update(temp, pearson_hash8(be, be->zero_hash, _val(be, tempv), 1), _val(be, ++tempv), U8_ASIZE);
+        pds_la_update(temp, pearson_hash8(be, be->zero_hash, _val(be, tempv++), 1), _val(be, 0x1), U1_ASIZE);
+    }
+    ACC=temp;
 
     thread_context *tc;
     bstruct paging_base;
@@ -140,112 +95,26 @@ void dev_prompt(void){
                 break;
 
             case 1:
-//                ACC = HASHC(be, "/babel/tag/trie");
-//                ACC = HASHC(be, "foo");
-
-                //---------------- 0000000000000010
-                //0000000000000000 cdeed55d2583ab94
-                //0000000000000008 a385809743a25530
-
-//#define HASH8(be,str) (pearson_hash8(be, be->zero_hash, (char*)string_c2b(be, str, STRLEN(str)), STRLEN(str)))
-//#define trie_exists(pyr, trie, key, secondary_key) (!is_nil(trie_lookup_hash(pyr, trie, key, secondary_key))) // trie_exists#
-
-//                temp = trie_new(be);
-//                trie_insert(be, temp, HASH8(be, "foo"), be->nil, _val(be, 0x01234567));
-//                trie_insert(be, temp, HASH8(be, "bar"), be->nil, _val(be, 0x89abcdef));
-//                trie_insert(be, temp, HASH8(be, "baz"), be->nil, _val(be, 0x00112233));
-//                ACC = temp;
-
-//                ACC = _val(be, trie_exists(be, temp, HASH8(be, "fop"), be->nil));
-//                ACC = trie_lookup_hash(be, temp, be->nil, C2B("foo"));
-
-//                cmd_code_str = strtok(NULL, " ");
-//                if(cmd_code_str == NULL){ _say("Not enough arguments"); continue; }
-//
-//                ACC = _val(be, trie_exists(be, temp, pearson_hash8(be,be->zero_hash,cmd_code_str,strlen(cmd_code_str)), be->nil));
-
-//                trie_remove(be, temp, pearson_hash8(be,be->zero_hash,"foo",STRLEN("foo")), be->nil);
-//                ACC = temp;
-
-//                ACC = trie_entries(be, temp);
-//                ACC = list_to_ptr_array(be, trie_entries(be, temp)); // array-of-pairs form
-
-//                ACC  = aop_from_trie(be, temp);
-//                temp = aop_to_trie_keys(be, ACC);
-//                temp = aop_to_array(be, ACC);
-//                ACC  = aop_from_array(be, pcar(temp), pcdr(temp));
-
-//                temp = aop_to_list(be, ACC);
-//                ACC = aop_from_list(be, pcar(temp), pcdr(temp));
-//                temp = aop_to_sap(be, ACC, ALPHA_BYTE_ST);
-//                ACC = aop_from_list(be, pcar(temp), pcdr(temp));
-
-//                ACC = temp;
-
-//                _d(be->thread_id);
-
-//                for(i=0; i<10; i++){
-//                             tc = be->threads[i];
-//                    paging_base = tc->mem->paging_base;
-//                    level1_page = rdp(paging_base, 0);
-//                    level0_page = rdp(level1_page, 0);
-//                    alloc_ptr   = level0_page + tc->mem->alloc_ptr.level0_index;
-//_d( i );
-//_d( *paging_base );
-//_d( *level1_page );
-//_d( *level0_page );
-//_d( *alloc_ptr );
-//                }
-
-//                _dd(tc->mem->alloc_ptr.level2_index);
-//                _dd(tc->mem->alloc_ptr.level1_index);
-//                _dd(tc->mem->alloc_ptr.level0_index);
-
-//                ACC = list_cons(be, C2B("coo"), be->nil);
-//                _dump(ACC);
-
-//                ACC  = aop_from_trie_keys(be, temp);
-//                ACC  = aop_from_trie(be, temp);
-//                temp = aop_to_sap(be, ACC, LEX_MWORD_ST);
-//                ACC = temp;
-
-//                tempv = sap_find_index_linear(be, temp, 0, size(temp), list_cons(be, C2B("coo"), be->nil), LEX_MWORD_ST);
-//                tempv = sap_find_index_linear(be, temp, 0, size(temp), list_cons(be, HASH8(be, "000"), be->nil), LEX_MWORD_ST);
-//                _dd(tempv);
-//                tempv = sap_find_index_binary(be, temp, list_cons(be, HASH8(be, "000"), be->nil), LEX_MWORD_ST);
-//                _dd(tempv);
-//                tempv = sap_find_index_probe(be, temp,list_cons(be, HASH8(be, "000"), be->nil));
-//                _dd(tempv);
-//                ACC = pcdr(rdp(temp,tempv));
-//                ACC = (mword*)tempv;
-
-//                tempv = sap_find_index_binary(be, temp, list_cons(be, HASH8(be, "000"), be->nil), LEX_MWORD_ST);
-
-
-//                _mem(be->nil);
-//                _mem(be->zero_hash);
-
-//                temp = HASH8(be, "000");
-//                _mem(temp);
-
-//                cmd_code_str = strtok(NULL, " ");
-//                if(cmd_code_str == NULL){ _say("Not enough arguments"); continue; }
-
-//                tempv = sap_find_index_linear(be, temp, 0, size(temp), pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), LEX_MWORD_ST);
-//                tempv = sap_find_index_binary(be, temp, pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), UNSIGNED_ST);
-//                tempv = sap_find_index_probe(be, temp, pearson_hash8(be,be->zero_hash,cmd_code_str,strlen(cmd_code_str)));
-
-//                ACC = sap_lookup(be, temp, pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), PROBE_S, UNSIGNED_ST);
-//                _dd(tempv);
-
-//                approx_update(ACC, pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), _val(be, ++tempv), U8_ASIZE);
-//                approx_update(ACC, pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), _val(be, 1), U1_ASIZE);
+//                pds_la_update(ACC, pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), _val(be, ++tempv), U8_ASIZE);
+//                pds_la_update(ACC, pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), _val(be, 1), U1_ASIZE);
 
 //                array8_write(ACC, atoi((char*)cmd_code_str), 0xa5);
 
-                for(i=0;i<100;i++){
-                    approx_update(ACC, pearson_hash8(be, be->zero_hash, _val(be, tempv), 1), _val(be, ++tempv), U8_ASIZE);
-                }
+//                for(i=0;i<100;i++){
+//                    pds_la_update(ACC, pearson_hash8(be, be->zero_hash, _val(be, tempv), 1), _val(be, ++tempv), U8_ASIZE);
+//                }
+
+//                cmd_code_str = strtok(NULL, " ");
+//                if(cmd_code_str == NULL){ _say("Not enough arguments"); continue; }
+//                ACC = pds_la_lookup(temp, pearson_hash8(be, be->zero_hash, _val(be, atoi(cmd_code_str)), 1), U8_ASIZE);
+
+//                cmd_code_str = strtok(NULL, " ");
+//                if(cmd_code_str == NULL){ _say("Not enough arguments"); continue; }
+//                array1_write(ACC, atoi((char*)cmd_code_str), 0x1);
+
+                cmd_code_str = strtok(NULL, " ");
+                if(cmd_code_str == NULL){ _say("Not enough arguments"); continue; }
+                ACC = pds_la_lookup(temp, pearson_hash8(be, be->zero_hash, _val(be, atoi(cmd_code_str)), 1), U1_ASIZE);
 
                 break;
 

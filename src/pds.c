@@ -1,16 +1,23 @@
-// approx.c
+// pds.c
 //
+// probabilistic data-structures
+//      la -> lossy-array
+//      bf -> bloom filter
+//     cms -> count-min sketch
 
 #include "babel.h"
-#include "approx.h"
+#include "pds.h"
 #include "array.h"
 
-// notes: Use approx_*_scaled() for best perf. Wrapper functions provided for
+// Notes:
+//
+// Use pds_la_*_scaled() for best perf. Wrapper functions provided for
 // convenience.
+
 
 //
 //
-mword approx_lookup(mword *sap, mword *key, access_size asize){
+mword pds_la_lookup(mword *sap, mword *key, access_size asize){
 
     mword sap_size;
    
@@ -28,16 +35,16 @@ mword approx_lookup(mword *sap, mword *key, access_size asize){
             _pigs_fly;
     }
 
-    approx_lookup_scaled(sap, sap_size, key, asize);
+    return pds_la_lookup_scaled(sap, sap_size, key, asize);
 
 }
 
 
 //
 //
-mword approx_lookup_scaled(mword *sap, mword size, mword *key, access_size asize){
+mword pds_la_lookup_scaled(mword *sap, mword size, mword *key, access_size asize){
 
-    mword sap_index = approx_find_index(key, size);
+    mword sap_index = pds_la_find_index(key, size);
 
     switch(asize){
         case MWORD_ASIZE:
@@ -55,9 +62,9 @@ mword approx_lookup_scaled(mword *sap, mword size, mword *key, access_size asize
 }
 
 
-// convenience fn for calling approx_update_scaled()
+// convenience fn for calling la_update_scaled()
 //
-void approx_update(mword *sap, mword *key, mword *payload, access_size asize){
+void pds_la_update(mword *sap, mword *key, mword *payload, access_size asize){
 
     mword sap_size;
    
@@ -75,19 +82,17 @@ void approx_update(mword *sap, mword *key, mword *payload, access_size asize){
             _pigs_fly;
     }
 
-    approx_update_scaled(sap, sap_size, key, payload, asize);
+    pds_la_update_scaled(sap, sap_size, key, payload, asize);
 
 }
 
 
 //
 //
-void approx_update_scaled(mword *sap, mword size, mword *key, mword *payload, access_size asize){
+void pds_la_update_scaled(mword *sap, mword size, mword *key, mword *payload, access_size asize){
 
-    mword sap_index = approx_find_index(key, size);
-_dd(size);
-_dd(sap_index);
-_dq(key[1]);
+    mword sap_index = pds_la_find_index(key, size);
+
     switch(asize){
         case MWORD_ASIZE:
             ldv(sap,sap_index) = *payload;
@@ -107,7 +112,7 @@ _dq(key[1]);
 
 //
 //
-mword approx_find_index(mword *key, mword sap_size){
+mword pds_la_find_index(mword *key, mword sap_size){
 
     // FIXME: 64-bit specific:
     double partition_num = (double)(key[1]) / (double)ULONG_MAX;

@@ -9,22 +9,19 @@
 #include "list.h"
 
 
-#define array8_mask_generate(off,arr,mask,sel)      \
-    mword sel         = (off / MWORD_SIZE);         \
-    mword byte_offset = (off % MWORD_SIZE);         \
-                                                    \
-    if(sel > size(arr)-1){                          \
-        _fatal("error");                            \
-    }                                               \
-                                                    \
-    mword mask = (0xff<<UNITS_8TO1(byte_offset));
-
-
 //
 //
 mword array8_read(mword *array, mword offset){ // array8_read#
 
-    array8_mask_generate(offset, array, read_mask, mword_select);
+    mword mword_select = (offset / MWORD_SIZE);
+    mword byte_offset  = (offset % MWORD_SIZE);
+
+    if(mword_select > size(array)-1){
+        _fatal("error");
+    }
+
+    mword read_mask = ((mword)0xff<<UNITS_8TO1(byte_offset));
+
     return ((rdv(array,mword_select) & read_mask) >> UNITS_8TO1(offset));
 
 }
@@ -43,14 +40,6 @@ void array8_write(mword *array, mword offset, mword value){ // array8_write#
 
     mword write_mask = ((mword)0xff<<UNITS_8TO1(byte_offset));
 
-//_dd(offset);
-//_dq(mword_select);
-//_dq(byte_offset);
-//_dq(UNITS_8TO1(byte_offset));
-//_dq(write_mask);
-//_dq(~write_mask);
-//
-//    array8_mask_generate(offset, array, write_mask, mword_select);
     ldv(array,mword_select) = 
           (rdv(array,mword_select) & ~write_mask) 
         | ((value & MASK_1_BYTE) << UNITS_8TO1(byte_offset));
@@ -145,22 +134,30 @@ mword array8_mword_size(mword size8){ // array8_mword_size#
  *                                                                           *
  ****************************************************************************/
 
-#define array1_mask_generate(off,arr,mask,sel)      \
-    mword sel          = (off / MWORD_BIT_SIZE);    \
-    mword bit_offset   = (off % MWORD_BIT_SIZE);    \
-                                                    \
-    if(sel > size(arr)-1){                 \
-        _fatal("error");                            \
-    }                                               \
-                                                    \
-    mword mask = ((mword)1<<bit_offset);
+//#define array1_mask_generate(off,arr,mask,sel)      \
+//    mword sel          = (off / MWORD_BIT_SIZE);    \
+//    mword bit_offset   = (off % MWORD_BIT_SIZE);    \
+//                                                    \
+//    if(sel > size(arr)-1){                 \
+//        _fatal("error");                            \
+//    }                                               \
+//                                                    \
+//    mword mask = ((mword)1<<bit_offset);
     
 
 // XXX TESTED XXX
 //
 mword array1_read(mword *array, mword offset){ // array1_read#
 
-    array1_mask_generate(offset, array, read_mask, mword_select);
+    mword mword_select = (offset / MWORD_BIT_SIZE);
+    mword bit_offset   = (offset % MWORD_BIT_SIZE);
+
+    if(mword_select > size(array)-1)
+        _fatal("error");
+
+    mword read_mask = ((mword)1<<bit_offset);
+ 
+//    array1_mask_generate(offset, array, read_mask, mword_select);
     return ((rdv(array,mword_select) & read_mask) >> offset);
 
 }
@@ -170,10 +167,39 @@ mword array1_read(mword *array, mword offset){ // array1_read#
 //
 void array1_write(mword *array, mword offset, mword value){ // array1_write#
 
-    array1_mask_generate(offset, array, write_mask, mword_select);
-    ldv(array,mword_select) = (rdv(array,mword_select) & ~write_mask) | ((value<<bit_offset) & write_mask);
+    mword mword_select = (offset / MWORD_BIT_SIZE);
+    mword bit_offset   = (offset % MWORD_BIT_SIZE);
+
+    if(mword_select > size(array)-1)
+        _fatal("error");
+
+    mword write_mask = ((mword)1<<bit_offset);
+    
+    ldv(array,mword_select) = 
+          (rdv(array,mword_select) & ~write_mask) 
+        | ((value<<bit_offset) & write_mask);
 
 }
+
+
+//// XXX TESTED XXX
+////
+//mword array1_read(mword *array, mword offset){ // array1_read#
+//
+//    array1_mask_generate(offset, array, read_mask, mword_select);
+//    return ((rdv(array,mword_select) & read_mask) >> offset);
+//
+//}
+//
+//
+//// XXX TESTED XXX
+////
+//void array1_write(mword *array, mword offset, mword value){ // array1_write#
+//
+//    array1_mask_generate(offset, array, write_mask, mword_select);
+//    ldv(array,mword_select) = (rdv(array,mword_select) & ~write_mask) | ((value<<bit_offset) & write_mask);
+//
+//}
 
 
 // Returns a val containing the bit at val_array[entry1] (bitwise addressing)
