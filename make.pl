@@ -21,6 +21,13 @@ else{
     if($ARGV[0] eq "clean"){
         clean();
     }
+    elsif($ARGV[0] eq "libs"){
+        libs();
+    }
+    elsif($ARGV[0] eq "all"){
+        libs();
+        build();
+    }
 }
 
 sub libs{

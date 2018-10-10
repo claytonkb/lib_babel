@@ -112,9 +112,9 @@ void dev_prompt(void){
 //                if(cmd_code_str == NULL){ _say("Not enough arguments"); continue; }
 //                array1_write(ACC, atoi((char*)cmd_code_str), 0x1);
 
-                cmd_code_str = strtok(NULL, " ");
-                if(cmd_code_str == NULL){ _say("Not enough arguments"); continue; }
-                ACC = pds_la_lookup(temp, pearson_hash8(be, be->zero_hash, _val(be, atoi(cmd_code_str)), 1), U1_ASIZE);
+//                cmd_code_str = strtok(NULL, " ");
+//                if(cmd_code_str == NULL){ _say("Not enough arguments"); continue; }
+//                ACC = pds_la_lookup(temp, pearson_hash8(be, be->zero_hash, _val(be, atoi(cmd_code_str)), 1), U1_ASIZE);
 
                 break;
 
