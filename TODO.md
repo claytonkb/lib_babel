@@ -9,8 +9,7 @@ Migration
 *TOS*
 
     pds
-        approx array
-            Fix (mword)0xff issue in array[81]_read()
+        lossy array
         bloom filter
         cms
 

@@ -32,6 +32,8 @@ void dev_prompt(void);
 //
 int main(void){
 
+    srand((unsigned)time(NULL));
+
     dev_prompt();
 
 }
@@ -51,6 +53,7 @@ void dev_prompt(void){
 
     bstruct ACC;
     bstruct temp;
+    bstruct temp2;
     char   *tempc=" ";
     mword   tempv=0;
     char *c = malloc(8); 
@@ -63,13 +66,47 @@ void dev_prompt(void){
     ACC = be->nil;
     temp = be->nil;
 
-//    ACC = mem_new_val(be, 8, 0);
-    temp = mem_new_val(be, 32, 0);
-    for(i=0;i<100;i++){
-//        pds_la_update(temp, pearson_hash8(be, be->zero_hash, _val(be, tempv), 1), _val(be, ++tempv), U8_ASIZE);
-        pds_la_update(temp, pearson_hash8(be, be->zero_hash, _val(be, tempv++), 1), _val(be, 0x1), U1_ASIZE);
+////    ACC = mem_new_val(be, 8, 0);
+//    temp = mem_new_val(be, 8, 0);
+//    for(i=0;i<10;i++){
+//        pds_la_update(temp, pearson_hash8(be, be->zero_hash, _val(be, tempv++), 1), _val(be, 7+i*7), U8_ASIZE);
+////        pds_la_update(temp, pearson_hash8(be, be->zero_hash, _val(be, tempv++), 1), _val(be, 0x1), U1_ASIZE);
+//    }
+//    ACC=temp;
+
+    c[0] = '0';
+    c[1] = '0';
+    c[2] = '0';
+    c[3] = '\0';
+    mword *temph;
+
+    temp = trie_new(be);
+    for(i=0; i<10; i++){
+        for(j=0; j<10; j++){
+            for(k=0; k<10; k++){
+//                trie_insert(be, 
+//                        temp,
+//                        be->nil,
+//                        string_c2b(be, c, 3), 
+//                        _val(be, (i*100 + j*10 + k)));
+                trie_insert(be, 
+                        temp,
+                        pearson_hash8(be, be->zero_hash, (char*)string_c2b(be, c, 3), 3), 
+                        be->nil,
+                        _val(be, (i*100 + j*10 + k)));
+                c[0]++;
+            }
+            c[0] = '0';
+            c[1]++;
+        }
+        c[0] = '0';
+        c[1] = '0';
+        c[2]++;
     }
-    ACC=temp;
+    ACC  = aop_from_trie(be, temp);
+    temp = aop_to_sap(be, ACC, UNSIGNED_ST);
+//    sap_update(be, temp, HASH8(be, "000"), _val(be, 0xdeadbeef), PROBE_S, UNSIGNED_ST);
+
 
     thread_context *tc;
     bstruct paging_base;
@@ -115,6 +152,30 @@ void dev_prompt(void){
 //                cmd_code_str = strtok(NULL, " ");
 //                if(cmd_code_str == NULL){ _say("Not enough arguments"); continue; }
 //                ACC = pds_la_lookup(temp, pearson_hash8(be, be->zero_hash, _val(be, atoi(cmd_code_str)), 1), U1_ASIZE);
+
+//                cmd_code_str = strtok(NULL, " ");
+//                if(cmd_code_str == NULL){ _say("Not enough arguments"); continue; }
+//                ACC = pearson_hash8(be,be->zero_hash,cmd_code_str,strlen(cmd_code_str));
+
+//                ldp(temp,534) = be->nil;
+
+//                cmd_code_str = strtok(NULL, " ");
+//                if(cmd_code_str == NULL){ _say("Not enough arguments"); continue; }
+//                temp2 = pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str));
+//
+//                tempv = sap_find_index_linear(be, temp, 0, size(temp), pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), UNSIGNED_ST);
+//                tempv = sap_find_index_binary(be, temp, pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), UNSIGNED_ST);
+//
+//                tempv = sap_remove(be, temp, temp2);
+//                _dd(tempv);
+//                tempv = sap_insert(be, temp, temp2, _val(be, 0xdeadbeef));
+//                _dd(tempv);
+//                tempv = sap_find_index_probe(be, temp, pearson_hash8(be,be->zero_hash,cmd_code_str,strlen(cmd_code_str)));
+//                _dd(tempv);
+//
+//                ACC = sap_lookup(be, temp, pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), PROBE_S, UNSIGNED_ST);
+
+
 
                 break;
 

@@ -19,6 +19,12 @@
 #include "pearson.h"
 #include "mem.h"
 
+//void bogus(void);
+//void bogus(void){
+//    int i;
+//    int foo = rand() & 0xffff;
+//    for(i=0;i<foo;i++){}
+//}
 
 // allocating version of pearson128()
 //
@@ -37,7 +43,7 @@ hash pearson_hash8(babel_env *be, const bstruct init, const char *key, const uns
 //
 void pearson128(hash result, const bstruct init, const char *key, const unsigned strlen){ // pearson128#
 
-    int i,j;
+    int i,j,k;
     unsigned char temp;
     unsigned char round_key;
 
@@ -52,14 +58,26 @@ void pearson128(hash result, const bstruct init, const char *key, const unsigned
 
         cresult[0] = pearson_perm[ cresult[15] ^ round_key ];
 
+// XXX this code might have serialization issues on certain processors; more
+// testing needed...
+//
+//        for(j=1;j<HASH_BYTE_SIZE;j++){
+//            cresult[j] = pearson_perm[ cresult[j-1] ^ (round_key+j) ];
+//    
+//            // xoroshiro128
+//            result[1] ^= result[0];
+//            result[0]  = ROTL64(result[0], 55) ^ result[1] ^ (result[1] << 14);
+//            result[1]  = ROTL64(result[1], 36);
+//        }
+
         for(j=1;j<HASH_BYTE_SIZE;j++){
             cresult[j] = pearson_perm[ cresult[j-1] ^ (round_key+j) ];
         }
 
         // xoroshiro128
-//        result[1] ^= result[0];
-//        result[0]  = ROTL64(result[0], 55) ^ result[1] ^ (result[1] << 14);
-//        result[1]  = ROTL64(result[1], 36);
+        result[1] ^= result[0];
+        result[0]  = ROTL64(result[0], 55) ^ result[1] ^ (result[1] << 14);
+        result[1]  = ROTL64(result[1], 36);
 
    }
 
