@@ -26,7 +26,7 @@
 void dev_get_line(char *buffer, FILE *stream);
 void dev_menu(void);
 void dev_prompt(void);
-
+int dev_i;
 
 //
 //
