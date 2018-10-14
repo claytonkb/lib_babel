@@ -43,13 +43,27 @@ sub libs{
 
 }
 
+#sub build{
+#    `mkdir -p bin`;
+#    my @objs = `ls obj`;
+#    my $obj_string = "";
+#    for(@objs){ chomp $_; $obj_string .= "obj/$_ " };
+#    my $build_string =
+#        "gcc test/main.c $obj_string -Isrc -o bin/test";
+#    `$build_string`;
+#}
+
 sub build{
     `mkdir -p bin`;
-    my @objs = `ls obj`;
-    my $obj_string = "";
-    for(@objs){ chomp $_; $obj_string .= "obj/$_ " };
+#    my @objs = `ls obj`;
+#    my $obj_string = "";
+#    for(@objs){ chomp $_; $obj_string .= "obj/$_ " };
+    chdir "test";
     my $build_string =
-        "gcc test/main.c $obj_string -Isrc -o bin/test";
+        "gcc -c main.c -I../src";
+    `$build_string`;
+    $build_string =
+        "gcc main.o -lbabel -L../obj -o ../bin/test";
     `$build_string`;
 }
 
