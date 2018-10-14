@@ -34,8 +34,13 @@ sub libs{
     `mkdir -p obj`;
     chdir "src";
     `gcc -c *.c`;
-    `mv *.o ../obj`;
+#    `mv *.o ../obj`;
+#    chdir "../";
+    `ar rcs libbabel.a *.o`;
+    `rm *.o`;
+    `mv *.a ../obj`;
     chdir "../";
+
 }
 
 sub build{
@@ -52,5 +57,4 @@ sub clean{
     `rm -rf obj`;
     `rm -rf bin`;
 }
-
 

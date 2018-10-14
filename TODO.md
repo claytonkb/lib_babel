@@ -8,6 +8,15 @@ Migration
 
 *TOS*
 
+    write C++ compatible library header, add to repo
+        C++ doesn't like stdint.h
+
+    sap
+        add an empty-pair to babel_env to allow sorting of sparse sap's
+        augment is_nil() test in sap_find_index* to include is_empty_pair()
+
+        empty_pair --> [ptr be->zero_hash 0]
+
     pds
         lossy array
         bloom filter
