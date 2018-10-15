@@ -419,7 +419,7 @@ void *_mkval(babel_env *be, mword array_size, ...){
     int i;
 
     for(i=0;i<array_size;i++){
-        setv(val,i,va_arg(vl,mword));
+        bsetv(val,i,va_arg(vl,mword));
 //        ldv(val,i) = va_arg(vl,mword);
     }
 

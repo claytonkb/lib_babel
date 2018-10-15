@@ -15,12 +15,12 @@ void access_api_rd(babel_env *be, bstruct b, mword offset, cptr result, access_s
     if(is_tptr(b)){
         if(is_builtin(b)){
             // dispatch
-            // setp(result,0,dispatched_result);
+            // bsetp(result,0,dispatched_result);
         }
         else{
             // NOTE: If you want to read the tag out of a tptr, use get_tag()
             //       not an access_* function
-//            setp(result, 0, get_tptr(b));
+//            bsetp(result, 0, get_tptr(b));
         }
     }
     else if(is_large_arr(b)){
@@ -29,10 +29,10 @@ void access_api_rd(babel_env *be, bstruct b, mword offset, cptr result, access_s
     }
     else{
         if(is_ptr(b)){
-            setp(result, 0, getp(b, offset));
+            bsetp(result, 0, bgetp(b, offset));
         }
         else{ // is_val(b)
-            setv(result, 0, access_api_rd_val(be, b, offset, asize));
+            bsetv(result, 0, access_api_rd_val(be, b, offset, asize));
         }
     }
 
@@ -59,7 +59,7 @@ void access_api_wr(babel_env *be, bstruct b, mword offset, bstruct payload, acce
     }
     else{
         if(is_ptr(b)){
-            setp(b, offset, getp(payload, 0));
+            bsetp(b, offset, bgetp(payload, 0));
         }
         else{ // is_val(b)
             access_api_wr_val(be, b, offset, payload, asize);
@@ -91,11 +91,11 @@ mword access_api_rd_val(babel_env *be, val v, mword offset, access_size asize){
             break;
         case U32_ASIZE:
             // assert(sizeof(mword) == sizeof(uint64_t)
-            // return getv(v, offset) & 0x00000000ffffffff;
+            // return bgetv(v, offset) & 0x00000000ffffffff;
             break;
         case U64_ASIZE:
         case MWORD_ASIZE:
-            return getv(v, offset);
+            return bgetv(v, offset);
         default:
             _pigs_fly;
     }
@@ -135,7 +135,7 @@ void access_api_wr_val(babel_env *be, val v, mword offset, cptr payload, access_
 //
 mword *access_api_rd_ptr(ptr p, mword offset){
 
-//    return getp(p, offset);
+//    return bgetp(p, offset);
     _trace;
     return (mword*)0;
 
@@ -146,7 +146,7 @@ mword *access_api_rd_ptr(ptr p, mword offset){
 //
 void access_api_wr_ptr(ptr p, mword offset, cptr payload){
 
-    setp(p, offset, payload);
+    bsetp(p, offset, payload);
 
 }
 

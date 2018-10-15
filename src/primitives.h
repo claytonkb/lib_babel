@@ -26,10 +26,10 @@
 
 
 // mutators
-#define getp(x,y)      (*((mword**)(x)+(y)))  // getp#
-#define getv(x,y)      (*((mword* )(x)+(y)))  // getv#
-#define setp(x,y,z) do{ *((mword**)(x)+(y))=(z); }while(0) // setp#
-#define setv(x,y,z) do{ *((mword* )(x)+(y))=(z); }while(0) // setv#
+#define bgetp(x,y)      (*((mword**)(x)+(y)))  // bgetp#
+#define bgetv(x,y)      (*((mword* )(x)+(y)))  // bgetv#
+#define bsetp(x,y,z) do{ *((mword**)(x)+(y))=(z); }while(0) // bsetp#
+#define bsetv(x,y,z) do{ *((mword* )(x)+(y))=(z); }while(0) // bsetv#
 
 
 /////// Lisp-style accessors ///////
