@@ -37,7 +37,7 @@ typedef bstruct tens;   // tensor
 typedef bstruct str;    // utf-8 encoded byte-string
 typedef bstruct hash;   // HASH_SIZE hash value
 typedef bstruct bsig;   // bstruct-signature
-typedef bstruct map;    // hash-table
+typedef bstruct kmap;   // map (hash-trie) with keys
 typedef bstruct tmap;   // tag-only map
 typedef bstruct hist;   // histogram
 typedef bstruct lut;    // lookup-table
@@ -164,7 +164,7 @@ typedef struct{
     mword            num_threads;
     thread_context **threads;
     sap              static_env;
-    map              dynamic_env;
+    kmap             dynamic_env;
 } babel_env;
 
 
