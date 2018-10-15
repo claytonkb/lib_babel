@@ -31,44 +31,29 @@ else{
 }
 
 sub libs{
-    `mkdir -p obj`;
+    `mkdir -p lib`;
     chdir "src";
     `gcc -c *.c`;
-#    `mv *.o ../obj`;
-#    chdir "../";
     `ar rcs libbabel.a *.o`;
     `rm *.o`;
-    `mv *.a ../obj`;
+    `mv *.a ../lib`;
     chdir "../";
 
 }
 
-#sub build{
-#    `mkdir -p bin`;
-#    my @objs = `ls obj`;
-#    my $obj_string = "";
-#    for(@objs){ chomp $_; $obj_string .= "obj/$_ " };
-#    my $build_string =
-#        "gcc test/main.c $obj_string -Isrc -o bin/test";
-#    `$build_string`;
-#}
-
 sub build{
     `mkdir -p bin`;
-#    my @objs = `ls obj`;
-#    my $obj_string = "";
-#    for(@objs){ chomp $_; $obj_string .= "obj/$_ " };
     chdir "test";
     my $build_string =
         "gcc -c main.c -I../src";
     `$build_string`;
     $build_string =
-        "gcc main.o -lbabel -L../obj -o ../bin/test";
+        "gcc main.o -lbabel -L../lib -o ../bin/test";
     `$build_string`;
 }
 
 sub clean{
-    `rm -rf obj`;
+    `rm -rf lib`;
     `rm -rf bin`;
 }
 
