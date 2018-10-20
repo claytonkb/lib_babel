@@ -58,28 +58,15 @@ void pearson128(hash result, const bstruct init, const char *key, const unsigned
 
         cresult[0] = pearson_perm[ cresult[15] ^ round_key ];
 
-// XXX this code might have serialization issues on certain processors; more
-// testing needed...
-//
-//        for(j=1;j<HASH_BYTE_SIZE;j++){
-//            cresult[j] = pearson_perm[ cresult[j-1] ^ (round_key+j) ];
-//    
-//            // xoroshiro128
-//            result[1] ^= result[0];
-//            result[0]  = ROTL64(result[0], 55) ^ result[1] ^ (result[1] << 14);
-//            result[1]  = ROTL64(result[1], 36);
-//        }
-
         for(j=1;j<HASH_BYTE_SIZE;j++){
             cresult[j] = pearson_perm[ cresult[j-1] ^ (round_key+j) ];
+            // xoroshiro128
+            result[1] ^= result[0];
+            result[0]  = ROTL64(result[0], 55) ^ result[1] ^ (result[1] << 14);
+            result[1]  = ROTL64(result[1], 36);
         }
 
-        // xoroshiro128
-        result[1] ^= result[0];
-        result[0]  = ROTL64(result[0], 55) ^ result[1] ^ (result[1] << 14);
-        result[1]  = ROTL64(result[1], 36);
-
-   }
+    }
 
 }
 
