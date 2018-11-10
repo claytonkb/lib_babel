@@ -12,6 +12,7 @@
 #
 #   Clean:
 #       perl make.pl clean
+$optimize=0;
 
 unless ($#ARGV > -1) {
     libs();
@@ -33,7 +34,8 @@ else{
 sub libs{
     `mkdir -p lib`;
     chdir "src";
-    `gcc -c *.c`;
+    `gcc -O3 -c *.c` if $optimize;
+    `gcc -c *.c` unless $optimize;
     `ar rcs libbabel.a *.o`;
     `rm *.o`;
     `mv *.a ../lib`;
