@@ -50,6 +50,17 @@ mword array1_mword_size(babel_env *be, mword size1);
 
 /*****************************************************************************
  *                                                                           *
+ *                          ARRAY CONCATENATION                              *
+ *                                                                           *
+ ****************************************************************************/
+
+mword *array_cat(babel_env *be, mword *left, mword *right);
+mword *array8_cat(babel_env *be, mword *left, mword *right);
+mword *array1_cat(babel_env *be, mword *left, mword *right);
+
+
+/*****************************************************************************
+ *                                                                           *
  *                            ARRAY COMPARISON                               *
  *                                                                           *
  ****************************************************************************/
