@@ -1,13 +1,18 @@
 // pds.c
 //
-// probabilistic data-structures
-//      la -> lossy-array
-//      bf -> bloom filter
-//     cms -> count-min sketch
 
 #include "babel.h"
 #include "pds.h"
 #include "array.h"
+
+// probabilistic data-structures
+//      la -> lossy-array
+//      bf -> bloom filter
+//          pds_bf_lookup
+//          pds_bf_mark
+//     cms -> count-min sketch
+//          pds_cms_8_lookup
+//          pds_cms_8_increment
 
 // Notes:
 //
