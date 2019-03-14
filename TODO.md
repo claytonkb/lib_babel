@@ -8,8 +8,12 @@ Migration
 
 *TOS*
 
-    write C++ compatible library header, add to repo
-        C++ doesn't like stdint.h
+    make lib_babel private for now
+        break everything
+
+    get make.pl up to snuff
+        get .last_built working
+        get entr working while we're at it...
 
     sap
         add an empty-pair to babel_env to allow sorting of sparse sap's
@@ -17,23 +21,44 @@ Migration
 
         empty_pair --> [ptr be->zero_hash 0]
 
+    flat heap
+        implemented as a ptr-array of size 2*N for heap of size N. Binary
+        indexing used to perform operations on heap. Entries in the ptr-array
+        alternate between priority and payload (default payload is a pair).
+
     pds
+        linear probing (lossless)
         lossy array
         bloom filter
         cms
 
-    implement mem_frame_close
+    sexpr --> aexpr
+        Need to convert s-expressions into nested aop (not sap)
 
-    zebra
+    all functions must have the following modes:
+        non-allocating supervisor (REQUIRED)
+        allocating supervisor (optional)
+        non-allocating user
+        allocating user
 
-    vvvvv mid priority
-        any way to get xoroshiro to play nice with pearson?
-        basic graph support
+    re-architect the memory manager (ugh!)
+        Don't get carried away
+        Flat pyramid
+        Flat allocator, page acquire/release, stop+copy GC
+        Portable mem_env (encapsulate mem_env to allow context-switching)
+
+    round-trippable bstructs
+        bstruct_load_str() --> implementation can wait, but stub it in  
+
+    basic graph support
+
+    type-format checking
+        get tagged bstruct and dispatch to relevant format-checker
+        checker does not *certify* type, only detects type format violations
+
         test whether quotes are working in sexpr
         sort out the tags issue (tags.h vs dynamic tags)
         diff ai_ml/pyramid and pyramid; may still need to migrate some functions
-        bstruct_load_str() --> implementation can wait, but stub it in  
-            round-trippable bstructs
 
 Will call this "lib_babel 0.5"; ready for external use  
 
@@ -96,6 +121,7 @@ Set up pyramidal array for mem_context
     
     Use these for semi-automatic memory mgmt
 
+    NOTE: THIS COMPLICATES CONTEXT-SWITCHING!!!
 
 
 Accessors

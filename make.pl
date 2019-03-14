@@ -1,4 +1,4 @@
-# make.pl
+#!/usr/bin/perl
 #
 # Use this to build lib_babel on any standard *nix with GCC
 #
