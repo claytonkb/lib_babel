@@ -7,7 +7,7 @@
 
 /*****************************************************************************
  *                                                                           *
- *                         PREPROCESSOR SWITCHES                             *
+ *                                FUSES                                      *
  *                                                                           *
  ****************************************************************************/
 
@@ -36,6 +36,8 @@
 #include <unistd.h>
 #include <math.h>
 #include <limits.h>
+
+typedef uint64_t mword;
 
 #include "constants.h"
 #include "typedefs.h"

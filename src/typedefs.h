@@ -7,8 +7,6 @@
  *                                                                           *
  ****************************************************************************/
 
-typedef uint64_t mword;
-
 typedef mword* bstruct;
 typedef mword* tstruct;
 typedef uint32_t* ucs4; // used in sexpr.*

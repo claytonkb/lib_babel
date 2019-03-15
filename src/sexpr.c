@@ -22,7 +22,7 @@
                 (x));                                           \
         }                                                       \
     } while(0)
-    
+
 //array8_slice(be, (mword*)bstring, UNITS_8TO32(i), UNITS_8TO32(j))
 
 #define capture_token                                       \

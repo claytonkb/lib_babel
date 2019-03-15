@@ -22,9 +22,9 @@ Migration
         empty_pair --> [ptr be->zero_hash 0]
 
     flat heap
-        implemented as a ptr-array of size 2*N for heap of size N. Binary
-        indexing used to perform operations on heap. Entries in the ptr-array
-        alternate between priority and payload (default payload is a pair).
+        implemented as a ptr-array of size 2*N for heap of size N. Flat binary tree
+        indexing used to perform operations on heap. Entries in the ptr-array alternate
+        between priority and payload (default payload is a pair).
 
     pds
         linear probing (lossless)
