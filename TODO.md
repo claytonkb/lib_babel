@@ -8,12 +8,26 @@ Migration
 
 *TOS*
 
-    make lib_babel private for now
-        break everything
+    break everything!
 
     get make.pl up to snuff
         get .last_built working
         get entr working while we're at it...
+
+    sexpr --> aexpr
+        Need to convert s-expressions into nested aop (not sap)
+        Temporary mem usage... :/
+        Babel/bpdl.c --> [bs ...]
+
+    val-based predicates
+        is_val_pred(x) (x > 0)
+        is_ptr_pred(x) (x < 0)
+        etc.
+
+    relative-offset accessors
+        rdval_rel(bs,x) bs[x]
+        access-size-specific versions
+        etc.
 
     sap
         add an empty-pair to babel_env to allow sorting of sparse sap's
@@ -32,9 +46,6 @@ Migration
         bloom filter
         cms
 
-    sexpr --> aexpr
-        Need to convert s-expressions into nested aop (not sap)
-
     all functions must have the following modes:
         non-allocating supervisor (REQUIRED)
         allocating supervisor (optional)
@@ -51,6 +62,12 @@ Migration
         bstruct_load_str() --> implementation can wait, but stub it in  
 
     basic graph support
+
+    canonical bstructs
+        Rivest's s-expression format:
+        people.csail.mit.edu/rivest/Sexp.txt
+
+        Convert bstruct to canonical s-expression, then convert to Rivest s-exp
 
     type-format checking
         get tagged bstruct and dispatch to relevant format-checker

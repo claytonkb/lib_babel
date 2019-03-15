@@ -10,7 +10,6 @@
 #include "mem.h"
 #include "tptr.h"
 
-
 #define append_sexpr(x)                                     \
     do{                                                     \
         if(is_nil(curr_sexpr)){                                 \
@@ -22,8 +21,6 @@
                 (x));                                           \
         }                                                       \
     } while(0)
-
-//array8_slice(be, (mword*)bstring, UNITS_8TO32(i), UNITS_8TO32(j))
 
 #define capture_token                                       \
     do{                                                     \
@@ -63,46 +60,6 @@
         }                                                       \
     } while(0)
 
-
-#define _capture_token                                       \
-    do{                                                     \
-        capture_length = j-i;                                   \
-        if(capture_length){                                     \
-            captured_token = array8_slice(be, (mword*)bstring, UNITS_8TO32(i), UNITS_8TO32(j));     \
-            append_sexpr(captured_token);                       \
-        }                                                       \
-        else{                                                   \
-            parse_error;                                        \
-        }                                                       \
-    } while(0)
-
-
-#define _capture_dquote                                      \
-    do{                                                     \
-        capture_length = j-i;                                   \
-        if(capture_length){                                     \
-            captured_token = sexpr_unescape( be, (ucs4)array8_slice(be, (mword*)bstring, UNITS_8TO32(i), UNITS_8TO32(j)), '\\');    \
-            append_sexpr(captured_token);                       \
-        }                                                       \
-        else{                                                   \
-            parse_error;                                        \
-        }                                                       \
-    } while(0)
-
-
-#define _capture_squote                                      \
-    do{                                                     \
-        capture_length = j-i;                                   \
-        if(capture_length){                                     \
-            captured_token = sexpr_unescape( be, (ucs4)array8_slice(be, (mword*)bstring, UNITS_8TO32(i), UNITS_8TO32(j)), '/');    \
-            append_sexpr(captured_token);                       \
-        }                                                       \
-        else{                                                   \
-            parse_error;                                        \
-        }                                                       \
-    } while(0)
-
-
 #define  adv(x) do{ j++;  goto x; } while(0)
 #define  ret(x) do{ j--;  goto x; } while(0)
 #define  esc(x) do{ j+=2; goto x; } while(0)
@@ -114,7 +71,7 @@
 
 //
 //
-mword *sexpr_prelude(babel_env *be, ucs4 bstring, mword *index){ // sexpr_prelude#
+mword *sexpr_prelude(babel_env *be, ucs4 bstring, mword *index){
 
     mword j;
     j=*index;
@@ -168,7 +125,7 @@ done:
 
 //
 //
-mword *sexpr_body(babel_env *be, ucs4 bstring, mword *index, mword *sexpr_type){ // sexpr_body#
+mword *sexpr_body(babel_env *be, ucs4 bstring, mword *index, mword *sexpr_type){
 
     mword i,j;
     i=j=*index;
@@ -296,7 +253,7 @@ done:
 // input string: array-8 string ... INCLUDING THE QUOTES
 // returns: standard Babel-string
 //
-mword *sexpr_unescape(babel_env *be, ucs4 bstring, mword escape_char){ // sexpr_unescape#
+mword *sexpr_unescape(babel_env *be, ucs4 bstring, mword escape_char){
 
     int i,j;
     mword *temp_string;
@@ -384,7 +341,7 @@ mword *sexpr_unescape(babel_env *be, ucs4 bstring, mword escape_char){ // sexpr_
 
 //
 //
-mword *sexpr_from_string(babel_env *be, mword *bstring){ // sexpr_from_string#
+mword *sexpr_from_string(babel_env *be, mword *bstring){
 
     mword index=0;
     return sexpr_prelude(be, string_to_array(be, (mword*)bstring), &index);
