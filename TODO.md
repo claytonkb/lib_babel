@@ -12,6 +12,9 @@ Migration
 
     get make.pl up to snuff
         get .last_built working
+        use toy_code as a platform to get .last_built working... clone
+            lib_babel into the toy_code dir and then build something that
+            needs to use libbabel.a
         get entr working while we're at it...
 
     sexpr --> aexpr
