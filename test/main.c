@@ -57,6 +57,7 @@ void dev_prompt(void){
     char   *tempc=" ";
     mword   tempv=0;
     char *c = malloc(8); 
+    int tempi;
 
     mem_context *mc;
 //    babel_env *be;
@@ -132,6 +133,9 @@ void dev_prompt(void){
                 break;
 
             case 1:
+                temp = mem_new_str(be, 1000, 0);
+                bsprintf(be, temp, &tempi, "digraph babel {\nnode [shape=record];\n");
+
 //                pds_la_update(ACC, pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), _val(be, ++tempv), U8_ASIZE);
 //                pds_la_update(ACC, pearson_hash8(be, be->zero_hash, cmd_code_str, strlen(cmd_code_str)), _val(be, 1), U1_ASIZE);
 
